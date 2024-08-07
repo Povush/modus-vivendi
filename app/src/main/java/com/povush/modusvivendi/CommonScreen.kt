@@ -34,8 +34,11 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.size
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
@@ -61,6 +64,7 @@ import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontLoadingStrategy
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.google.android.gms.tagmanager.Container
@@ -71,22 +75,60 @@ import com.google.android.gms.tagmanager.Container
 fun CommonScreen() {
     Scaffold(
         modifier = Modifier,
-        topBar = {
-            TopAppBar(
-                title = {
-                    Text("My App")
-                },
-                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent )
-            )
-        }
+//        topBar = {
+//            TopAppBar(
+//                title = {
+//                    Text("My App")
+//                },
+//                colors = TopAppBarDefaults.smallTopAppBarColors(containerColor = Color.Transparent )
+//            )
+//        }
     ) { innerPadding ->
         Column(
             modifier = Modifier.padding(innerPadding)
         ) {
             MainParametersBar()
-        }
 
+            TopAppBar(
+                colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+                    containerColor = Color(0xFF844A49),
+                    titleContentColor = Color(0xFFFFFF99),
+                ),
+                title = {
+                    Text(
+                        "Questlines",
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        fontFamily = FontFamily(
+                            Font(R.font.moyenage)
+                        )
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = "Localized description",
+                            tint = Color(0xFFFFFF99)
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(onClick = { /* do something */ }) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = "Localized description",
+                            tint = Color(0xFFFFFF99)
+                        )
+                    }
+                },
+
+                windowInsets = WindowInsets(top = 0.dp)
+            )
+
+        }
     }
+
 }
 
 @Composable

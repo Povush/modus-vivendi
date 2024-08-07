@@ -279,6 +279,7 @@ fun NationalTheme(
         SideEffect {
             val window = (view.context as Activity).window
             window.statusBarColor = Color(0xFF642424).toArgb()
+            window.navigationBarColor = Color(0xFF642424).toArgb()
             WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
         }
     }
