@@ -61,6 +61,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.androidx.ui.text.google.fonts)
     implementation(libs.play.services.tagmanager.v4.impl)
+    implementation(libs.androidx.navigation.runtime.ktx)
+    implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
