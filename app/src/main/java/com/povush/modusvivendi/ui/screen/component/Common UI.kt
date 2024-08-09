@@ -51,7 +51,7 @@ import com.povush.modusvivendi.ui.theme.NationalTheme
 fun ExampleAppBar() {
     TopAppBar(
         colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
-            containerColor = Color(0xFF844A49),
+            containerColor = Color(0xFFE7E4D5),
             titleContentColor = Color.White,
         ),
         title = {
@@ -62,7 +62,8 @@ fun ExampleAppBar() {
                 fontFamily = FontFamily(
                     Font(R.font.moyenage)
                 ),
-                fontWeight = FontWeight.Normal
+                fontWeight = FontWeight.Normal,
+                color = Color.Black
             )
         },
         navigationIcon = {
@@ -70,7 +71,7 @@ fun ExampleAppBar() {
                 Icon(
                     imageVector = Icons.Filled.Menu,
                     contentDescription = "Localized description",
-                    tint = Color.White
+                    tint = Color.Black
                 )
             }
         },
@@ -79,7 +80,7 @@ fun ExampleAppBar() {
                 Icon(
                     imageVector = Icons.Filled.Search,
                     contentDescription = "Localized description",
-                    tint = Color.White
+                    tint = Color.Black
                 )
             }
         },
@@ -100,7 +101,6 @@ fun MainParametersBar(modifier: Modifier = Modifier) {
         MainParameter(value = "26,330", icon = R.drawable.ic_vitality_2)
         MainParameter(value = "+3", icon = R.drawable.ic_stability)
         MainParameter(value = "86.50", icon = R.drawable.ic_crown_2)
-//        MainParameter(value = "+100", icon = R.drawable.ic_prestige)
         MainParameter(value = "31.51", icon = R.drawable.ic_innovativeness)
     }
 }
