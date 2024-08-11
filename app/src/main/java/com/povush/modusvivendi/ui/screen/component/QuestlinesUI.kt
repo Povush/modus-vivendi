@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.ui.screen.component
 
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CutCornerShape
@@ -12,8 +13,13 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.Task
@@ -24,7 +30,7 @@ import java.util.Date
 
 @Composable
 fun QuestCard(
-    questTitle: String
+    quest: Quest
 ) {
     Card(
         onClick = { /*TODO: Opening and closing the quest*/ },
@@ -39,9 +45,27 @@ fun QuestCard(
             disabledContentColor = Color.Black
         )
     ) {
-        Text(
-            text = questTitle
-        )
+        Column(
+            modifier = Modifier
+                .padding(12.dp)
+        ) {
+            Text(
+                text = quest.title,
+                fontSize = 26.sp,
+                fontFamily = FontFamily(
+                    Font(R.font.moyenage)
+                ),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2
+            )
+            Text(
+                text = "Difficulty: ${quest.difficulty.text}".uppercase(),
+                fontSize = 16.sp,
+                fontFamily = FontFamily(
+                    Font(R.font.blender_pro_heavy)
+                ),
+            )
+        }
     }
 }
 
@@ -56,6 +80,13 @@ fun QuestPreview() {
             Task(
                 text = "Take a short primary course on Android development on Kotlin",
                 isCompleted = true
+            ),
+            Task(text = "Go through Android Basics with Compose"),
+            Task(text = "Create an application for linguistic simulation"),
+            Task(text = "Create an application for Ilya's diploma"),
+            Task(
+                text = "To dissect the entire Play Market",
+                isAdditional = true
             )
         ),
         isCompleted = false,
@@ -64,7 +95,7 @@ fun QuestPreview() {
 
     NationalTheme {
         QuestCard(
-            questTitle = "Code of reality II"
+            quest = sampleQuest
         )
     }
 }
