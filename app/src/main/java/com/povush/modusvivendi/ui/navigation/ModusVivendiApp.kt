@@ -1,16 +1,10 @@
 package com.povush.modusvivendi.ui.navigation
 
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.Density
-import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -29,17 +23,17 @@ fun ModusVivendiApp(
     Scaffold(
         modifier = Modifier,
         topBar = {
-            Column() {
-                // Заменить Спейсер на нормальный отступ
-                Spacer(modifier = Modifier.padding(17.dp))
-                MainParametersBar(modifier = Modifier)
+            Column {
+                MainParametersBar()
             }
-        }
+        },
     ) { innerPadding ->
         NavHost(
             navController = navController,
+            /*TODO: The first screen should be remembered*/
             startDestination = ModusVivendiScreens.Questlines.name,
-            modifier = Modifier.padding(innerPadding)
+            modifier = Modifier
+                .padding(innerPadding)
         ) {
             composable(route = ModusVivendiScreens.Questlines.name) {
                 QuestlinesScreen()

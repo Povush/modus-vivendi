@@ -1,26 +1,27 @@
 package com.povush.modusvivendi.ui.screen
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import com.povush.modusvivendi.ui.screen.component.ExampleAppBar
+import androidx.compose.ui.res.stringResource
+import com.povush.modusvivendi.R
+import com.povush.modusvivendi.ui.screen.component.AppBarWithSectionsAndSearch
 
+@SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
 @Composable
 fun QuestlinesScreen() {
     Scaffold(
-        topBar = { ExampleAppBar() }
-    ) { innerPadding ->
+        topBar = {
+            AppBarWithSectionsAndSearch(
+                title = stringResource(R.string.questlines),
+                onNavigationClicked = { /*TODO*/ }
+            )
+        }
+    ) {
         Column(
             modifier = Modifier
-                .padding(innerPadding)
-                .fillMaxSize()
         ) {
 
         }
