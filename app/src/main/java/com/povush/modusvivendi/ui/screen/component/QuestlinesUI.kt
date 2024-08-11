@@ -33,7 +33,7 @@ fun QuestCard(
     quest: Quest
 ) {
     Card(
-        onClick = { /*TODO: Opening and closing the quest*/ },
+        onClick = { /*TODO: Info about the quest*/ },
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 6.dp),
@@ -60,7 +60,8 @@ fun QuestCard(
             )
             Text(
                 text = "Difficulty: ${quest.difficulty.text}".uppercase(),
-                fontSize = 16.sp,
+                color = quest.difficulty.color,
+                fontSize = 18.sp,
                 fontFamily = FontFamily(
                     Font(R.font.blender_pro_heavy)
                 ),
