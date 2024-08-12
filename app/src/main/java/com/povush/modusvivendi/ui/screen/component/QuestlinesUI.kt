@@ -18,6 +18,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
@@ -60,21 +61,18 @@ fun QuestCard(
                 text = quest.title,
                 fontSize = 26.sp,
                 fontWeight = FontWeight.SemiBold,
-//                fontFamily = FontFamily(
-//                    Font(R.font.carima)
-//                ),
                 overflow = TextOverflow.Ellipsis,
-                maxLines = 2
+                maxLines = 2,
+                style = TextStyle(
+                    letterSpacing = 
+                )
             )
             Text(
                 text = "Difficulty: ${quest.difficulty.text}".uppercase(),
                 modifier = Modifier.padding(bottom = 4.dp),
                 color = quest.difficulty.color,
-                fontSize = 16.sp,
+                fontSize = 14.sp,
                 fontWeight = FontWeight.SemiBold,
-//                fontFamily = FontFamily(
-//                    Font(R.font.carima)
-//                ),
             )
             Text(
                 text = quest.description,
