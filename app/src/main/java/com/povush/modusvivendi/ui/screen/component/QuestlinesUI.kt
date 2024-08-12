@@ -64,7 +64,7 @@ fun QuestCard(
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
                 style = TextStyle(
-                    letterSpacing = 
+                    letterSpacing = 2.sp
                 )
             )
             Text(
