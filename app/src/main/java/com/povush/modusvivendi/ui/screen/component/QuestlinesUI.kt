@@ -1,10 +1,13 @@
 package com.povush.modusvivendi.ui.screen.component
 
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CutCornerShape
@@ -16,8 +19,17 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Shapes
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -31,8 +43,7 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.Task
-import com.povush.modusvivendi.data.dataclass.highDifficulty
-import com.povush.modusvivendi.data.dataclass.mediumDifficulty
+import com.povush.modusvivendi.data.dataclass.getDifficultyText
 import com.povush.modusvivendi.ui.theme.NationalTheme
 import java.util.Date
 
@@ -40,72 +51,140 @@ import java.util.Date
 fun QuestCard(
     quest: Quest
 ) {
-    Card(
-        onClick = { /*TODO: Info about the quest*/ },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(4.dp),
-        shape = RoundedCornerShape(3.dp),
-        colors = CardColors(
-            containerColor = Color.Transparent,
-            contentColor = Color.Black,
-            disabledContainerColor = Color.Transparent,
-            disabledContentColor = Color.Black
-        )
-    ) {
-        Column(
+    var expanded by remember { mutableStateOf(false) }
+
+    Column {
+        Card(
+            onClick = { expanded = !expanded },
             modifier = Modifier
-                .padding(horizontal = 8.dp, vertical = 12.dp)
+                .fillMaxWidth()
+                .padding(4.dp),
+            shape = RoundedCornerShape(3.dp),
+            colors = CardColors(
+                containerColor = Color.Transparent,
+                contentColor = Color.Black,
+                disabledContainerColor = Color.Transparent,
+                disabledContentColor = Color.Black
+            )
         ) {
-            Text(
-                text = quest.title,
-                fontSize = 26.sp,
-                fontWeight = FontWeight.Medium,
-                fontFamily = FontFamily(
-                    Font(R.font.moyenage)
-                ),
-                overflow = TextOverflow.Ellipsis,
-                maxLines = 2,
-                style = TextStyle(
-                    letterSpacing = 0.5.sp
+            Column {
+                Text(
+                    text = quest.title,
+                    modifier = Modifier
+                        .padding(top = 12.dp, start = 8.dp, end = 8.dp),
+                    fontSize = 28.sp,
+                    fontWeight = FontWeight.Medium,
+                    fontFamily = FontFamily(
+                        Font(R.font.moyenage)
+                    ),
+                    overflow = TextOverflow.Ellipsis,
+                    maxLines = 2,
+                    style = TextStyle(
+                        letterSpacing = 0.5.sp,
+                        shadow = Shadow(
+                            color = Color.Black,
+                            offset = Offset(0.10f, 0.10f),
+                            blurRadius = 0.30f
+                        )
+                    )
+                )
+                Text(
+                    text = stringResource(
+                        R.string.quest_difficulty,
+                        getDifficultyText(quest.difficulty)
+                    ).uppercase(),
+                    modifier = Modifier
+                        .padding(start = 9.5.dp, end = 8.dp, top = 4.dp, bottom = 6.dp),
+                    color = quest.difficulty.color,
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.SemiBold,
+                    fontFamily = FontFamily(
+                        Font(R.font.blender_pro_heavy)
+                    ),
+                    style = TextStyle(
+                        shadow = Shadow(
+                            color = quest.difficulty.color,
+                            offset = Offset(0.10f, 0.10f),
+                            blurRadius = 0.30f
+                        )
+                    )
+                )
+            }
+        }
+        if (expanded) {
+            QuestCardExpand(quest)
+        }
+
+    }
+
+}
+
+@Composable
+fun QuestCardExpand(
+    quest: Quest
+) {
+    Column(
+        modifier = Modifier.padding(horizontal = 4.dp)
+    ) {
+        Text(
+            text = quest.description,
+            modifier = Modifier.padding(start = 9.dp, end = 9.dp, bottom = 8.dp),
+            fontSize = 14.sp,
+            lineHeight = 18.sp,
+            style = TextStyle(
+                shadow = Shadow(
+                    color = Color.Black,
+                    offset = Offset(0.10f, 0.10f),
+                    blurRadius = 0.30f
                 )
             )
-            Text(
-                text = "Difficulty: ${quest.difficulty.text}".uppercase(),
-                modifier = Modifier.padding(start = 1.5.dp, bottom = 4.dp),
-                color = quest.difficulty.color,
-                fontSize = 16.sp,
-                fontWeight = FontWeight.SemiBold,
-                fontFamily = FontFamily(
-                    Font(R.font.blender_pro_heavy)
-                ),
-            )
-            Text(
-                text = quest.description,
-                modifier = Modifier.padding(start = 1.dp, bottom = 8.dp),
-                fontSize = 14.sp,
-                lineHeight = 20.sp
-            )
-            Tasks(tasks = quest.tasks)
-        }
+
+        )
+        Tasks(tasks = quest.tasks)
     }
 }
 
 @Composable
 fun Tasks(tasks: List<Task>) {
-    LazyColumn {
-        items(tasks) { task ->
-            Row() {
+    Column(
+        modifier = Modifier.padding(start = 4.dp, end = 8.dp, bottom = 12.dp)
+    ) {
+        tasks.forEach { task ->
+            Row {
                 Checkbox(
-                    checked = false,
-                    onCheckedChange = {  }
+                    checked = task.isCompleted,
+                    onCheckedChange = { /*TODO*/ },
+                    modifier = Modifier
+                        .size(32.dp)
                 )
-                Text(
-                    text = task.text
-                )
+                DynamicPaddingText(task.text)
             }
         }
     }
+}
+
+@Composable
+fun DynamicPaddingText(text: String) {
+    var lineCount by remember { mutableIntStateOf(0) }
+
+    val paddingValues = when (lineCount) {
+        1 -> PaddingValues(top = 8.dp)
+        else -> PaddingValues(top = 4.dp)
+    }
+
+    Text(
+        text = text,
+        modifier = Modifier.padding(paddingValues),
+        fontSize = 14.sp,
+        fontFamily = FontFamily(
+            Font(R.font.blender_pro_heavy)
+        ),
+        lineHeight = 14.sp,
+        style = TextStyle(fontSize = 16.sp),
+        onTextLayout = { textLayoutResult: TextLayoutResult ->
+            lineCount = textLayoutResult.lineCount
+        }
+    )
 }
 
 @Preview
@@ -113,14 +192,14 @@ fun Tasks(tasks: List<Task>) {
 fun QuestPreview() {
     val sampleQuest = Quest(
         title = "Code of reality II",
-        difficulty = highDifficulty,
+        difficulty = Difficulty.High,
         description = "The outcome of lengthy parliamentary debates of the Direction to take in the IT field was the decision to focus on mobile application development. The main advantages of this choice include higher demand compared to frontend development, greater impact on the immediately visible result compared to backend development, the ability to port game mechanics easily, and local compatibility with the current demands of programmers. But most importantly, we believe that the future lies in mobile development.",
         tasks = listOf(
             Task(
                 text = "Take a short primary course on Android development on Kotlin",
                 isCompleted = true
             ),
-            Task(text = "Go through Android Basics with Compose"),
+            Task(text = "Go through Android"), // Basics with Compose
             Task(text = "Create an application for linguistic simulation"),
             Task(text = "Create an application for Ilya's diploma"),
             Task(

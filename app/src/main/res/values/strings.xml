@@ -1,4 +1,10 @@
 <resources>
-    <string name="app_name">Modus Vivendi</string>
-    <string name="questlines">Questlines</string>
+    <string name="app_name" translatable="false">Modus Vivendi</string>
+    <string name="questlines" translatable="false">Questlines</string>
+    <string name="very_low_difficulty">Very low</string>
+    <string name="low_difficulty">Low</string>
+    <string name="medium_difficulty">Medium</string>
+    <string name="high_difficulty">High</string>
+    <string name="very_high_difficulty">Very high</string>
+    <string name="quest_difficulty">Difficulty: %1$s</string>
 </resources>

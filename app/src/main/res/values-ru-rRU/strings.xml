@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="very_low_difficulty">Очень низкая</string>
+    <string name="low_difficulty">Низкая</string>
+    <string name="medium_difficulty">Средняя</string>
+    <string name="high_difficulty">Высокая</string>
+    <string name="very_high_difficulty">Очень высокая</string>
+    <string name="quest_difficulty">Сложность: %1$s</string>
+</resources>
