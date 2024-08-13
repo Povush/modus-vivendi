@@ -60,23 +60,29 @@ fun QuestCard(
             Text(
                 text = quest.title,
                 fontSize = 26.sp,
-                fontWeight = FontWeight.SemiBold,
+                fontWeight = FontWeight.Medium,
+                fontFamily = FontFamily(
+                    Font(R.font.moyenage)
+                ),
                 overflow = TextOverflow.Ellipsis,
                 maxLines = 2,
                 style = TextStyle(
-                    letterSpacing = 2.sp
+                    letterSpacing = 0.5.sp
                 )
             )
             Text(
                 text = "Difficulty: ${quest.difficulty.text}".uppercase(),
-                modifier = Modifier.padding(bottom = 4.dp),
+                modifier = Modifier.padding(start = 1.5.dp, bottom = 4.dp),
                 color = quest.difficulty.color,
-                fontSize = 14.sp,
+                fontSize = 16.sp,
                 fontWeight = FontWeight.SemiBold,
+                fontFamily = FontFamily(
+                    Font(R.font.blender_pro_heavy)
+                ),
             )
             Text(
                 text = quest.description,
-                modifier = Modifier.padding(bottom = 8.dp),
+                modifier = Modifier.padding(start = 1.dp, bottom = 8.dp),
                 fontSize = 14.sp,
                 lineHeight = 20.sp
             )
@@ -92,7 +98,7 @@ fun Tasks(tasks: List<Task>) {
             Row() {
                 Checkbox(
                     checked = false,
-                    onCheckedChange = null
+                    onCheckedChange = {  }
                 )
                 Text(
                     text = task.text
