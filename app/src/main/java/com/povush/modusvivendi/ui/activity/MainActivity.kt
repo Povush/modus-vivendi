@@ -30,5 +30,3 @@ class MainActivity : ComponentActivity() {
         }
     }
 }
-
-// pov pov
