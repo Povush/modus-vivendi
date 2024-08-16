@@ -42,7 +42,7 @@ import com.povush.modusvivendi.ui.theme.NationalTheme
 fun QuestCard(
     quest: Quest
 ) {
-    var expanded by remember { mutableStateOf(false) }
+    var expanded by remember { mutableStateOf(true) }
 
     Column {
         Card(
@@ -52,9 +52,9 @@ fun QuestCard(
                 .padding(vertical = 4.dp),
             shape = RoundedCornerShape(3.dp),
             colors = CardColors(
-                containerColor = Color.Transparent,
+                containerColor = Color(0xFFFCF0C8),
                 contentColor = Color.Black,
-                disabledContainerColor = Color.Transparent,
+                disabledContainerColor = Color(0xFFFCF0C8),
                 disabledContentColor = Color.Black
             )
         ) {
@@ -121,7 +121,7 @@ fun QuestExpand(
     ) {
         Text(
             text = quest.description,
-            modifier = Modifier.padding(start = 9.dp, end = 9.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 8.dp),
             fontSize = 14.sp,
             lineHeight = 18.sp,
             style = TextStyle(
