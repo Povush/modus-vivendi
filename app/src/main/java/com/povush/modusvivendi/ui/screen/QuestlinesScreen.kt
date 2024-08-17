@@ -1,13 +1,10 @@
 package com.povush.modusvivendi.ui.screen
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.HorizontalDivider
@@ -48,64 +45,55 @@ fun QuestlinesScreen(
 
     Scaffold(
         topBar = {
-            Box {
-                AppBarWithSections(
-                    title = stringResource(R.string.questlines),
-                    onNavigationClicked = { /*TODO*/ }
-                )
-               Column {
-                   val questSections = listOf(
-                       QuestSection(R.string.main_quest_section, 0),
-                       QuestSection(R.string.additional_quest_section, 0),
-                       QuestSection(R.string.completed_quest_section, 0),
-                       QuestSection(R.string.failed_quest_section, 0)
-                   )
-
-                   Spacer(modifier = Modifier.size(60.dp))
-                   ScrollableTabRow(
-                       selectedTabIndex = uiState.selectedQuestSectionIndex,
-                       modifier = Modifier
-                           .fillMaxWidth(),
-                       containerColor = MaterialTheme.colorScheme.primary,
-                       contentColor = MaterialTheme.colorScheme.onPrimary,
-                       edgePadding = 4.dp
-                   ) {
-                       questSections.forEachIndexed { index, questSection ->
-                           Tab(
-                               selected = uiState.selectedQuestSectionIndex == index,
-                               onClick = { viewModel.onTabClick(index) },
-                               text = {
-                                   Text(
-                                       text = stringResource(id = questSection.name),
-                                       color = MaterialTheme.colorScheme.onPrimary,
-                                       fontSize = 18.sp,
-                                       fontWeight = FontWeight.Normal,
-                                       fontFamily = FontFamily(
-                                           Font(R.font.carima)
-                                       ),
-                                       maxLines = 1,
-                                       overflow = TextOverflow.Ellipsis,
-                                       style = TextStyle(
-                                           shadow = Shadow(
-                                               color = Color.Black,
-                                               offset = Offset(1f, 1f) ,
-                                               blurRadius = 2f
-                                           )
-                                       )
-                                   )
-                               }
-                           )
-                       }
-                   }
-
-               }
-            }
+            AppBarWithSections(
+                title = stringResource(R.string.questlines),
+                onNavigationClicked = { /*TODO*/ }
+            )
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
+            val questSections = listOf(
+                QuestSection(R.string.main_quest_section, 0),
+                QuestSection(R.string.additional_quest_section, 0),
+                QuestSection(R.string.completed_quest_section, 0),
+                QuestSection(R.string.failed_quest_section, 0)
+            )
 
-
-
+            ScrollableTabRow(
+                selectedTabIndex = uiState.selectedQuestSectionIndex,
+                modifier = Modifier
+                    .fillMaxWidth(),
+                containerColor = MaterialTheme.colorScheme.primary,
+                contentColor = MaterialTheme.colorScheme.onPrimary,
+                edgePadding = 6.dp
+            ) {
+                questSections.forEachIndexed { index, questSection ->
+                    Tab(
+                        selected = uiState.selectedQuestSectionIndex == index,
+                        onClick = { viewModel.onTabClick(index) },
+                        text = {
+                            Text(
+                                text = stringResource(id = questSection.name),
+                                color = MaterialTheme.colorScheme.onPrimary,
+                                fontSize = 18.sp,
+                                fontWeight = FontWeight.Normal,
+                                fontFamily = FontFamily(
+                                    Font(R.font.carima)
+                                ),
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                style = TextStyle(
+                                    shadow = Shadow(
+                                        color = Color.Black,
+                                        offset = Offset(1f, 1f) ,
+                                        blurRadius = 2f
+                                    )
+                                )
+                            )
+                        }
+                    )
+                }
+            }
 
             val questList = when (uiState.selectedQuestSectionIndex) {
                 0 -> uiState.mainQuests
