@@ -13,9 +13,15 @@ class QuestlinesViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(QuestlinesUiState())
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
 
+    fun onTabClick(index: Int) {
+        _uiState.update {
+            it.copy(selectedQuestSectionIndex = index)
+        }
+    }
+
     fun changeQuestExpandStatus(quest: Quest) {
         _uiState.update {
-            val quests = it.quests
+            val quests = it.mainQuests
             val questIndex = quests.indexOf(quest)
             val expandStatus = quests[questIndex].expanded
             val updatedQuest = quests[questIndex].copy(expanded = !expandStatus)
@@ -23,7 +29,7 @@ class QuestlinesViewModel : ViewModel() {
                 if (index == questIndex) updatedQuest else value
             }
 
-            it.copy(quests = updatedQuests)
+            it.copy(mainQuests = updatedQuests)
         }
     }
 
@@ -34,7 +40,7 @@ class QuestlinesViewModel : ViewModel() {
         // TODO: I believe it can be made less cumbersome
         _uiState.update {
             // Find necessary task and its status
-            val quests = it.quests
+            val quests = it.mainQuests
             val questIndex = quests.indexOf(quest)
             val tasks = quests[questIndex].tasks
             val taskIndex = tasks.indexOf(task)
@@ -50,7 +56,7 @@ class QuestlinesViewModel : ViewModel() {
                 if (index == questIndex) updatedQuest else value
             }
 
-            it.copy(quests = updatedQuests)
+            it.copy(mainQuests = updatedQuests)
         }
     }
 

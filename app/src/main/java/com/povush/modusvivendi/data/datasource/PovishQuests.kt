@@ -2,6 +2,7 @@ package com.povush.modusvivendi.data.datasource
 
 import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
+import com.povush.modusvivendi.data.dataclass.QuestSection
 import com.povush.modusvivendi.data.dataclass.Task
 
 val povishQuests = listOf(
