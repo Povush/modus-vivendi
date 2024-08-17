@@ -3,6 +3,7 @@ package com.povush.modusvivendi.ui.screen.component
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -60,16 +61,16 @@ fun AppBarWithSections(
             }
         },
         actions = {
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { /*TODO: Search functionality*/ }) {
                 Icon(
-                    imageVector = Icons.Filled.Add,
+                    imageVector = Icons.Filled.Search,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary
                 )
             }
-            IconButton(onClick = { /*TODO*/ }) {
+            IconButton(onClick = { /*TODO: Add quest, Collapse/expand, Sort by*/ }) {
                 Icon(
-                    imageVector = Icons.Filled.Search,
+                    imageVector = Icons.Filled.MoreVert,
                     contentDescription = null,
                     tint = MaterialTheme.colorScheme.onPrimary
                 )

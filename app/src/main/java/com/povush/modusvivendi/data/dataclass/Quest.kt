@@ -11,8 +11,9 @@ data class Quest(
     val difficulty: Difficulty = Difficulty.Medium,
     val description: String = "Description",
     val tasks: List<Task> = listOf(),
-    val isCompleted: Boolean,
-    val dateOfCompletion: Date? = null
+    val isCompleted: Boolean = false,
+    val dateOfCompletion: Date? = null,
+    val expanded: Boolean = false
 )
 
 enum class Difficulty(val textResId: Int, val color: Color) {
@@ -21,11 +22,6 @@ enum class Difficulty(val textResId: Int, val color: Color) {
     Medium(R.string.medium_difficulty, Color(0xFFBF8F00)),
     High(R.string.high_difficulty, Color(0xFFC45911)),
     VeryHigh(R.string.very_high_difficulty, Color(0xFFFF0000))
-}
-
-@Composable
-fun getDifficultyText(difficulty: Difficulty): String {
-    return stringResource(id = difficulty.textResId)
 }
 
 data class Task(

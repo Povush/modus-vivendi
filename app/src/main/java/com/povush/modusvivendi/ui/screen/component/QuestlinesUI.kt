@@ -35,20 +35,17 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.Task
-import com.povush.modusvivendi.data.dataclass.getDifficultyText
-import com.povush.modusvivendi.data.model.QuestlinesViewModel
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 @Composable
 fun QuestCard(
     quest: Quest,
+    changeQuestExpandStatus: (Quest) -> Unit,
     changeTaskStatus: (Quest, Task) -> Unit
 ) {
-    var expanded by remember { mutableStateOf(false) }
-
-    Column {
+        Column {
         Card(
-            onClick = { expanded = !expanded },
+            onClick = { changeQuestExpandStatus(quest) },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp),
@@ -86,7 +83,7 @@ fun QuestCard(
                 Text(
                     text = stringResource(
                         R.string.quest_difficulty,
-                        getDifficultyText(quest.difficulty)
+                        stringResource(id = quest.difficulty.textResId)
                     ).uppercase(),
                     modifier = Modifier
                         .padding(start = 9.5.dp, end = 8.dp, top = 4.dp, bottom = 6.dp),
@@ -106,7 +103,7 @@ fun QuestCard(
                 )
             }
         }
-        if (expanded) {
+        if (quest.expanded) {
             QuestExpand(
                 quest = quest,
                 changeTaskStatus = changeTaskStatus
@@ -114,7 +111,6 @@ fun QuestCard(
         }
 
     }
-
 }
 
 @Composable
@@ -137,7 +133,6 @@ fun QuestExpand(
                     blurRadius = 0.30f
                 )
             )
-
         )
         Tasks(quest = quest, changeTaskStatus = changeTaskStatus)
     }
@@ -151,7 +146,7 @@ fun Tasks(
     val tasks = quest.tasks
 
     Column(
-        modifier = Modifier.padding(start = 4.dp, end = 8.dp, bottom = 12.dp)
+        modifier = Modifier.padding(start = 0.dp, end = 8.dp, bottom = 12.dp)
     ) {
         tasks.forEach { task ->
             Row {
@@ -191,34 +186,35 @@ fun DynamicPaddingText(text: String) {
     )
 }
 
-//@Preview
-//@Composable
-//fun QuestPreview() {
-//    val sampleQuest = Quest(
-//        title = "Code of reality II",
-//        difficulty = Difficulty.High,
-//        description = "The outcome of lengthy parliamentary debates of the Direction to take in the IT field was the decision to focus on mobile application development. The main advantages of this choice include higher demand compared to frontend development, greater impact on the immediately visible result compared to backend development, the ability to port game mechanics easily, and local compatibility with the current demands of programmers. But most importantly, we believe that the future lies in mobile development.",
-//        tasks = listOf(
-//            Task(
-//                text = "Take a short primary course on Android development on Kotlin",
-//                isCompleted = true
-//            ),
-//            Task(text = "Go through Android"), // Basics with Compose
-//            Task(text = "Create an application for linguistic simulation"),
-//            Task(text = "Create an application for Ilya's diploma"),
-//            Task(
-//                text = "To dissect the entire Play Market",
-//                isAdditional = true
-//            )
-//        ),
-//        isCompleted = false,
-//        dateOfCompletion = null
-//    )
-//
-//    NationalTheme {
-//        QuestCard(
-//            quest = sampleQuest,
-//            changeTaskStatus = {  }
-//        )
-//    }
-//}
+@Preview
+@Composable
+fun QuestPreview() {
+    val sampleQuest = Quest(
+        title = "Code of reality II",
+        difficulty = Difficulty.High,
+        description = "The outcome of lengthy parliamentary debates of the Direction to take in the IT field was the decision to focus on mobile application development. The main advantages of this choice include higher demand compared to frontend development, greater impact on the immediately visible result compared to backend development, the ability to port game mechanics easily, and local compatibility with the current demands of programmers. But most importantly, we believe that the future lies in mobile development.",
+        tasks = listOf(
+            Task(
+                text = "Take a short primary course on Android development on Kotlin",
+                isCompleted = true
+            ),
+            Task(text = "Go through Android"), // Basics with Compose
+            Task(text = "Create an application for linguistic simulation"),
+            Task(text = "Create an application for Ilya's diploma"),
+            Task(
+                text = "To dissect the entire Play Market",
+                isAdditional = true
+            )
+        ),
+        isCompleted = false,
+        dateOfCompletion = null
+    )
+
+    NationalTheme {
+        QuestCard(
+            quest = sampleQuest,
+            changeQuestExpandStatus = { _: Quest -> },
+            changeTaskStatus = { _: Quest, _: Task -> }
+        )
+    }
+}
