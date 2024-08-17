@@ -18,30 +18,26 @@ class QuestlinesViewModel : ViewModel() {
         task: Task
     ) {
         _uiState.update {
-            var quests = it.quests
-
+            // Find necessary task and its status
+            val quests = it.quests
             val questIndex = quests.indexOf(quest)
-            var tasks = quests[questIndex].tasks
+            val tasks = quests[questIndex].tasks
             val taskIndex = tasks.indexOf(task)
             val taskStatus = quests[questIndex].tasks[taskIndex].isCompleted
-            val updatedQuests = quests[questIndex]
 
-            
+            // Update task, list of tasks, quest and list of quests
+            val updatedTask = tasks[taskIndex].copy(isCompleted = !taskStatus)
+            val updatedTasks = tasks.mapIndexed { index, value ->
+                if (index == taskIndex) updatedTask else value
+            }
+            val updatedQuest = quests[questIndex].copy(tasks = updatedTasks)
+            val updatedQuests = quests.mapIndexed { index, value ->
+                if (index == questIndex) updatedQuest else value
+            }
 
-            it.copy()
-
-            // Code
-//            Find out task in QuestlinesUiState
-//            val quests = mutableListOf(it.quests)
-//            val questIndex = quests.indexOf(quest)
-//            val tasks = quests[questIndex].tasks
-//            val taskIndex = tasks.indexOf(task)
-//            val taskStatus = quests[questIndex].tasks[taskIndex].isCompleted
-//            val newQuests = null
-//
-//            it.copy(
-//                quests = listOf()
-//            )
+            it.copy(
+                quests = updatedQuests
+            )
         }
     }
 }

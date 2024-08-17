@@ -1,6 +1,7 @@
 package com.povush.modusvivendi.ui.screen.component
 
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -24,7 +25,7 @@ import com.povush.modusvivendi.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppBarWithSectionsAndSearch(
+fun AppBarWithSections(
     title: String,
     onNavigationClicked: () -> Unit
 ) {
@@ -59,6 +60,13 @@ fun AppBarWithSectionsAndSearch(
             }
         },
         actions = {
+            IconButton(onClick = { /*TODO*/ }) {
+                Icon(
+                    imageVector = Icons.Filled.Add,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onPrimary
+                )
+            }
             IconButton(onClick = { /*TODO*/ }) {
                 Icon(
                     imageVector = Icons.Filled.Search,

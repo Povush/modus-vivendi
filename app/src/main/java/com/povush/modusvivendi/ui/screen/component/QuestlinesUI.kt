@@ -42,7 +42,7 @@ import com.povush.modusvivendi.ui.theme.NationalTheme
 @Composable
 fun QuestCard(
     quest: Quest,
-    changeTaskStatus: () -> Unit
+    changeTaskStatus: (Quest, Task) -> Unit
 ) {
     var expanded by remember { mutableStateOf(false) }
 
@@ -120,7 +120,7 @@ fun QuestCard(
 @Composable
 fun QuestExpand(
     quest: Quest,
-    changeTaskStatus: () -> Unit
+    changeTaskStatus: (Quest, Task) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 8.dp)
@@ -146,7 +146,7 @@ fun QuestExpand(
 @Composable
 fun Tasks(
     quest: Quest,
-    changeTaskStatus: () -> Unit
+    changeTaskStatus: (Quest, Task) -> Unit
 ) {
     val tasks = quest.tasks
 
@@ -157,7 +157,7 @@ fun Tasks(
             Row {
                 Checkbox(
                     checked = task.isCompleted,
-                    onCheckedChange = { changeTaskStatus(quest = quest, task = task) },
+                    onCheckedChange = { changeTaskStatus(quest, task) },
                     modifier = Modifier
                         .size(32.dp)
                 )
@@ -191,33 +191,34 @@ fun DynamicPaddingText(text: String) {
     )
 }
 
-@Preview
-@Composable
-fun QuestPreview() {
-    val sampleQuest = Quest(
-        title = "Code of reality II",
-        difficulty = Difficulty.High,
-        description = "The outcome of lengthy parliamentary debates of the Direction to take in the IT field was the decision to focus on mobile application development. The main advantages of this choice include higher demand compared to frontend development, greater impact on the immediately visible result compared to backend development, the ability to port game mechanics easily, and local compatibility with the current demands of programmers. But most importantly, we believe that the future lies in mobile development.",
-        tasks = listOf(
-            Task(
-                text = "Take a short primary course on Android development on Kotlin",
-                isCompleted = true
-            ),
-            Task(text = "Go through Android"), // Basics with Compose
-            Task(text = "Create an application for linguistic simulation"),
-            Task(text = "Create an application for Ilya's diploma"),
-            Task(
-                text = "To dissect the entire Play Market",
-                isAdditional = true
-            )
-        ),
-        isCompleted = false,
-        dateOfCompletion = null
-    )
-
-    NationalTheme {
-        QuestCard(
-            quest = sampleQuest
-        )
-    }
-}
+//@Preview
+//@Composable
+//fun QuestPreview() {
+//    val sampleQuest = Quest(
+//        title = "Code of reality II",
+//        difficulty = Difficulty.High,
+//        description = "The outcome of lengthy parliamentary debates of the Direction to take in the IT field was the decision to focus on mobile application development. The main advantages of this choice include higher demand compared to frontend development, greater impact on the immediately visible result compared to backend development, the ability to port game mechanics easily, and local compatibility with the current demands of programmers. But most importantly, we believe that the future lies in mobile development.",
+//        tasks = listOf(
+//            Task(
+//                text = "Take a short primary course on Android development on Kotlin",
+//                isCompleted = true
+//            ),
+//            Task(text = "Go through Android"), // Basics with Compose
+//            Task(text = "Create an application for linguistic simulation"),
+//            Task(text = "Create an application for Ilya's diploma"),
+//            Task(
+//                text = "To dissect the entire Play Market",
+//                isAdditional = true
+//            )
+//        ),
+//        isCompleted = false,
+//        dateOfCompletion = null
+//    )
+//
+//    NationalTheme {
+//        QuestCard(
+//            quest = sampleQuest,
+//            changeTaskStatus = {  }
+//        )
+//    }
+//}
