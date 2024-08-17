@@ -30,7 +30,7 @@ fun getDifficultyText(difficulty: Difficulty): String {
 
 data class Task(
     val text: String = "New Task",
-    var isCompleted: Boolean = false,
+    val isCompleted: Boolean = false,
     val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
     val subTasks: List<SubTask> = listOf()

@@ -36,13 +36,15 @@ import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.Task
 import com.povush.modusvivendi.data.dataclass.getDifficultyText
+import com.povush.modusvivendi.data.model.QuestlinesViewModel
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 @Composable
 fun QuestCard(
-    quest: Quest
+    quest: Quest,
+    changeTaskStatus: () -> Unit
 ) {
-    var expanded by remember { mutableStateOf(true) }
+    var expanded by remember { mutableStateOf(false) }
 
     Column {
         Card(
@@ -52,9 +54,9 @@ fun QuestCard(
                 .padding(vertical = 4.dp),
             shape = RoundedCornerShape(3.dp),
             colors = CardColors(
-                containerColor = Color(0xFFFCF0C8),
+                containerColor = Color.Transparent,
                 contentColor = Color.Black,
-                disabledContainerColor = Color(0xFFFCF0C8),
+                disabledContainerColor = Color.Transparent,
                 disabledContentColor = Color.Black
             )
         ) {
@@ -105,7 +107,10 @@ fun QuestCard(
             }
         }
         if (expanded) {
-            QuestExpand(quest)
+            QuestExpand(
+                quest = quest,
+                changeTaskStatus = changeTaskStatus
+            )
         }
 
     }
@@ -114,14 +119,15 @@ fun QuestCard(
 
 @Composable
 fun QuestExpand(
-    quest: Quest
+    quest: Quest,
+    changeTaskStatus: () -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 8.dp)
     ) {
         Text(
             text = quest.description,
-            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 4.dp, bottom = 8.dp),
+            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 0.dp, bottom = 12.dp),
             fontSize = 14.sp,
             lineHeight = 18.sp,
             style = TextStyle(
@@ -133,12 +139,17 @@ fun QuestExpand(
             )
 
         )
-        Tasks(tasks = quest.tasks)
+        Tasks(quest = quest, changeTaskStatus = changeTaskStatus)
     }
 }
 
 @Composable
-fun Tasks(tasks: List<Task>) {
+fun Tasks(
+    quest: Quest,
+    changeTaskStatus: () -> Unit
+) {
+    val tasks = quest.tasks
+
     Column(
         modifier = Modifier.padding(start = 4.dp, end = 8.dp, bottom = 12.dp)
     ) {
@@ -146,7 +157,7 @@ fun Tasks(tasks: List<Task>) {
             Row {
                 Checkbox(
                     checked = task.isCompleted,
-                    onCheckedChange = { /*TODO*/ },
+                    onCheckedChange = { changeTaskStatus(quest = quest, task = task) },
                     modifier = Modifier
                         .size(32.dp)
                 )
