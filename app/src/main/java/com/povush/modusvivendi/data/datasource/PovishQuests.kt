@@ -4,7 +4,7 @@ import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.Task
 
-val myMainQuests = listOf(
+val myMainQuests = mutableListOf(
     Quest(
         title = "Код реальности II",
         difficulty = Difficulty.High,
@@ -57,7 +57,7 @@ val myMainQuests = listOf(
     )
 )
 
-val myAdditionalQuests = listOf(
+val myAdditionalQuests = mutableListOf(
     Quest(
         title = "Чайный неофит",
         difficulty = Difficulty.Medium,

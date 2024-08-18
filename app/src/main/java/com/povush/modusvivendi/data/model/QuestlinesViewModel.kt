@@ -1,6 +1,7 @@
 package com.povush.modusvivendi.data.model
 
 import androidx.lifecycle.ViewModel
+import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.QuestType
 import com.povush.modusvivendi.data.dataclass.Task
@@ -9,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import java.util.Date
 
 class QuestlinesViewModel : ViewModel() {
     private val _uiState = MutableStateFlow(QuestlinesUiState())
@@ -20,6 +22,67 @@ class QuestlinesViewModel : ViewModel() {
         }
     }
 
+    fun questRebuilder(
+        quest: Quest,
+        updatedTitle: String? = null,
+        updatedDifficulty: Difficulty? = null,
+        updatedDescription: String? = null,
+        updatedTasks: List<Task>? = null,
+        updatedIsCompleted: Boolean? = null,
+        updatedDateOfCompletion: Date? = null,
+        updatedExpanded: Boolean? = null,
+        updatedType: QuestType? = null
+    ) {
+        // Build new quest
+        val updatedQuest = quest.copy(
+            title = updatedTitle ?: quest.title,
+            difficulty = updatedDifficulty ?: quest.difficulty,
+            description = updatedDescription ?: quest.description,
+            tasks = updatedTasks ?: quest.tasks,
+            isCompleted = updatedIsCompleted ?: quest.isCompleted,
+            dateOfCompletion = updatedDateOfCompletion ?: quest.dateOfCompletion,
+            expanded = updatedExpanded ?: quest.expanded,
+            type = updatedType ?: quest.type
+        )
+
+        // Find necessary quests lists
+        val oldQuestsList = when (quest.type) {
+            QuestType.Main -> uiState.value.mainQuests
+            QuestType.Additional -> uiState.value.additionalQuests
+            QuestType.Completed -> uiState.value.completedQuests
+            QuestType.Failed -> uiState.value.failedQuests
+        }
+        val newQuestList = when (updatedType) {
+            QuestType.Main -> uiState.value.mainQuests
+            QuestType.Additional -> uiState.value.additionalQuests
+            QuestType.Completed -> uiState.value.completedQuests
+            QuestType.Failed -> uiState.value.failedQuests
+            null -> oldQuestsList
+        }
+
+        // Getting new versions of the quests lists
+        val updatedOldQuestsList = oldQuestsList.filterNot { it === quest }
+        val updatedNewQuestsList = newQuestList + updatedQuest
+
+        // TODO: The sorting method according to the current sorting criterion
+
+        _uiState.update { currentState ->
+            when (quest.type) {
+                QuestType.Main -> currentState.copy(mainQuests = updatedOldQuestsList)
+                QuestType.Additional -> currentState.copy(additionalQuests = updatedOldQuestsList)
+                QuestType.Completed -> currentState.copy(completedQuests = updatedOldQuestsList)
+                QuestType.Failed -> currentState.copy(failedQuests = updatedOldQuestsList)
+            }
+            when (updatedQuest.type) {
+                QuestType.Main -> currentState.copy(mainQuests = updatedNewQuestsList)
+                QuestType.Additional -> currentState.copy(additionalQuests = updatedNewQuestsList)
+                QuestType.Completed -> currentState.copy(completedQuests = updatedNewQuestsList)
+                QuestType.Failed -> currentState.copy(failedQuests = updatedNewQuestsList)
+            }
+        }
+    }
+
+    // TODO: I believe it can be made less cumbersome
     fun changeQuestExpandStatus(quest: Quest) {
         _uiState.update {
             val quests = when (quest.type) {
@@ -39,11 +102,11 @@ class QuestlinesViewModel : ViewModel() {
         }
     }
 
+    // TODO: I believe it can be made less cumbersome
     fun changeTaskStatus(
         quest: Quest,
         task: Task
     ) {
-        // TODO: I believe it can be made less cumbersome
         _uiState.update {
             // Find necessary task and its status
             val quests = it.mainQuests

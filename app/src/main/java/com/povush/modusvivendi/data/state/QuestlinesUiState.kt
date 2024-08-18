@@ -6,10 +6,10 @@ import com.povush.modusvivendi.data.datasource.myMainQuests
 
 data class QuestlinesUiState(
     // TODO: Take from local data
-    val mainQuests: List<Quest> = myMainQuests,
-    val additionalQuests: List<Quest> = myAdditionalQuests,
-    val completedQuests: List<Quest> = listOf(),
-    val failedQuests: List<Quest> = listOf(),
+    val mainQuests: MutableList<Quest> = myMainQuests,
+    val additionalQuests: MutableList<Quest> = myAdditionalQuests,
+    val completedQuests: MutableList<Quest> = mutableListOf(),
+    val failedQuests: MutableList<Quest> = mutableListOf(),
 
     val selectedQuestSection: Int = 0
 )
