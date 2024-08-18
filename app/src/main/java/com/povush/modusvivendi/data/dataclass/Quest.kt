@@ -7,11 +7,6 @@ import androidx.compose.ui.res.stringResource
 import com.povush.modusvivendi.R
 import java.util.Date
 
-data class QuestSection(
-    @StringRes val name: Int,
-    val numberOfQuests: Int
-)
-
 data class Quest(
     val title: String = "New Quest",
     val difficulty: Difficulty = Difficulty.Medium,

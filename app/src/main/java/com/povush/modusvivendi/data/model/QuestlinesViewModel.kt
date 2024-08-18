@@ -15,7 +15,7 @@ class QuestlinesViewModel : ViewModel() {
 
     fun onTabClick(index: Int) {
         _uiState.update {
-            it.copy(selectedQuestSectionIndex = index)
+            it.copy(selectedQuestSection = index)
         }
     }
 
