@@ -44,20 +44,9 @@ fun ModusVivendiAppBar(
                 Text(
                     text = title,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Normal,
-                    fontFamily = FontFamily(
-                        Font(R.font.carima)
-                    ),
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = TextStyle(
-                        shadow = Shadow(
-                            color = Color.Black,
-                            offset = Offset(1f, 1f),
-                            blurRadius = 2f
-                        )
-                    )
+                    style = MaterialTheme.typography.titleLarge
                 )
             },
             //        modifier = Modifier.heightIn(max = 20.dp),
