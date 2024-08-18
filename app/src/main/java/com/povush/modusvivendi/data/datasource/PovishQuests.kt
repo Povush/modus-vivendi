@@ -4,7 +4,7 @@ import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.Task
 
-val povishQuests = listOf(
+val myMainQuests = listOf(
     Quest(
         title = "Код реальности II",
         difficulty = Difficulty.High,
@@ -51,6 +51,29 @@ val povishQuests = listOf(
             Task(text = "Активировать протокол «Планета Спорт»"),
             Task(text = "Успешно продержаться первый месяц"),
             Task(text = "Соматические традиции: 20.0 и более"),
+        ),
+        isCompleted = false,
+        dateOfCompletion = null
+    )
+)
+
+val myAdditionalQuests = listOf(
+    Quest(
+        title = "Чайный неофит",
+        difficulty = Difficulty.Medium,
+        description = "Вход в чайную культуру и сферу сопутствующего ей глубинного гнозиса потребует от нас немало средств и времени, но однозначно стоит того, чтобы попробовать.",
+        tasks = listOf(
+            Task(
+                text = "Попробовать 20 сортов чая",
+                isCompleted = true
+            ),
+            Task(text = "Освоить основы способов заваривания"),
+            Task(text = "Создать приложение для лингвистической симуляции"),
+            Task(text = "Купить чайный сервиз"),
+            Task(
+                text = "Получить от АриссКи дневник для ведения чайных заметок",
+                isAdditional = true
+            )
         ),
         isCompleted = false,
         dateOfCompletion = null

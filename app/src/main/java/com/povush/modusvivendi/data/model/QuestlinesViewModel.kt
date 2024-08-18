@@ -2,6 +2,7 @@ package com.povush.modusvivendi.data.model
 
 import androidx.lifecycle.ViewModel
 import com.povush.modusvivendi.data.dataclass.Quest
+import com.povush.modusvivendi.data.dataclass.QuestType
 import com.povush.modusvivendi.data.dataclass.Task
 import com.povush.modusvivendi.data.state.QuestlinesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -21,7 +22,12 @@ class QuestlinesViewModel : ViewModel() {
 
     fun changeQuestExpandStatus(quest: Quest) {
         _uiState.update {
-            val quests = it.mainQuests
+            val quests = when (quest.type) {
+                QuestType.Main -> it.mainQuests
+                QuestType.Additional -> it.additionalQuests
+                QuestType.Completed -> it.completedQuests
+                QuestType.Failed -> it.failedQuests
+            }
             val questIndex = quests.indexOf(quest)
             val expandStatus = quests[questIndex].expanded
             val updatedQuest = quests[questIndex].copy(expanded = !expandStatus)
@@ -59,15 +65,4 @@ class QuestlinesViewModel : ViewModel() {
             it.copy(mainQuests = updatedQuests)
         }
     }
-
-//    private fun findQuestIndex(quest: Quest): Int {
-//        val quests = _uiState.value.quests
-//        return quests.indexOf(quest)
-//    }
-//
-//    private fun findTaskIndex(quest: Quest, task: Task): Int {
-//        val quests = _uiState.value.quests
-//        val tasks = quests[findQuestIndex(quest)].tasks
-//        return tasks.indexOf(task)
-//    }
 }

@@ -46,7 +46,7 @@ fun MainParametersBar() {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.primary)
-            .padding(top = 6.dp),
+            .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.Center
     ) {
         /*TODO: Make parameters interactive*/

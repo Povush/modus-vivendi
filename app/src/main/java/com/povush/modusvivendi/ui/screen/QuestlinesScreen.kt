@@ -36,14 +36,18 @@ fun QuestlinesScreen(
                 title = stringResource(R.string.questlines),
                 onNavigationClicked = { /*TODO*/ },
                 actions = {
-                    IconButton(onClick = { /*TODO: Search functionality*/ }) {
+                    IconButton(
+                        onClick = { /*TODO: Search functionality*/ }
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.Search,
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
-                    IconButton(onClick = { /*TODO: Add quest, Collapse/expand, Sort by*/ }) {
+                    IconButton(
+                        onClick = { /*TODO: Add quest, Collapse/expand, Sort by*/ }
+                    ) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
                             contentDescription = null,
@@ -57,7 +61,10 @@ fun QuestlinesScreen(
                     R.string.completed_quest_section,
                     R.string.failed_quest_section
                 ),
-                selectedSection = uiState.selectedQuestSection
+                selectedSection = uiState.selectedQuestSection,
+                onTabClicked = { index: Int ->
+                    viewModel.onTabClick(index)
+                }
             )
         }
     ) { innerPadding ->

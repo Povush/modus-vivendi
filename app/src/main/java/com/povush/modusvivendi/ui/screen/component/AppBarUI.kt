@@ -1,8 +1,13 @@
 package com.povush.modusvivendi.ui.screen.component
 
 import androidx.annotation.StringRes
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -36,7 +41,8 @@ fun ModusVivendiAppBar(
     onNavigationClicked: () -> Unit,
     actions: @Composable () -> Unit,
     @StringRes sections: List<Int> = listOf(),
-    selectedSection: Int = 0
+    selectedSection: Int = 0,
+    onTabClicked: (Int) -> Unit = {}
 ) {
     Column {
         TopAppBar(
@@ -49,7 +55,7 @@ fun ModusVivendiAppBar(
                     style = MaterialTheme.typography.titleLarge
                 )
             },
-            //        modifier = Modifier.heightIn(max = 20.dp),
+            modifier = Modifier.heightIn(max = 45.dp),
             navigationIcon = {
                 IconButton(onClick = onNavigationClicked) {
                     Icon(
@@ -60,15 +66,22 @@ fun ModusVivendiAppBar(
                 }
             },
             actions = { actions() },
-            //        windowInsets = WindowInsets(0.dp),
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primary,
             )
         )
-        if (sections.isNotEmpty()) {
+        if (sections.isEmpty()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(10.dp)
+                    .background(color = MaterialTheme.colorScheme.primary)
+            )
+        } else {
             ScrollableSectionsRow(
                 sections = sections,
-                selectedSection = selectedSection
+                selectedSection = selectedSection,
+                onTabClicked = onTabClicked
             )
         }
     }
@@ -77,7 +90,8 @@ fun ModusVivendiAppBar(
 @Composable
 fun ScrollableSectionsRow(
     @StringRes sections: List<Int>,
-    selectedSection: Int
+    selectedSection: Int,
+    onTabClicked: (Int) -> Unit
 ) {
     ScrollableTabRow(
         selectedTabIndex = selectedSection,
@@ -85,31 +99,19 @@ fun ScrollableSectionsRow(
             .fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
-        edgePadding = 6.dp
+        edgePadding = 4.dp
     ) {
         sections.forEachIndexed { index, section ->
             Tab(
                 selected = selectedSection == index,
-                onClick = {  },
+                onClick = { onTabClicked(index) },
                 text = {
                     Text(
                         text = stringResource(id = section),
-                        modifier = Modifier,
                         color = MaterialTheme.colorScheme.onPrimary,
-                        fontSize = 18.sp,
-                        fontWeight = FontWeight.Normal,
-                        fontFamily = FontFamily(
-                            Font(R.font.carima)
-                        ),
                         maxLines = 1,
                         overflow = TextOverflow.Ellipsis,
-                        style = TextStyle(
-                            shadow = Shadow(
-                                color = Color.Black,
-                                offset = Offset(1f, 1f) ,
-                                blurRadius = 2f
-                            )
-                        )
+                        style = MaterialTheme.typography.titleSmall
                     )
                 }
             )

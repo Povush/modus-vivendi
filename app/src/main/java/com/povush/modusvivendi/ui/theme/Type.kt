@@ -22,10 +22,7 @@ val Typography = Typography(
 //    headlineMedium
 //    headlineSmall
 
-
-/**
- * Use for titles of TopAppBars.
- */
+    // Use for titles of TopAppBars.
     titleLarge = TextStyle(
         fontFamily = FontFamily(
             Font(R.font.carima)
@@ -36,13 +33,29 @@ val Typography = Typography(
         letterSpacing = 0.sp,
         shadow = Shadow(
             color = Color.Black,
-            offset = Offset(1f, 1f),
-            blurRadius = 2f
+            offset = Offset(1.5f, 1.5f),
+            blurRadius = 3f
+        )
+    ),
+
+//    titleMedium
+
+    // Use for Tabs in ScrollableSectionsRow.
+    titleSmall = TextStyle(
+        fontFamily = FontFamily(
+            Font(R.font.carima)
+        ),
+        fontWeight = FontWeight.Medium,
+        fontSize = 18.sp,
+        lineHeight = 26.sp,
+        letterSpacing = 0.15.sp,
+        shadow = Shadow(
+            color = Color.Black,
+            offset = Offset(1.5f, 1.5f),
+            blurRadius = 3f
         )
     )
 
-//    titleMedium
-//    titleSmall
 //    bodyLarge
 //    bodyMedium
 //    bodySmall
