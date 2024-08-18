@@ -73,32 +73,14 @@ class QuestlinesViewModel : ViewModel() {
                 QuestType.Completed -> currentState.copy(completedQuests = updatedOldQuestsList)
                 QuestType.Failed -> currentState.copy(failedQuests = updatedOldQuestsList)
             }
+        }
+        _uiState.update { currentState ->
             when (updatedQuest.type) {
                 QuestType.Main -> currentState.copy(mainQuests = updatedNewQuestsList)
                 QuestType.Additional -> currentState.copy(additionalQuests = updatedNewQuestsList)
                 QuestType.Completed -> currentState.copy(completedQuests = updatedNewQuestsList)
                 QuestType.Failed -> currentState.copy(failedQuests = updatedNewQuestsList)
             }
-        }
-    }
-
-    // TODO: I believe it can be made less cumbersome
-    fun changeQuestExpandStatus(quest: Quest) {
-        _uiState.update {
-            val quests = when (quest.type) {
-                QuestType.Main -> it.mainQuests
-                QuestType.Additional -> it.additionalQuests
-                QuestType.Completed -> it.completedQuests
-                QuestType.Failed -> it.failedQuests
-            }
-            val questIndex = quests.indexOf(quest)
-            val expandStatus = quests[questIndex].expanded
-            val updatedQuest = quests[questIndex].copy(expanded = !expandStatus)
-            val updatedQuests = quests.mapIndexed { index, value ->
-                if (index == questIndex) updatedQuest else value
-            }
-
-            it.copy(mainQuests = updatedQuests)
         }
     }
 

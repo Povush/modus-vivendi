@@ -83,12 +83,8 @@ fun QuestlinesScreen(
                 items(questList) { quest ->
                     QuestCard(
                         quest = quest,
-                        changeQuestExpandStatus = { currentQuest: Quest ->
-                            viewModel.changeQuestExpandStatus(currentQuest)
-                        },
-                        changeTaskStatus = { currentQuest: Quest, currentTask: Task ->
-                            viewModel.changeTaskStatus(currentQuest, currentTask)
-                        }
+                        changeQuestExpandStatus = { /*TODO: here*/ },
+                        changeTaskStatus = { /*TODO: and here*/ }
                     )
                 }
             }
