@@ -1,15 +1,12 @@
 package com.povush.modusvivendi.data.dataclass
 
-import androidx.annotation.StringRes
-import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.stringResource
 import com.povush.modusvivendi.R
 import java.util.Date
 
 data class Quest(
     val title: String = "New Quest",
-    val difficulty: Difficulty = Difficulty.Medium,
+    val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Description",
     val tasks: List<Task> = listOf(),
     val isCompleted: Boolean = false,
@@ -34,11 +31,11 @@ data class SubTask(
 )
 
 enum class Difficulty(val textResId: Int, val color: Color) {
-    VeryLow(R.string.very_low_difficulty, Color(0xFF767171)),
-    Low(R.string.low_difficulty, Color(0xFF00B050)),
-    Medium(R.string.medium_difficulty, Color(0xFFBF8F00)),
-    High(R.string.high_difficulty, Color(0xFFC45911)),
-    VeryHigh(R.string.very_high_difficulty, Color(0xFFFF0000))
+    VERY_LOW(R.string.very_low_difficulty, Color(0xFF767171)),
+    LOW(R.string.low_difficulty, Color(0xFF00B050)),
+    MEDIUM(R.string.medium_difficulty, Color(0xFFBF8F00)),
+    HIGH(R.string.high_difficulty, Color(0xFFC45911)),
+    VERY_HIGH(R.string.very_high_difficulty, Color(0xFFFF0000))
 }
 
 enum class QuestType {

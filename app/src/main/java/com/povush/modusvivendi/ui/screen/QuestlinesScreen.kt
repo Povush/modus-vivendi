@@ -69,16 +69,6 @@ fun QuestlinesScreen(
         }
     ) { innerPadding ->
         Column(modifier = Modifier.padding(innerPadding)) {
-
-
-            // Fix!
-            val questList = when (uiState.selectedQuestSection) {
-                0 -> uiState.mainQuests
-                1 -> uiState.additionalQuests
-                2 -> uiState.completedQuests
-                else -> uiState.failedQuests
-            }
-
             LazyColumn {
                 items(questList) { quest ->
                     QuestCard(

@@ -39,10 +39,10 @@ import com.povush.modusvivendi.R
 fun ModusVivendiAppBar(
     title: String,
     onNavigationClicked: () -> Unit,
-    actions: @Composable () -> Unit,
+    actions: @Composable () -> Unit = {},
     @StringRes sections: List<Int> = listOf(),
     selectedSection: Int = 0,
-    onTabClicked: (Int) -> Unit = {}
+    onTabClicked: (Int) -> Unit = {},
 ) {
     Column {
         TopAppBar(

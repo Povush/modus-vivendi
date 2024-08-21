@@ -13,7 +13,7 @@ import com.povush.modusvivendi.ui.screen.QuestlinesScreen
 import com.povush.modusvivendi.ui.screen.component.MainParametersBar
 
 enum class ModusVivendiScreens(val title: String) {
-    Questlines(title = "Questlines")
+    QUESTLINES(title = "Questlines")
 }
 
 @Composable
@@ -31,11 +31,11 @@ fun ModusVivendiApp(
         NavHost(
             navController = navController,
             /*TODO: The first screen should be remembered*/
-            startDestination = ModusVivendiScreens.Questlines.name,
+            startDestination = ModusVivendiScreens.QUESTLINES.name,
             modifier = Modifier
                 .padding(innerPadding)
         ) {
-            composable(route = ModusVivendiScreens.Questlines.name) {
+            composable(route = ModusVivendiScreens.QUESTLINES.name) {
                 QuestlinesScreen()
             }
         }
