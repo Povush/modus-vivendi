@@ -38,9 +38,9 @@ enum class Difficulty(val textResId: Int, val color: Color) {
     VERY_HIGH(R.string.very_high_difficulty, Color(0xFFFF0000))
 }
 
-enum class QuestType {
-    Main,
-    Additional,
-    Completed,
-    Failed
+enum class QuestType(val textResId: Int) {
+    Main(R.string.main_quest_section),
+    Additional(R.string.additional_quest_section),
+    Completed(R.string.completed_quest_section),
+    Failed(R.string.failed_quest_section)
 }

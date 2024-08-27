@@ -22,6 +22,7 @@ import com.povush.modusvivendi.ui.screen.component.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.screen.component.QuestCard
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.data.dataclass.Quest
+import com.povush.modusvivendi.data.dataclass.QuestType
 import com.povush.modusvivendi.data.dataclass.Task
 
 @Composable
@@ -55,32 +56,20 @@ fun QuestlinesScreen(
                         )
                     }
                 },
-                sections = listOf(
-                    R.string.main_quest_section,
-                    R.string.additional_quest_section,
-                    R.string.completed_quest_section,
-                    R.string.failed_quest_section
-                ),
-                selectedSection = uiState.selectedQuestSection,
-                onTabClicked = { index: Int ->
-                    viewModel.onTabClick(index)
-                }
+                sections = QuestType.entries.map { it.textResId },
+                selectedSection = uiState.selectedQuestSection.ordinal,
+                onTabClicked = { index: Int -> viewModel.onTabClick(index) }
             )
         }
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {
-            LazyColumn {
-                items(questList) { quest ->
-                    QuestCard(
-                        quest = quest,
-                        changeQuestExpandStatus = { /*TODO: here*/ },
-                        changeTaskStatus = { /*TODO: and here*/ }
-                    )
-                }
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            items(uiState.quests[uiState.selectedQuestSection]?: emptyList()) { quest ->
+                QuestCard(
+                    quest = quest,
+                    changeQuestExpandStatus = {  },
+                    changeTaskStatus = { changedQuest: Quest, changedTask: Task -> }
+                )
             }
         }
     }
 }
-
-// wtffff
-

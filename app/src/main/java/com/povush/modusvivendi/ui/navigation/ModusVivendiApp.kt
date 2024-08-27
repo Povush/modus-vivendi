@@ -12,8 +12,8 @@ import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.ui.screen.QuestlinesScreen
 import com.povush.modusvivendi.ui.screen.component.MainParametersBar
 
-enum class ModusVivendiScreens(val title: String) {
-    QUESTLINES(title = "Questlines")
+enum class ModusVivendiScreens {
+    QUESTLINES
 }
 
 @Composable
@@ -23,6 +23,7 @@ fun ModusVivendiApp(
     Scaffold(
         modifier = Modifier,
         topBar = {
+            /*TODO: Ability to disable the MainParametersBar*/
             Column {
                 MainParametersBar()
             }
