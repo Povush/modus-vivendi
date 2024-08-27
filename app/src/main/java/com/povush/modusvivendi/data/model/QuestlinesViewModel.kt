@@ -33,5 +33,12 @@ class QuestlinesViewModel : ViewModel() {
         }
     }
 
+//    fun changeQuestExpandStatus(quest: Quest) {
+//        val index = LocalQuestsDataProvider.allQuests.indexOf(quest)
+//        val changedQuest = LocalQuestsDataProvider.allQuests[index]
+//        val updatedQuest = changedQuest.copy(expanded = !changedQuest.expanded)
+//        LocalQuestsDataProvider.allQuests[index] = updatedQuest
+//    }
+
     // TODO: The sorting method according to the current sorting criterion
 }

@@ -6,7 +6,7 @@ import com.povush.modusvivendi.data.dataclass.QuestType
 import com.povush.modusvivendi.data.dataclass.Task
 
 object LocalQuestsDataProvider {
-    val allQuests = listOf(
+    val allQuests = mutableListOf(
         Quest(
             title = "Код реальности II",
             difficulty = Difficulty.HIGH,

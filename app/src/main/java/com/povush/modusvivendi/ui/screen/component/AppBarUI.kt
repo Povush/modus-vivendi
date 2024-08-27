@@ -16,11 +16,15 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ScrollableTabRow
 import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRowDefaults
+import androidx.compose.material3.TabRowDefaults.SecondaryIndicator
+import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
@@ -100,7 +104,14 @@ fun ScrollableSectionsRow(
             .fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
-        edgePadding = 4.dp
+        edgePadding = 4.dp,
+        indicator = { tabPositions ->
+            SecondaryIndicator(
+                Modifier
+                    .tabIndicatorOffset(tabPositions[selectedSection]),
+                color = MaterialTheme.colorScheme.onPrimary
+            )
+        }
     ) {
         sections.forEachIndexed { index, section ->
             Tab(
