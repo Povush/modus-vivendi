@@ -26,6 +26,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.stringResource
@@ -49,7 +50,13 @@ fun ModusVivendiAppBar(
     selectedSection: Int = 0,
     onTabClicked: (Int) -> Unit = {},
 ) {
-    Column {
+    Column(modifier = Modifier) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(6.dp)
+                .background(color = MaterialTheme.colorScheme.secondary)
+        )
         TopAppBar(
             title = {
                 Text(
@@ -72,15 +79,15 @@ fun ModusVivendiAppBar(
             },
             actions = { actions() },
             colors = TopAppBarDefaults.topAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primary,
+                containerColor = MaterialTheme.colorScheme.secondary,
             )
         )
         if (sections.isEmpty()) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(10.dp)
-                    .background(color = MaterialTheme.colorScheme.primary)
+                    .height(6.dp)
+                    .background(color = MaterialTheme.colorScheme.secondary)
             )
         } else {
             ScrollableSectionsRow(
@@ -102,7 +109,7 @@ fun ScrollableSectionsRow(
         selectedTabIndex = selectedSection,
         modifier = Modifier
             .fillMaxWidth(),
-        containerColor = MaterialTheme.colorScheme.primary,
+        containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
         edgePadding = 4.dp,
         indicator = { tabPositions ->

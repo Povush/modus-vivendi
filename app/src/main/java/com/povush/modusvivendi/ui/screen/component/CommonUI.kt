@@ -4,6 +4,8 @@ import androidx.annotation.DrawableRes
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.scrollable
+import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -11,6 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -46,15 +51,16 @@ fun MainParametersBar() {
         modifier = Modifier
             .fillMaxWidth()
             .background(color = MaterialTheme.colorScheme.primary)
-            .padding(vertical = 8.dp),
-        horizontalArrangement = Arrangement.Center
+            .padding(8.dp),
+        horizontalArrangement = Arrangement.SpaceAround
     ) {
         /*TODO: Make parameters interactive*/
         MainParameter(value = "4833", icon = R.drawable.ic_money)
-        MainParameter(value = "26,330", icon = R.drawable.ic_vitality_2)
+        MainParameter(value = "242", icon = R.drawable.ic_development_5)
+        MainParameter(value = "-6.1", icon = R.drawable.ic_vitality_2)
         MainParameter(value = "+3", icon = R.drawable.ic_stability)
-        MainParameter(value = "86.50", icon = R.drawable.ic_crown_2)
-        MainParameter(value = "31.51", icon = R.drawable.ic_innovativeness)
+        MainParameter(value = "86", icon = R.drawable.ic_crown_2)
+        MainParameter(value = "31", icon = R.drawable.ic_innovativeness)
     }
 }
 
@@ -69,42 +75,64 @@ fun MainParameter(
         pathEffect = PathEffect.dashPathEffect(floatArrayOf(8.5f, 8.5f), 0f)
     )
 
-    Row(
+    Box(
         modifier = Modifier
-            .padding(horizontal = 5.dp)
-            .clickable { /*TODO*/ },
-        horizontalArrangement = Arrangement.Center,
-        verticalAlignment = Alignment.CenterVertically
+            .height(24.dp)
+            .background(
+                color = Color(0xFF403152),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .border(
+                width = 2.dp,
+                color = Color(0xFF332640),
+                shape = RoundedCornerShape(12.dp)
+            )
+            .drawBehind {
+                drawRoundRect(
+                    color = Color.Gray,
+                    style = stroke,
+                    cornerRadius = CornerRadius(36f)
+                )
+            },
+        contentAlignment = Alignment.Center
     ) {
-        Icon(
-            painter = painterResource(icon),
-            contentDescription = null,
+
+        Row(
             modifier = Modifier
-                .size(22.dp)
-                .padding(end = 4.dp),
-            tint = Color.Unspecified
-        )
-        Box(
-            modifier = Modifier
-                .height(20.dp)
-                .background(
-                    color = Color(0xFF403152),
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .border(
-                    width = 2.dp,
-                    color = Color(0xFF332640),
-                    shape = RoundedCornerShape(4.dp)
-                )
-                .drawBehind {
-                    drawRoundRect(
-                        color = Color.Gray,
-                        style = stroke,
-                        cornerRadius = CornerRadius(12f)
-                    )
-                },
-            contentAlignment = Alignment.TopStart
+                .padding(horizontal = 4.dp, vertical = 2.dp)
+                .clickable { /*TODO*/ },
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                painter = painterResource(icon),
+                contentDescription = null,
+                modifier = Modifier
+                    .size(22.dp)
+                    .padding(end = 4.dp),
+                tint = Color.Unspecified
+            )
+//        Box(
+//            modifier = Modifier
+//                .height(20.dp)
+//                .background(
+//                    color = Color(0xFF403152),
+//                    shape = RoundedCornerShape(4.dp)
+//                )
+//                .border(
+//                    width = 2.dp,
+//                    color = Color(0xFF332640),
+//                    shape = RoundedCornerShape(4.dp)
+//                )
+//                .drawBehind {
+//                    drawRoundRect(
+//                        color = Color.Gray,
+//                        style = stroke,
+//                        cornerRadius = CornerRadius(12f)
+//                    )
+//                },
+//            contentAlignment = Alignment.TopStart
+//        ) {
             // Shifting the text slightly downwards
             val text = buildAnnotatedString {
                 withStyle(style = SpanStyle(baselineShift = BaselineShift(-0.05f))) {
@@ -114,7 +142,7 @@ fun MainParameter(
             Text(
                 text = text,
                 modifier = Modifier
-                    .padding(horizontal = 4.dp),
+                    .padding(horizontal = 0.dp),
                 color = Color.White,
                 fontWeight = FontWeight.Medium,
                 fontFamily = FontFamily(
@@ -124,11 +152,14 @@ fun MainParameter(
                 style = TextStyle(
                     shadow = Shadow(
                         color = Color.Black,
-                        offset = Offset(1.5f, 1.5f),
+                        offset = Offset(1.5f,1.5f),
                         blurRadius = 3f
                     )
                 )
             )
+
         }
+
+
     }
 }

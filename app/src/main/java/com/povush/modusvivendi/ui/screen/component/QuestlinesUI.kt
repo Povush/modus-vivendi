@@ -14,7 +14,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
@@ -42,9 +44,11 @@ fun QuestCard(
     changeQuestExpandStatus: (Quest) -> Unit,
     changeTaskStatus: (Quest, Task) -> Unit
 ) {
-        Column {
+    var questExpanded by rememberSaveable { mutableStateOf(false) }
+
+    Column {
         Card(
-            onClick = { changeQuestExpandStatus(quest) },
+            onClick = { questExpanded = !questExpanded },
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 4.dp),
@@ -102,7 +106,7 @@ fun QuestCard(
                 )
             }
         }
-        if (quest.expanded) {
+        if (questExpanded) {
             QuestExpand(
                 quest = quest,
                 changeTaskStatus = changeTaskStatus

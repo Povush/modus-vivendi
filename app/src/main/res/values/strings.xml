@@ -1,5 +1,5 @@
 <resources>
-    <string name="app_name" translatable="false">Modus Vivendi</string>
+    <string name="app_name" translatable="false">Modus Vivendi II</string>
     <string name="questlines" translatable="false">Questlines</string>
     <string name="very_low_difficulty">Very low</string>
     <string name="low_difficulty">Low</string>
