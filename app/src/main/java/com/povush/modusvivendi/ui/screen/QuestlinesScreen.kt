@@ -1,6 +1,5 @@
 package com.povush.modusvivendi.ui.screen
 
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -27,6 +26,7 @@ import com.povush.modusvivendi.data.dataclass.Task
 
 @Composable
 fun QuestlinesScreen(
+    mainParametersBarOn: Boolean,
     viewModel: QuestlinesViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -36,6 +36,7 @@ fun QuestlinesScreen(
             ModusVivendiAppBar(
                 title = stringResource(R.string.questlines),
                 onNavigationClicked = { /*TODO*/ },
+                mainParametersBarOn = mainParametersBarOn,
                 actions = {
                     IconButton(
                         onClick = { /*TODO: Search functionality*/ }
@@ -58,7 +59,10 @@ fun QuestlinesScreen(
                 },
                 sections = QuestType.entries.map { it.textResId },
                 selectedSection = uiState.selectedQuestSection.ordinal,
-                onTabClicked = { index: Int -> viewModel.onTabClick(index) }
+                onTabClicked = { index: Int -> viewModel.onTabClick(index) },
+                tabCounter = { index ->
+                    viewModel.sectionCounter(index)
+                }
             )
         }
     ) { innerPadding ->

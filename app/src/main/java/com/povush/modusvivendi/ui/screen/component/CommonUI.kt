@@ -55,9 +55,9 @@ fun MainParametersBar() {
         horizontalArrangement = Arrangement.SpaceAround
     ) {
         /*TODO: Make parameters interactive*/
-        MainParameter(value = "4833", icon = R.drawable.ic_money)
+        MainParameter(value = "3944", icon = R.drawable.ic_money)
         MainParameter(value = "242", icon = R.drawable.ic_development_5)
-        MainParameter(value = "-6.1", icon = R.drawable.ic_vitality_2)
+        MainParameter(value = "560", icon = R.drawable.ic_willpower)
         MainParameter(value = "+3", icon = R.drawable.ic_stability)
         MainParameter(value = "86", icon = R.drawable.ic_crown_2)
         MainParameter(value = "31", icon = R.drawable.ic_innovativeness)
@@ -104,6 +104,12 @@ fun MainParameter(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
+            val text = buildAnnotatedString {
+                withStyle(style = SpanStyle(baselineShift = BaselineShift(-0.05f))) {
+                    append(value)
+                }
+            }
+
             Icon(
                 painter = painterResource(icon),
                 contentDescription = null,
@@ -112,33 +118,6 @@ fun MainParameter(
                     .padding(end = 4.dp),
                 tint = Color.Unspecified
             )
-//        Box(
-//            modifier = Modifier
-//                .height(20.dp)
-//                .background(
-//                    color = Color(0xFF403152),
-//                    shape = RoundedCornerShape(4.dp)
-//                )
-//                .border(
-//                    width = 2.dp,
-//                    color = Color(0xFF332640),
-//                    shape = RoundedCornerShape(4.dp)
-//                )
-//                .drawBehind {
-//                    drawRoundRect(
-//                        color = Color.Gray,
-//                        style = stroke,
-//                        cornerRadius = CornerRadius(12f)
-//                    )
-//                },
-//            contentAlignment = Alignment.TopStart
-//        ) {
-            // Shifting the text slightly downwards
-            val text = buildAnnotatedString {
-                withStyle(style = SpanStyle(baselineShift = BaselineShift(-0.05f))) {
-                    append(value)
-                }
-            }
             Text(
                 text = text,
                 modifier = Modifier
@@ -157,9 +136,6 @@ fun MainParameter(
                     )
                 )
             )
-
         }
-
-
     }
 }

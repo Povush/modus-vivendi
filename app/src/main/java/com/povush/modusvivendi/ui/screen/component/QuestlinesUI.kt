@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.ui.screen.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -10,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -20,6 +22,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.res.stringResource
@@ -44,15 +47,22 @@ fun QuestCard(
     changeQuestExpandStatus: (Quest) -> Unit,
     changeTaskStatus: (Quest, Task) -> Unit
 ) {
-    var questExpanded by rememberSaveable { mutableStateOf(false) }
-
     Column {
         Card(
-            onClick = { questExpanded = !questExpanded },
+            onClick = {  },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(vertical = 4.dp),
-            shape = RoundedCornerShape(3.dp),
+                .padding(horizontal = 6.dp)
+                .padding(top = 6.dp)
+                .background(
+                    brush = Brush.horizontalGradient(
+                        colors = listOf(
+                            Color(0xFFFFFCF2),
+                            MaterialTheme.colorScheme.primaryContainer
+                        )
+                    ),
+                    shape = RoundedCornerShape(8.dp)
+                ),
             colors = CardColors(
                 containerColor = Color.Transparent,
                 contentColor = Color.Black,
@@ -106,7 +116,7 @@ fun QuestCard(
                 )
             }
         }
-        if (questExpanded) {
+        if (false) {
             QuestExpand(
                 quest = quest,
                 changeTaskStatus = changeTaskStatus

@@ -1,10 +1,11 @@
 package com.povush.modusvivendi.ui.navigation
 
-import androidx.compose.foundation.layout.Column
+import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -20,11 +21,14 @@ enum class ModusVivendiScreens {
 fun ModusVivendiApp(
     navController: NavHostController = rememberNavController()
 ) {
+    val mainParametersBarOn = true
+
     Scaffold(
         modifier = Modifier,
         topBar = {
-            /*TODO: Ability to disable the MainParametersBar*/
-            Column {
+            if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT &&
+                mainParametersBarOn) {
+                /*TODO: Ability to disable the MainParametersBar*/
                 MainParametersBar()
             }
         },
@@ -37,7 +41,7 @@ fun ModusVivendiApp(
                 .padding(innerPadding)
         ) {
             composable(route = ModusVivendiScreens.QUESTLINES.name) {
-                QuestlinesScreen()
+                QuestlinesScreen(mainParametersBarOn = mainParametersBarOn)
             }
         }
     }
