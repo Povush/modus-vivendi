@@ -1,6 +1,7 @@
 package com.povush.modusvivendi.ui.screen.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -57,8 +58,15 @@ fun QuestCard(
             onClick = {  },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 6.dp)
+                .padding(start = 12.dp, end = 6.dp)
                 .padding(top = 6.dp)
+                .graphicsLayer {
+                    shadowElevation = 2.dp.toPx()
+                    shape = RoundedCornerShape(8.dp)
+                    clip = false
+                    translationX = -12f
+                    translationY = -12f
+                }
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
@@ -66,23 +74,15 @@ fun QuestCard(
                             MaterialTheme.colorScheme.primaryContainer
                         )
                     ),
-//                    shape = RoundedCornerShape(8.dp)
-                )
-                .graphicsLayer {
-                    shadowElevation = 1.dp.toPx()
-                    shape = shape
-                    clip = false
-                    // Смещение тени по оси X и Y для создания эффекта справа и снизу
-                    translationX = -4f
-                    translationY = -4f
-                },
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            shape = RoundedCornerShape(8.dp),
             colors = CardColors(
                 containerColor = Color.Transparent,
                 contentColor = Color.Black,
                 disabledContainerColor = Color.Transparent,
                 disabledContentColor = Color.Black
             ),
-//            elevation = CardDefaults.cardElevation(defaultElevation = 1.dp)
         ) {
             Column(
                 modifier = Modifier.padding(horizontal = 4.dp)
