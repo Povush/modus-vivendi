@@ -3,8 +3,10 @@ package com.povush.modusvivendi.data.dataclass
 import androidx.compose.ui.graphics.Color
 import com.povush.modusvivendi.R
 import java.util.Date
+import java.util.concurrent.atomic.AtomicInteger
 
 data class Quest(
+    val id: Int = QuestIdGenerator.generateId(),
     val title: String = "New Quest",
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Description",
@@ -43,4 +45,9 @@ enum class QuestType(val textResId: Int) {
     Additional(R.string.additional_quest_section),
     Completed(R.string.completed_quest_section),
     Failed(R.string.failed_quest_section)
+}
+
+object QuestIdGenerator {
+    private val idCounter = AtomicInteger(0)
+    fun generateId(): Int = idCounter.incrementAndGet()
 }

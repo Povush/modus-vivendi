@@ -69,13 +69,19 @@ fun QuestlinesScreen(
             )
         }
     ) { innerPadding ->
-        LazyColumn(modifier = Modifier.padding(innerPadding).padding(top = 8.dp)) {
-            items(uiState.quests[uiState.selectedQuestSection]?: emptyList()) { quest ->
+        LazyColumn(modifier = Modifier.padding(innerPadding)) {
+            items(
+                uiState.questsByTypes[uiState.selectedQuestSection]?: emptyList(),
+                key = { it.id }
+            ) { quest ->
                 QuestCard(
                     quest = quest,
-                    changeQuestExpandStatus = {  },
+                    changeQuestExpandStatus = { questId ->
+                        viewModel.changeQuestExpandStatus(questId) },
                     changeTaskStatus = { changedQuest: Quest, changedTask: Task -> }
                 )
+            }
+            item {
                 Spacer(modifier = Modifier.size(6.dp))
             }
         }

@@ -1,7 +1,12 @@
 package com.povush.modusvivendi.ui.screen.component
 
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -41,6 +46,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.dataclass.Difficulty
 import com.povush.modusvivendi.data.dataclass.Quest
@@ -50,23 +56,33 @@ import com.povush.modusvivendi.ui.theme.NationalTheme
 @Composable
 fun QuestCard(
     quest: Quest,
-    changeQuestExpandStatus: (Quest) -> Unit,
+    changeQuestExpandStatus: (Int) -> Unit,
     changeTaskStatus: (Quest, Task) -> Unit
 ) {
-    Column {
-        Card(
-            onClick = {  },
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(start = 8.dp, end = 8.dp, top = 8.dp)
+//            .graphicsLayer {
+//                shadowElevation = 1.dp.toPx()
+//                shape = RoundedCornerShape(8.dp)
+//                clip = false
+//                translationX = -12f
+//                translationY = -12f
+//            }
+            .animateContentSize(),
+        shape = RoundedCornerShape(8.dp),
+        colors = CardColors(
+            containerColor = Color.Transparent,
+            contentColor = Color.Black,
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = Color.Black
+        ),
+    ) {
+        Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(start = 12.dp, end = 6.dp)
-                .padding(top = 6.dp)
-                .graphicsLayer {
-                    shadowElevation = 2.dp.toPx()
-                    shape = RoundedCornerShape(8.dp)
-                    clip = false
-                    translationX = -12f
-                    translationY = -12f
-                }
+                .clickable { changeQuestExpandStatus(quest.id) }
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
@@ -75,68 +91,56 @@ fun QuestCard(
                         )
                     ),
                     shape = RoundedCornerShape(8.dp)
-                ),
-            shape = RoundedCornerShape(8.dp),
-            colors = CardColors(
-                containerColor = Color.Transparent,
-                contentColor = Color.Black,
-                disabledContainerColor = Color.Transparent,
-                disabledContentColor = Color.Black
-            ),
+                )
         ) {
-            Column(
-                modifier = Modifier.padding(horizontal = 4.dp)
-            ) {
-                Text(
-                    text = quest.title,
-                    modifier = Modifier
-                        .padding(top = 12.dp, start = 8.dp, end = 8.dp),
-                    fontSize = 28.sp,
-                    fontWeight = FontWeight.Medium,
-                    fontFamily = FontFamily(
-                        Font(R.font.moyenage)
-                    ),
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2,
-                    style = TextStyle(
-                        letterSpacing = 0.5.sp,
-                        shadow = Shadow(
-                            color = Color.Black,
-                            offset = Offset(0.10f, 0.10f),
-                            blurRadius = 0.30f
-                        )
+            Text(
+                text = quest.title,
+                modifier = Modifier
+                    .padding(top = 12.dp,start = 8.dp,end = 8.dp),
+                fontSize = 28.sp,
+                fontWeight = FontWeight.Medium,
+                fontFamily = FontFamily(
+                    Font(R.font.moyenage)
+                ),
+                overflow = TextOverflow.Ellipsis,
+                maxLines = 2,
+                style = TextStyle(
+                    letterSpacing = 0.5.sp,
+                    shadow = Shadow(
+                        color = Color.Black,
+                        offset = Offset(0.10f,0.10f),
+                        blurRadius = 0.30f
                     )
                 )
-                Text(
-                    text = stringResource(
-                        R.string.quest_difficulty,
-                        stringResource(id = quest.difficulty.textResId)
-                    ).uppercase(),
-                    modifier = Modifier
-                        .padding(start = 9.5.dp, end = 8.dp, top = 4.dp, bottom = 6.dp),
-                    color = quest.difficulty.color,
-                    fontSize = 16.sp,
-                    fontWeight = FontWeight.SemiBold,
-                    fontFamily = FontFamily(
-                        Font(R.font.blender_pro_heavy)
-                    ),
-                    style = TextStyle(
-                        shadow = Shadow(
-                            color = quest.difficulty.color,
-                            offset = Offset(0.10f, 0.10f),
-                            blurRadius = 0.30f
-                        )
+            )
+            Text(
+                text = stringResource(
+                    R.string.quest_difficulty,
+                    stringResource(id = quest.difficulty.textResId)
+                ).uppercase(),
+                modifier = Modifier
+                    .padding(start = 9.5.dp,end = 8.dp,top = 4.dp,bottom = 6.dp),
+                color = quest.difficulty.color,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.SemiBold,
+                fontFamily = FontFamily(
+                    Font(R.font.blender_pro_heavy)
+                ),
+                style = TextStyle(
+                    shadow = Shadow(
+                        color = quest.difficulty.color,
+                        offset = Offset(0.10f,0.10f),
+                        blurRadius = 0.30f
                     )
                 )
-            }
+            )
         }
-        if (false) {
+        if (quest.expanded) {
             QuestExpand(
                 quest = quest,
                 changeTaskStatus = changeTaskStatus
             )
         }
-
     }
 }
 
@@ -146,13 +150,18 @@ fun QuestExpand(
     changeTaskStatus: (Quest, Task) -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(horizontal = 8.dp)
+        modifier = Modifier.padding(horizontal = 0.dp)
     ) {
         Text(
             text = quest.description,
-            modifier = Modifier.padding(start = 4.dp, end = 4.dp, top = 0.dp, bottom = 12.dp),
+            modifier = Modifier.padding(start = 8.dp, end = 8.dp, top = 6.dp, bottom = 12.dp),
             fontSize = 14.sp,
-            lineHeight = 18.sp,
+            fontWeight = FontWeight.Thin,
+            fontFamily = FontFamily(
+                Font(R.font.roboto_regular)
+            ),
+            lineHeight = 17.sp,
+            letterSpacing = 0.2.sp,
             style = TextStyle(
                 shadow = Shadow(
                     color = Color.Black,
@@ -173,7 +182,7 @@ fun Tasks(
     val tasks = quest.tasks
 
     Column(
-        modifier = Modifier.padding(start = 0.dp, end = 8.dp, bottom = 12.dp)
+        modifier = Modifier.padding(start = 4.dp, end = 4.dp, bottom = 8.dp)
     ) {
         tasks.forEach { task ->
             Row {
@@ -234,13 +243,14 @@ fun QuestPreview() {
             )
         ),
         isCompleted = false,
-        dateOfCompletion = null
+        dateOfCompletion = null,
+        expanded = true
     )
 
     NationalTheme {
         QuestCard(
             quest = sampleQuest,
-            changeQuestExpandStatus = { _: Quest -> },
+            changeQuestExpandStatus = { _: Int -> },
             changeTaskStatus = { _: Quest, _: Task -> }
         )
     }
