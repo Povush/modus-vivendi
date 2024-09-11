@@ -13,6 +13,7 @@ playServicesTagmanagerV4Impl = "18.1.0"
 navigationRuntimeKtx = "2.7.7"
 navigationCompose = "2.7.7"
 testng = "6.9.6"
+roomCommon = "2.6.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -34,6 +35,7 @@ play-services-tagmanager-v4-impl = { group = "com.google.android.gms", name = "p
 androidx-navigation-runtime-ktx = { group = "androidx.navigation", name = "navigation-runtime-ktx", version.ref = "navigationRuntimeKtx" }
 androidx-navigation-compose = { group = "androidx.navigation", name = "navigation-compose", version.ref = "navigationCompose" }
 testng = { group = "org.testng", name = "testng", version.ref = "testng" }
+androidx-room-common = { group = "androidx.room", name = "room-common", version.ref = "roomCommon" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

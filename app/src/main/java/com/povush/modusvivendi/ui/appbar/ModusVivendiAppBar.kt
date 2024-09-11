@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.screen.component
+package com.povush.modusvivendi.ui.appbar
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background
@@ -33,6 +33,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

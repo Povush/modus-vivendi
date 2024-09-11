@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.screen
+package com.povush.modusvivendi.ui.questlines
 
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.padding
@@ -19,14 +19,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.data.model.QuestlinesViewModel
-import com.povush.modusvivendi.ui.screen.component.ModusVivendiAppBar
-import com.povush.modusvivendi.ui.screen.component.QuestCard
+import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.povush.modusvivendi.data.dataclass.Quest
-import com.povush.modusvivendi.data.dataclass.QuestType
-import com.povush.modusvivendi.data.dataclass.Task
-import com.povush.modusvivendi.data.local.LocalQuestsDataProvider
+import com.povush.modusvivendi.data.LocalQuestsDataProvider
 
 @Composable
 fun QuestlinesScreen(
@@ -74,7 +69,7 @@ fun QuestlinesScreen(
                     quest = quest,
                     changeQuestExpandStatus = { questId ->
                         viewModel.changeQuestExpandStatus(questId) },
-                    changeTaskStatus = { changedQuest: Quest, changedTask: Task -> }
+                    changeTaskStatus = { changedQuest: Quest,changedTask: Task -> }
                 )
             }
             item {

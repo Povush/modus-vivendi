@@ -7,11 +7,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.povush.modusvivendi.ui.screen.QuestlinesScreen
-import com.povush.modusvivendi.ui.screen.component.MainParametersBar
+import com.povush.modusvivendi.ui.appbar.MainParametersBar
 
 enum class ModusVivendiScreens {
     QUESTLINES

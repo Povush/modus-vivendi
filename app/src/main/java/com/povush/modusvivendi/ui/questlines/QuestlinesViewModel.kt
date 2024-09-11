@@ -1,18 +1,14 @@
-package com.povush.modusvivendi.data.model
+package com.povush.modusvivendi.ui.questlines
 
 import androidx.lifecycle.ViewModel
-import com.povush.modusvivendi.data.dataclass.Quest
-import com.povush.modusvivendi.data.dataclass.QuestType
-import com.povush.modusvivendi.data.local.LocalQuestsDataProvider
-import com.povush.modusvivendi.data.state.QuestlinesUiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 
 class QuestlinesViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(QuestlinesUiState())
-    val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(QuestUiState())
+    val uiState: StateFlow<QuestUiState> = _uiState.asStateFlow()
 
     init {
         loadQuests()

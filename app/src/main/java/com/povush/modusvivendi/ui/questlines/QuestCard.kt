@@ -1,41 +1,30 @@
-package com.povush.modusvivendi.ui.screen.component
+package com.povush.modusvivendi.ui.questlines
 
 import androidx.compose.animation.animateContentSize
-import androidx.compose.animation.core.Spring
-import androidx.compose.animation.core.spring
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CornerSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -46,18 +35,14 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.data.dataclass.Difficulty
-import com.povush.modusvivendi.data.dataclass.Quest
-import com.povush.modusvivendi.data.dataclass.Task
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 @Composable
 fun QuestCard(
     quest: Quest,
     changeQuestExpandStatus: (Int) -> Unit,
-    changeTaskStatus: (Quest, Task) -> Unit
+    changeTaskStatus: (Quest,Task) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -147,7 +132,7 @@ fun QuestCard(
 @Composable
 fun QuestExpand(
     quest: Quest,
-    changeTaskStatus: (Quest, Task) -> Unit
+    changeTaskStatus: (Quest,Task) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(horizontal = 0.dp)
@@ -177,7 +162,7 @@ fun QuestExpand(
 @Composable
 fun Tasks(
     quest: Quest,
-    changeTaskStatus: (Quest, Task) -> Unit
+    changeTaskStatus: (Quest,Task) -> Unit
 ) {
     val tasks = quest.tasks
 
@@ -251,7 +236,7 @@ fun QuestPreview() {
         QuestCard(
             quest = sampleQuest,
             changeQuestExpandStatus = { _: Int -> },
-            changeTaskStatus = { _: Quest, _: Task -> }
+            changeTaskStatus = { _: Quest,_: Task -> }
         )
     }
 }

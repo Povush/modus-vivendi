@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.screen
+package com.povush.modusvivendi.ui.greeting
 
 import androidx.compose.runtime.Composable
 
