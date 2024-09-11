@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.activity
+package com.povush.modusvivendi
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity

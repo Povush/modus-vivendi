@@ -26,10 +26,10 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.data.dataclass.Quest
 import com.povush.modusvivendi.data.dataclass.QuestType
 import com.povush.modusvivendi.data.dataclass.Task
+import com.povush.modusvivendi.data.local.LocalQuestsDataProvider
 
 @Composable
 fun QuestlinesScreen(
-    mainParametersBarOn: Boolean,
     viewModel: QuestlinesViewModel = viewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -39,7 +39,6 @@ fun QuestlinesScreen(
             ModusVivendiAppBar(
                 title = stringResource(R.string.questlines),
                 onNavigationClicked = { /*TODO*/ },
-                mainParametersBarOn = mainParametersBarOn,
                 actions = {
                     IconButton(
                         onClick = { /*TODO: Search functionality*/ }
@@ -70,10 +69,7 @@ fun QuestlinesScreen(
         }
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            items(
-                uiState.questsByTypes[uiState.selectedQuestSection]?: emptyList(),
-                key = { it.id }
-            ) { quest ->
+            items(LocalQuestsDataProvider.allQuests) { quest ->
                 QuestCard(
                     quest = quest,
                     changeQuestExpandStatus = { questId ->

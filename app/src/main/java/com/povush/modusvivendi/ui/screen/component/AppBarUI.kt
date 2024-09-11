@@ -39,7 +39,6 @@ import androidx.compose.ui.unit.dp
 fun ModusVivendiAppBar(
     title: String,
     onNavigationClicked: () -> Unit,
-    mainParametersBarOn: Boolean,
     actions: @Composable () -> Unit = {},
     @StringRes sections: List<Int> = listOf(),
     selectedSection: Int = 0,
@@ -47,7 +46,8 @@ fun ModusVivendiAppBar(
     tabCounter: ((Int) -> Int)? = null,
 ) {
     Column(modifier = Modifier) {
-        if (!mainParametersBarOn) {
+        /*TODO: For disabled MainParametersBar*/
+        if (false) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -177,7 +177,6 @@ fun TabText(
                         fontWeight = FontWeight.Bold,
                         shadow = null
                     )
-
                 )
             }
         }

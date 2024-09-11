@@ -19,11 +19,7 @@ class QuestlinesViewModel : ViewModel() {
     }
 
     private fun loadQuests() {
-        val quests: Map<QuestType,List<Quest>> =
-            LocalQuestsDataProvider.allQuests.groupBy { it.type }
-        _uiState.update {
-            it.copy(questsByTypes = quests)
-        }
+        /*TODO: Not yet implemented*/
     }
 
     fun onTabClick(index: Int) {
@@ -33,18 +29,12 @@ class QuestlinesViewModel : ViewModel() {
     }
 
     fun sectionCounter(index: Int): Int {
-        val questType = QuestType.entries.getOrNull(index)
-        val numberOfQuests = uiState.value.questsByTypes[questType]?.size
-        return numberOfQuests ?: 0
+        /*TODO: Not yet implemented*/
+        return 0
     }
 
     fun changeQuestExpandStatus(questId: Int) {
-        val questIndex = LocalQuestsDataProvider.allQuests.indexOfFirst { it.id == questId }
-        val quest = LocalQuestsDataProvider.allQuests[questIndex]
-        LocalQuestsDataProvider.allQuests[questIndex] = quest.copy(
-            expanded = !quest.expanded
-        )
-        loadQuests()
+        /*TODO: Not yet implemented*/
     }
 
     /*TODO: The sorting method according to the current sorting criterion*/
