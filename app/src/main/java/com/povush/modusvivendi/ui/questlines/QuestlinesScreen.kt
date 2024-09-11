@@ -21,7 +21,6 @@ import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.povush.modusvivendi.data.LocalQuestsDataProvider
 
 @Composable
 fun QuestlinesScreen(

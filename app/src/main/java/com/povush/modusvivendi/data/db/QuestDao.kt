@@ -1,16 +1,14 @@
-package com.povush.modusvivendi.data.database
+package com.povush.modusvivendi.data.db
 
 import androidx.room.Dao
 import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
-import androidx.room.Transaction
 import androidx.room.Update
 import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.data.model.Subtask
 import com.povush.modusvivendi.data.model.Task
-import com.povush.modusvivendi.data.model.relations.QuestWithTasks
-import com.povush.modusvivendi.data.model.relations.TaskWithSubTasks
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -51,11 +49,21 @@ interface QuestDao {
     @Delete
     suspend fun deleteTask(task: Task)
 
-    @Query("SELECT * FROM tasks")
-    fun getAllTasks(questId: Int): Flow<List<Quest>>
+    @Query("SELECT * FROM tasks WHERE questId = :questId")
+    fun getAllTasksByQuestId(questId: Int): Flow<List<Task>>
+
+    /**
+     * Functions for working with Subtasks.
+     */
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertSubtask(subtask: Subtask)
+
+    @Update
+    suspend fun updateSubtask(subtask: Subtask)
+
+    @Delete
+    suspend fun deleteSubtask(subtask: Subtask)
+
+    @Query("SELECT * FROM subtasks WHERE taskId = :taskId")
+    fun getAllSubtasksByTaskId(taskId: Int): Flow<List<Subtask>>
 }
-
-
-
-
-
