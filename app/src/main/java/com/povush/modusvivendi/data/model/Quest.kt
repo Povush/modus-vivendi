@@ -14,7 +14,6 @@ data class Quest(
     val type: QuestType = QuestType.ADDITIONAL,
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Sample description.",
-    val tasks: List<Task> = listOf(),
     val isCompleted: Boolean = false,
     val dateOfCompletion: Date? = null
 )
@@ -28,6 +27,7 @@ data class Task(
     val isCompleted: Boolean = false,
     val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
+    val orderIndex: Int = 0
 )
 
 @Entity(tableName = "subtasks")
@@ -39,6 +39,7 @@ data class Subtask(
     val isCompleted: Boolean = false,
     val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
+    val orderIndex: Int = 0
 )
 
 enum class QuestType(val textResId: Int) {
