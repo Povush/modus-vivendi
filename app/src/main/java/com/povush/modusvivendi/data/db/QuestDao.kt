@@ -37,6 +37,9 @@ interface QuestDao {
     @Query("SELECT * FROM quests ORDER BY difficulty DESC")
     fun getAllQuestsByDifficultyDown(): Flow<List<Quest>>
 
+    @Query("SELECT * FROM quests WHERE id = :questId")
+    fun getQuestStreamById(questId: Int): Flow<Quest>
+
     /**
      * Functions for working with Tasks.
      */

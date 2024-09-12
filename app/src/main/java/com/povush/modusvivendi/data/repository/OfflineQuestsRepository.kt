@@ -17,17 +17,19 @@ class OfflineQuestsRepository(private val questDao: QuestDao) {
     suspend fun updateSubtask(subtask: Subtask) = questDao.updateSubtask(subtask)
     suspend fun deleteSubtask(subtask: Subtask) = questDao.deleteSubtask(subtask)
 
-    fun getAllQuests(sortingMethod: QuestSortingMethod): Flow<List<Quest>> = when(sortingMethod) {
+    fun getAllQuestsStream(sortingMethod: QuestSortingMethod): Flow<List<Quest>> = when(sortingMethod) {
         QuestSortingMethod.BY_NAME_UP -> questDao.getAllQuestsByNameUp()
         QuestSortingMethod.BY_NAME_DOWN -> questDao.getAllQuestsByNameDown()
         QuestSortingMethod.BY_DIFFICULTY_UP -> questDao.getAllQuestsByDifficultyUp()
         QuestSortingMethod.BY_DIFFICULTY_DOWN -> questDao.getAllQuestsByDifficultyDown()
     }
 
-    fun getAllTasks(questId: Int): Flow<List<Task>> =
+    fun getQuestStreamById(questId: Int): Flow<Quest> = questDao.getQuestStreamById(questId)
+
+    fun getAllTasksStream(questId: Int): Flow<List<Task>> =
         questDao.getAllTasksByQuestId(questId)
 
-    fun getAllSubtasks(taskId: Int): Flow<List<Subtask>> =
+    fun getAllSubtasksStream(taskId: Int): Flow<List<Subtask>> =
         questDao.getAllSubtasksByTaskId(taskId)
 }
 

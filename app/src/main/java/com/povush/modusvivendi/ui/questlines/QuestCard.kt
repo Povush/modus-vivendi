@@ -37,17 +37,20 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.modusVivendiApplication
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 @Composable
 fun QuestCard(
     quest: Quest,
+    viewModel: QuestViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val viewModel = remember { QuestViewModel(QuestUiState(quest), modusVivendiApplication().container.offlineQuestsRepository) }
     val uiState by viewModel.uiState.collectAsState()
+    viewModel.loadQuest(quest)
 
     Card(
         modifier = Modifier
