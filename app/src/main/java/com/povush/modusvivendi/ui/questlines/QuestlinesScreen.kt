@@ -21,17 +21,25 @@ import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.ui.AppViewModelProvider
+import com.povush.modusvivendi.ui.navigation.NavigationDestination
+
+object QuestlinesDestination : NavigationDestination {
+    override val route = "questlines"
+    override val titleRes = R.string.questlines
+}
 
 @Composable
 fun QuestlinesScreen(
-    viewModel: QuestlinesViewModel = viewModel()
+    viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = {
             ModusVivendiAppBar(
-                title = stringResource(R.string.questlines),
+                title = stringResource(QuestlinesDestination.titleRes),
                 onNavigationClicked = { /*TODO*/ },
                 actions = {
                     IconButton(
@@ -54,7 +62,7 @@ fun QuestlinesScreen(
                     }
                 },
                 sections = QuestType.entries.map { it.textResId },
-                selectedSection = uiState.selectedQuestSection.ordinal,
+                selectedSection = uiState.selectedQuestSection,
                 onTabClicked = { index: Int -> viewModel.onTabClick(index) },
                 tabCounter = { index ->
                     viewModel.sectionCounter(index)
@@ -63,17 +71,17 @@ fun QuestlinesScreen(
         }
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
-            items(LocalQuestsDataProvider.allQuests) { quest ->
-                QuestCard(
-                    quest = quest,
-                    changeQuestExpandStatus = { questId ->
-                        viewModel.changeQuestExpandStatus(questId) },
-                    changeTaskStatus = { changedQuest: Quest,changedTask: Task -> }
-                )
-            }
-            item {
-                Spacer(modifier = Modifier.size(6.dp))
-            }
+//            items(LocalQuestsDataProvider.allQuests) { quest ->
+//                QuestCard(
+//                    quest = quest,
+//                    changeQuestExpandStatus = { questId ->
+//                        viewModel.changeQuestExpandStatus(questId) },
+//                    changeTaskStatus = { changedQuest: Quest,changedTask: Task -> }
+//                )
+//            }
+//            item {
+//                Spacer(modifier = Modifier.size(6.dp))
+//            }
         }
     }
 }

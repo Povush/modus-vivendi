@@ -40,9 +40,9 @@ import com.povush.modusvivendi.ui.theme.NationalTheme
 
 @Composable
 fun QuestCard(
-    quest: Quest,
-    changeQuestExpandStatus: (Int) -> Unit,
-    changeTaskStatus: (Quest,Task) -> Unit
+//    quest: Quest,
+//    changeQuestExpandStatus: (Int) -> Unit,
+//    changeTaskStatus: (Quest,Task) -> Unit
 ) {
     Card(
         modifier = Modifier
@@ -240,5 +240,3 @@ fun QuestPreview() {
         )
     }
 }
-
-// hi

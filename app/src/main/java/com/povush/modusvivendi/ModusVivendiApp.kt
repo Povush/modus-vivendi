@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.navigation
+package com.povush.modusvivendi
 
 import android.content.res.Configuration
 import androidx.compose.foundation.layout.padding
@@ -9,11 +9,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.ui.appbar.MainParametersBar
-
-enum class ModusVivendiScreens {
-    QUESTLINES
-    /*TODO: Transfer screen names from here?*/
-}
+import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
 
 @Composable
 fun ModusVivendiApp(

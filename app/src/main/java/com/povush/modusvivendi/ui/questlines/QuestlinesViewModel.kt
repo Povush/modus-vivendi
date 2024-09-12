@@ -4,11 +4,10 @@ import androidx.lifecycle.ViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.update
 
 class QuestlinesViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(QuestUiState())
-    val uiState: StateFlow<QuestUiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(QuestlinesUiState(0))
+    val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
 
     init {
         loadQuests()
@@ -19,9 +18,9 @@ class QuestlinesViewModel : ViewModel() {
     }
 
     fun onTabClick(index: Int) {
-        _uiState.update {
-            it.copy(selectedQuestSection = QuestType.entries[index])
-        }
+//        _uiState.update {
+//            it.copy(selectedQuestSection = QuestType.entries[index])
+//        }
     }
 
     fun sectionCounter(index: Int): Int {

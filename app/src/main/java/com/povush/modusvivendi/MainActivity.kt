@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
-import com.povush.modusvivendi.ui.navigation.ModusVivendiApp
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 class MainActivity : ComponentActivity() {
