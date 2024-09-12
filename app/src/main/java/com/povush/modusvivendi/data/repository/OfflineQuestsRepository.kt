@@ -24,13 +24,15 @@ class OfflineQuestsRepository(private val questDao: QuestDao) {
         QuestSortingMethod.BY_DIFFICULTY_DOWN -> questDao.getAllQuestsByDifficultyDown()
     }
 
-    fun getQuestStreamById(questId: Int): Flow<Quest> = questDao.getQuestStreamById(questId)
-
     fun getAllTasksStream(questId: Int): Flow<List<Task>> =
         questDao.getAllTasksByQuestId(questId)
 
     fun getAllSubtasksStream(taskId: Int): Flow<List<Subtask>> =
         questDao.getAllSubtasksByTaskId(taskId)
+
+    fun getQuestStreamById(questId: Int): Flow<Quest> = questDao.getQuestStreamById(questId)
+    fun getTaskStreamById(taskId: Int): Flow<Task> = questDao.getTaskStreamById(taskId)
+    fun getSubtaskStreamById(subtaskId: Int): Flow<Subtask> = questDao.getSubtaskStreamById(subtaskId)
 }
 
 enum class QuestSortingMethod {

@@ -15,7 +15,7 @@ data class Quest(
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Sample description.",
     val isCompleted: Boolean = false,
-    val dateOfCompletion: Date? = null,
+//    val dateOfCompletion: Date? = null,
     val pinned: Boolean = false
 )
 
@@ -26,7 +26,7 @@ data class Task(
     val questId: Int,
     val name: String = "New Task",
     val isCompleted: Boolean = false,
-    val counter: Pair<Int, Int>? = null,
+//    val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
     val orderIndex: Int = 0
 )
@@ -38,7 +38,7 @@ data class Subtask(
     val taskId: Int,
     val name: String = "New Task",
     val isCompleted: Boolean = false,
-    val counter: Pair<Int, Int>? = null,
+//    val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
     val orderIndex: Int = 0
 )

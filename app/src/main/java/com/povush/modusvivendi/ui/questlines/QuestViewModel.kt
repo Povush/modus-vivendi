@@ -19,43 +19,23 @@ import kotlinx.coroutines.launch
 import java.util.Date
 
 data class QuestUiState(
-    val quest: Flow<Quest>,
+    val quest: Quest = Quest(),
     val canBeCompleted: Boolean = false,
     val expanded: Boolean = false
 )
 
 class QuestViewModel(private val questsRepository: OfflineQuestsRepository) : ViewModel() {
-//    val _uiState: StateFlow<QuestUiState> =
-//        questsRepository.getQuestStreamById(questId)
-//            .filterNotNull()
-//            .map {
-//                ItemDetailsUiState(outOfStock = it.quantity <= 0, itemDetails = it.toItemDetails())
-//            }.stateIn(
-//                scope = viewModelScope,
-//                started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-//                initialValue = ItemDetailsUiState()
-//            )
-
     private val _uiState = MutableStateFlow(QuestUiState())
     val uiState: StateFlow<QuestUiState> = _uiState.asStateFlow()
 
-    fun loadQuest(quest: Quest) {
-        _uiState.update {
-            it.copy(
-                quest = questsRepository.getQuestStreamById(quest.id)
-            )
-        }
+    fun loadQuest(questId: Int) {
+        val questStream: Flow<Quest> = questsRepository.getQuestStreamById(questId)
 
-//        val _uiState: StateFlow<QuestUiState> =
-//            questsRepository.getQuestStreamById(questId)
-//                .filterNotNull()
-//                .map {
-//                    ItemDetailsUiState(outOfStock = it.quantity <= 0, itemDetails = it.toItemDetails())
-//                }.stateIn(
-//                    scope = viewModelScope,
-//                    started = SharingStarted.WhileSubscribed(TIMEOUT_MILLIS),
-//                    initialValue = ItemDetailsUiState()
-//                )
+        viewModelScope.launch {
+            questStream.collect { quest ->
+                _uiState.update { it.copy(quest = quest) }
+            }
+        }
     }
 
     fun changeQuestExpandStatus() {

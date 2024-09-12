@@ -55,6 +55,9 @@ interface QuestDao {
     @Query("SELECT * FROM tasks WHERE questId = :questId")
     fun getAllTasksByQuestId(questId: Int): Flow<List<Task>>
 
+    @Query("SELECT * FROM tasks WHERE id = :taskId")
+    fun getTaskStreamById(taskId: Int): Flow<Task>
+
     /**
      * Functions for working with Subtasks.
      */
@@ -69,4 +72,7 @@ interface QuestDao {
 
     @Query("SELECT * FROM subtasks WHERE taskId = :taskId")
     fun getAllSubtasksByTaskId(taskId: Int): Flow<List<Subtask>>
+
+    @Query("SELECT * FROM subtasks WHERE id = :subtaskId")
+    fun getSubtaskStreamById(subtaskId: Int): Flow<Subtask>
 }
