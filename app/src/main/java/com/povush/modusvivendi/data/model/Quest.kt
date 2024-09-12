@@ -15,7 +15,8 @@ data class Quest(
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Sample description.",
     val isCompleted: Boolean = false,
-    val dateOfCompletion: Date? = null
+    val dateOfCompletion: Date? = null,
+    val pinned: Boolean = false
 )
 
 @Entity(tableName = "tasks")

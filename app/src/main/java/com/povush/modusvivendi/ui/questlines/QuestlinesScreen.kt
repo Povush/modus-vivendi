@@ -62,7 +62,7 @@ fun QuestlinesScreen(
                     }
                 },
                 sections = QuestType.entries.map { it.textResId },
-                selectedSection = uiState.selectedQuestSection,
+                selectedSection = uiState.selectedQuestSection.ordinal,
                 onTabClicked = { index: Int -> viewModel.onTabClick(index) },
                 tabCounter = { index ->
                     viewModel.sectionCounter(index)
@@ -71,17 +71,12 @@ fun QuestlinesScreen(
         }
     ) { innerPadding ->
         LazyColumn(modifier = Modifier.padding(innerPadding)) {
-//            items(LocalQuestsDataProvider.allQuests) { quest ->
-//                QuestCard(
-//                    quest = quest,
-//                    changeQuestExpandStatus = { questId ->
-//                        viewModel.changeQuestExpandStatus(questId) },
-//                    changeTaskStatus = { changedQuest: Quest,changedTask: Task -> }
-//                )
-//            }
-//            item {
-//                Spacer(modifier = Modifier.size(6.dp))
-//            }
+            items(uiState.allQuests.filter { it.type == uiState.selectedQuestSection }) { quest ->
+                QuestCard(quest = quest)
+            }
+            item {
+                Spacer(modifier = Modifier.size(6.dp))
+            }
         }
     }
 }

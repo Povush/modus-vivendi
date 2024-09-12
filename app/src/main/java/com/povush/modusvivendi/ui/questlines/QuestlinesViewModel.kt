@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class QuestlinesUiState(
-    val quests: Map<QuestType, List<QuestUiState>> = emptyMap(),
+    val allQuests: List<Quest> = emptyList(),
     val selectedQuestSection: QuestType = QuestType.MAIN,
     val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_NAME_UP
 )
@@ -28,19 +28,13 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
     }
 
     private fun loadQuests() {
-        viewModelScope.launch {
-            val quests = questsRepository.getAllQuests(uiState.value.sortingMethod)
-
-            _uiState.update {
-                it.copy(quests = quests)
-            }
-        }
+        /*TODO: Not yet implemented*/
     }
 
     fun onTabClick(index: Int) {
-//        _uiState.update {
-//            it.copy(selectedQuestSection = QuestType.entries[index])
-//        }
+        _uiState.update {
+            it.copy(selectedQuestSection = QuestType.entries[index])
+        }
     }
 
     fun sectionCounter(index: Int): Int {

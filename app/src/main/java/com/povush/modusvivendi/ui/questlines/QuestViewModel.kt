@@ -1,20 +1,25 @@
 package com.povush.modusvivendi.ui.questlines
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import java.util.Date
 
 data class QuestUiState(
-    val questData: Quest,
+    val quest: Quest,
     val canBeCompleted: Boolean = false,
-    val expanded: Boolean = false,
-    val pinned: Boolean = false
+    val expanded: Boolean = false
 )
 
-class QuestViewModel(questUiState: QuestUiState) : ViewModel() {
+class QuestViewModel(private val questsRepository: OfflineQuestsRepository) : ViewModel() {
     private val _uiState = MutableStateFlow(questUiState)
     val uiState: StateFlow<QuestUiState> = _uiState.asStateFlow()
 
@@ -24,9 +29,13 @@ class QuestViewModel(questUiState: QuestUiState) : ViewModel() {
         }
     }
 
-    fun changeQuestPinStatus() {
-        _uiState.update {
-            it.copy(pinned = !it.pinned)
+    fun changeTaskStatus() {
+        viewModelScope.launch {
+
         }
+    }
+
+    fun changeQuestPinStatus() {
+        /*TODO: Not yet implemented*/
     }
 }

@@ -16,6 +16,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -25,6 +26,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.TextStyle
@@ -36,25 +38,28 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.povush.modusvivendi.R
+import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.ui.modusVivendiApplication
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 @Composable
 fun QuestCard(
-//    quest: Quest,
-//    changeQuestExpandStatus: (Int) -> Unit,
-//    changeTaskStatus: (Quest,Task) -> Unit
+    quest: Quest,
 ) {
+    val viewModel = remember { QuestViewModel(QuestUiState(quest), modusVivendiApplication().container.offlineQuestsRepository) }
+    val uiState by viewModel.uiState.collectAsState()
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(start = 8.dp, end = 8.dp, top = 8.dp)
-//            .graphicsLayer {
-//                shadowElevation = 1.dp.toPx()
-//                shape = RoundedCornerShape(8.dp)
-//                clip = false
-//                translationX = -12f
-//                translationY = -12f
-//            }
+            .graphicsLayer {
+                shadowElevation = 1.dp.toPx()
+                shape = RoundedCornerShape(8.dp)
+                clip = false
+                translationX = -12f
+                translationY = -12f
+            }
             .animateContentSize(),
         shape = RoundedCornerShape(8.dp),
         colors = CardColors(
@@ -67,7 +72,7 @@ fun QuestCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { changeQuestExpandStatus(quest.id) }
+                .clickable { viewModel.changeQuestExpandStatus() }
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
@@ -79,7 +84,7 @@ fun QuestCard(
                 )
         ) {
             Text(
-                text = quest.title,
+                text = uiState.quest.name,
                 modifier = Modifier
                     .padding(top = 12.dp,start = 8.dp,end = 8.dp),
                 fontSize = 28.sp,
@@ -120,7 +125,7 @@ fun QuestCard(
                 )
             )
         }
-        if (quest.expanded) {
+        if (uiState.expanded) {
             QuestExpand(
                 quest = quest,
                 changeTaskStatus = changeTaskStatus
