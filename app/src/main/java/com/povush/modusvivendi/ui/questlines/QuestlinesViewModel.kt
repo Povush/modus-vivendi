@@ -1,12 +1,26 @@
 package com.povush.modusvivendi.ui.questlines
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
+import com.povush.modusvivendi.data.repository.QuestSortingMethod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
 
-class QuestlinesViewModel : ViewModel() {
-    private val _uiState = MutableStateFlow(QuestlinesUiState(0))
+data class QuestlinesUiState(
+    val quests: Map<QuestType, List<QuestUiState>> = emptyMap(),
+    val selectedQuestSection: QuestType = QuestType.MAIN,
+    val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_NAME_UP
+)
+
+class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository) : ViewModel() {
+    private val _uiState = MutableStateFlow(QuestlinesUiState())
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
 
     init {
@@ -14,7 +28,13 @@ class QuestlinesViewModel : ViewModel() {
     }
 
     private fun loadQuests() {
-        /*TODO: Not yet implemented*/
+        viewModelScope.launch {
+            val quests = questsRepository.getAllQuests(uiState.value.sortingMethod)
+
+            _uiState.update {
+                it.copy(quests = quests)
+            }
+        }
     }
 
     fun onTabClick(index: Int) {
@@ -26,10 +46,6 @@ class QuestlinesViewModel : ViewModel() {
     fun sectionCounter(index: Int): Int {
         /*TODO: Not yet implemented*/
         return 0
-    }
-
-    fun changeQuestExpandStatus(questId: Int) {
-        /*TODO: Not yet implemented*/
     }
 
     /*TODO: The sorting method according to the current sorting criterion*/

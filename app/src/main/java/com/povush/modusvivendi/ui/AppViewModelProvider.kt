@@ -12,7 +12,9 @@ import com.povush.modusvivendi.ui.questlines.QuestlinesViewModel
 object AppViewModelProvider {
     val Factory = viewModelFactory {
         initializer {
-            QuestlinesViewModel()
+            QuestlinesViewModel(
+                modusVivendiApplication().container.offlineQuestsRepository
+            )
         }
     }
 }
