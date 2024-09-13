@@ -17,10 +17,13 @@ private val lightScheme = lightColorScheme(
     onPrimary = onPrimaryLight,
     primaryContainer = primaryContainerLight,
     secondary = secondaryLight,
+    onSecondary = onSecondaryLight,
     background = backgroundLight,
     onBackground = onBackgroundLight,
     surface = surfaceLight,
-    onSurface = onSurfaceLight
+    onSurface = onSurfaceLight,
+    surfaceContainerLowest = surfaceContainerLowestLight,
+    surfaceContainerLow = surfaceContainerLowLight
 )
 
 private val darkScheme = darkColorScheme(
@@ -50,6 +53,7 @@ fun NationalTheme(
     content: @Composable() () -> Unit
 ) {
   val colorScheme = when {
+
 /*TODO: implement dynamic color*/
 
 //      dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
@@ -77,4 +81,3 @@ fun NationalTheme(
     content = content
   )
 }
-

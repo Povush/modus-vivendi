@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -28,38 +28,38 @@ import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ModusVivendiAppBar(
-    title: String,
+    @StringRes titleRes: Int,
     onNavigationClicked: () -> Unit,
-    actions: @Composable () -> Unit = {},
     @StringRes sections: List<Int> = listOf(),
+    actions: @Composable () -> Unit = {},
     selectedSection: Int = 0,
     onTabClicked: (Int) -> Unit = {},
     tabCounter: ((Int) -> Int)? = null,
 ) {
-    Column(modifier = Modifier) {
-        /*TODO: For disabled MainParametersBar*/
-        if (false) {
+    /*TODO: Ability to disable the MainParametersBar*/
+    val mainParameters = true
+
+    Column {
+        if (!mainParameters) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(6.dp)
+                    .height(8.dp)
                     .background(color = MaterialTheme.colorScheme.primary)
             )
         }
         TopAppBar(
             title = {
                 Text(
-                    text = title,
+                    text = stringResource(id = titleRes),
                     color = MaterialTheme.colorScheme.onPrimary,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
@@ -85,7 +85,7 @@ fun ModusVivendiAppBar(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(6.dp)
+                    .height(8.dp)
                     .background(color = MaterialTheme.colorScheme.primary)
             )
         } else {
@@ -108,8 +108,7 @@ fun ScrollableSectionsRow(
 ) {
     ScrollableTabRow(
         selectedTabIndex = selectedSection,
-        modifier = Modifier
-            .fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth(),
         containerColor = MaterialTheme.colorScheme.primary,
         contentColor = MaterialTheme.colorScheme.onPrimary,
         edgePadding = 4.dp,
@@ -164,8 +163,8 @@ fun TabText(
                 modifier = Modifier
                     .background(
                         color = if (selectedSection == index) MaterialTheme.colorScheme.onPrimary
-                        else Color(0xFFFFFFB2),
-                        shape = RoundedCornerShape(12.dp)
+                        else MaterialTheme.colorScheme.onSecondary,
+                        shape = CircleShape
                     )
             ) {
                 Text(

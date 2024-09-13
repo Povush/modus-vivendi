@@ -9,9 +9,12 @@ import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import com.povush.modusvivendi.data.repository.QuestSortingMethod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.single
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -22,10 +25,15 @@ data class QuestlinesUiState(
 )
 
 class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository) : ViewModel() {
+    /*TODO: Remember sortingMethod in repository*/
     private val _uiState = MutableStateFlow(QuestlinesUiState())
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
 
-    fun loadAllQuests() {
+    init {
+        loadQuests()
+    }
+
+    private fun loadQuests() {
         val allQuestsStream: Flow<List<Quest>> =
             questsRepository.getAllQuestsStream(uiState.value.sortingMethod)
 
@@ -43,8 +51,9 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
     }
 
     fun sectionCounter(index: Int): Int {
-        /*TODO: Not yet implemented*/
-        return 0
+        val currentType = QuestType.entries[index]
+        val numberOfQuests = uiState.value.allQuests.filter { it.type == currentType }.size
+        return numberOfQuests
     }
 
     /*TODO: The sorting method according to the current sorting criterion*/

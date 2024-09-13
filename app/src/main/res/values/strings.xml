@@ -7,8 +7,8 @@
     <string name="high_difficulty">High</string>
     <string name="very_high_difficulty">Very high</string>
     <string name="quest_difficulty">Difficulty: %1$s</string>
-    <string name="main_quest_section">Main</string>
-    <string name="additional_quest_section">Additional</string>
-    <string name="completed_quest_section">Completed</string>
-    <string name="failed_quest_section">Failed</string>
+    <string name="main_quest_section" translatable="false">Main</string>
+    <string name="additional_quest_section" translatable="false">Additional</string>
+    <string name="completed_quest_section" translatable="false">Completed</string>
+    <string name="failed_quest_section" translatable="false">Failed</string>
 </resources>

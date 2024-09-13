@@ -4,7 +4,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.povush.modusvivendi.R
-import java.util.Date
 
 @Entity(tableName = "quests")
 data class Quest(
@@ -15,6 +14,7 @@ data class Quest(
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Sample description.",
     val isCompleted: Boolean = false,
+    /*TODO: Need conversation*/
 //    val dateOfCompletion: Date? = null,
     val pinned: Boolean = false
 )
@@ -26,6 +26,7 @@ data class Task(
     val questId: Int,
     val name: String = "New Task",
     val isCompleted: Boolean = false,
+    /*TODO: Need conversation*/
 //    val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
     val orderIndex: Int = 0
@@ -38,6 +39,7 @@ data class Subtask(
     val taskId: Int,
     val name: String = "New Task",
     val isCompleted: Boolean = false,
+    /*TODO: Need conversation*/
 //    val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
     val orderIndex: Int = 0

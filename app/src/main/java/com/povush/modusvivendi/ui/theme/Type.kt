@@ -20,7 +20,22 @@ val Typography = Typography(
 //    displaySmall
 //    headlineLarge
 //    headlineMedium
-//    headlineSmall
+
+    // Use for titles of Quests.
+    headlineSmall = TextStyle(
+        fontFamily = FontFamily(
+            Font(R.font.moyenage)
+        ),
+        fontWeight = FontWeight.Medium,
+        fontSize = 24.sp,
+        lineHeight = 36.sp,
+        letterSpacing = 0.5.sp,
+        shadow = Shadow(
+            color = Color.Black,
+            offset = Offset(0.10f,0.10f),
+            blurRadius = 0.30f
+        )
+    ),
 
     // Use for titles of TopAppBars.
     titleLarge = TextStyle(
@@ -54,13 +69,53 @@ val Typography = Typography(
             offset = Offset(1.5f, 1.5f),
             blurRadius = 3f
         )
-    )
+    ),
 
-//    bodyLarge
-//    bodyMedium
+    // Use for tasks in Questlines.
+    bodyLarge = TextStyle(
+        fontFamily = FontFamily(
+            Font(R.font.blender_pro_heavy)
+        ),
+        fontWeight = FontWeight.Medium,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+    ),
+
+    // Use for general text on the screen.
+    bodyMedium = TextStyle(
+        fontFamily = FontFamily(
+            Font(R.font.roboto_regular)
+        ),
+        fontWeight = FontWeight.Thin,
+        fontSize = 14.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.25.sp,
+        shadow = Shadow(
+            color = Color.Black,
+            offset = Offset(0.10f, 0.10f),
+            blurRadius = 0.30f
+        )
+    ),
+
 //    bodySmall
 //    labelLarge
-//    labelMedium
+
+    // Use for parameters in MainParametersBar.
+    labelMedium = TextStyle(
+        fontFamily = FontFamily(
+            Font(R.font.ptserif_regular)
+        ),
+        fontWeight = FontWeight.Medium,
+        fontSize = 12.sp,
+        lineHeight = 16.sp,
+        letterSpacing = 0.5.sp,
+        shadow = Shadow(
+            color = Color.Black,
+            offset = Offset(1.5f,1.5f),
+            blurRadius = 3f
+        )
+    ),
+
 //    labelSmall
 )
 
