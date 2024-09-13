@@ -22,12 +22,14 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
@@ -101,62 +103,84 @@ fun QuestlinesScreen(
             }
         }
     ) { innerPadding ->
+        val modifier = Modifier
+            .padding(innerPadding)
+            .fillMaxSize()
+//            .onSizeChanged { size ->
+//                screenWidth = size.width.toFloat()
+//            }
+//            .swipeable(
+//                state = swipeableState,
+//                anchors = (0 until sectionsCount).associateWith { it * screenWidth }, // точки для переключения
+//                thresholds = { _, _ -> FractionalThreshold(0.3f) }, // порог срабатывания свайпа
+//                orientation = Orientation.Horizontal
+//            )
+
         if (uiState.allQuests.none { it.type == uiState.selectedQuestSection }) {
-            Box(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                contentAlignment = Alignment.Center
-            ) {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 24.dp),
-                    verticalArrangement = Arrangement.Center,
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    item {
-                        Image(
-                            painter = painterResource(R.drawable.img_empty_quest_section),
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(200.dp)
-                        )
-                        Spacer(modifier = Modifier.size(16.dp))
-                        Text(
-                            text = "Section is empty",
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 26.sp,
-                            fontFamily = FontFamily(
-                                Font(R.font.avenir_next_bold)
-                            ),
-                            textAlign = TextAlign.Center,
-                        )
-                        Text(
-                            text = "There is no quests in this section!",
-                            modifier = Modifier.fillMaxWidth(),
-                            fontSize = 18.sp,
-                            fontFamily = FontFamily(
-                                Font(R.font.avenir_next_regular)
-                            ),
-                            textAlign = TextAlign.Center,
-                        )
-                        Spacer(modifier = Modifier.size(50.dp))
-                    }
-                }
-            }
+            EmptyQuestSection(modifier = modifier)
         } else {
-            LazyColumn(
-                modifier = Modifier
-                    .padding(innerPadding)
-                    .fillMaxSize(),
-                verticalArrangement = Arrangement.spacedBy(8.dp),
-                contentPadding = PaddingValues(8.dp)
-            ) {
-                items(uiState.allQuests.filter { it.type == uiState.selectedQuestSection }) { quest ->
-                    QuestCard(quest = quest)
-                }
+            QuestSection(uiState = uiState, modifier = modifier)
+        }
+    }
+}
+
+@Composable
+fun EmptyQuestSection(modifier: Modifier = Modifier) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 24.dp),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            item {
+                Image(
+                    painter = painterResource(R.drawable.img_empty_quest_section),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(200.dp)
+                )
+                Spacer(modifier = Modifier.size(16.dp))
+                Text(
+                    text = "Section is empty",
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 26.sp,
+                    fontFamily = FontFamily(
+                        Font(R.font.avenir_next_bold)
+                    ),
+                    textAlign = TextAlign.Center,
+                )
+                Text(
+                    text = "There is no quests in this section!",
+                    modifier = Modifier.fillMaxWidth(),
+                    fontSize = 18.sp,
+                    fontFamily = FontFamily(
+                        Font(R.font.avenir_next_regular)
+                    ),
+                    textAlign = TextAlign.Center,
+                )
+                Spacer(modifier = Modifier.size(50.dp))
             }
+        }
+    }
+}
+
+@Composable
+fun QuestSection(
+    uiState: QuestlinesUiState,
+    modifier: Modifier = Modifier
+) {
+    LazyColumn(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(uiState.allQuests.filter { it.type == uiState.selectedQuestSection }) { quest ->
+            QuestCard(quest = quest)
         }
     }
 }

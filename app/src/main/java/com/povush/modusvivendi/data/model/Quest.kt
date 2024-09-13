@@ -11,6 +11,7 @@ data class Quest(
     val id: Int = 0,
     val name: String = "New Quest",
     val type: QuestType = QuestType.ADDITIONAL,
+    /*TODO: Need conversation*/
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Sample description.",
     val isCompleted: Boolean = false,

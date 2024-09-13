@@ -66,11 +66,11 @@ fun QuestCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .graphicsLayer {
-                shadowElevation = 2.dp.toPx()
-                shape = CutCornerShape(8.dp)
-                clip = true
-            }
+//            .graphicsLayer {
+//                shadowElevation = 2.dp.toPx()
+//                shape = CutCornerShape(8.dp)
+//                clip = true
+//            }
             .animateContentSize(),
         shape = RoundedCornerShape(8.dp),
         colors = CardColors(
@@ -83,11 +83,11 @@ fun QuestCard(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .graphicsLayer {
-                    shadowElevation = 2.dp.toPx()
-                    shape = CutCornerShape(8.dp)
-                    clip = true
-                }
+//                .graphicsLayer {
+//                    shadowElevation = 2.dp.toPx()
+//                    shape = CutCornerShape(8.dp)
+//                    clip = true
+//                }
                 .clickable { viewModel.changeQuestExpandStatus() }
                 .background(
                     brush = Brush.horizontalGradient(
@@ -125,7 +125,11 @@ fun QuestCard(
             )
         }
         if (uiState.expanded) {
-            QuestDescription(quest = quest)
+            Text(
+                text = quest.description,
+                modifier = Modifier.padding(8.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
             Tasks(
                 quest = quest,
                 tasks = uiState.tasks,
@@ -136,26 +140,13 @@ fun QuestCard(
 }
 
 @Composable
-fun QuestDescription(quest: Quest) {
-    Column(
-        modifier = Modifier.padding(4.dp)
-    ) {
-        Text(
-            text = quest.description,
-            modifier = Modifier.padding(8.dp),
-            style = MaterialTheme.typography.bodyMedium
-        )
-    }
-}
-
-@Composable
 fun Tasks(
     quest: Quest,
     tasks: List<Task>,
     changeTaskStatus: (Task) -> Unit
 ) {
     Column(
-        modifier = Modifier.padding(8.dp)
+        modifier = Modifier.padding(4.dp)
     ) {
         tasks.forEach { task ->
             Row {
