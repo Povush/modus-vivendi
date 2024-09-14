@@ -11,6 +11,4 @@ class AppDataContainer(private val context: Context) {
     val offlineQuestsRepository: OfflineQuestsRepository by lazy {
         OfflineQuestsRepository(ModusVivendiDatabase.getDatabase(context).questDao())
     }
-
-    val questViewModelStore: ViewModelStore = ViewModelStore()
 }

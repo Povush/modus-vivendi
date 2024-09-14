@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -124,11 +125,6 @@ fun QuestlinesScreen(
             }
         }
     ) { innerPadding ->
-
-        LaunchedEffect(pagerState.currentPage) {
-            viewModel.switchQuestSection(pagerState.currentPage) // Update ViewModel when page changes
-        }
-
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
