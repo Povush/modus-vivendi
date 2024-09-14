@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.play.services.tagmanager.v4.impl)
     implementation(libs.androidx.navigation.runtime.ktx)
     implementation(libs.androidx.navigation.compose)
+    implementation(libs.accompanist.pager)
 
     // Import the Compose BOM
     implementation(platform(libs.androidx.compose.bom))

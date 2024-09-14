@@ -66,11 +66,6 @@ fun QuestCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-//            .graphicsLayer {
-//                shadowElevation = 2.dp.toPx()
-//                shape = CutCornerShape(8.dp)
-//                clip = true
-//            }
             .animateContentSize(),
         shape = RoundedCornerShape(8.dp),
         colors = CardColors(

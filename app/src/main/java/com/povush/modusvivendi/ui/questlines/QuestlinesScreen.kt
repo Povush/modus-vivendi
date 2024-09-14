@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.ui.questlines
 
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -11,10 +12,12 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Create
+import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.FloatingActionButton
@@ -22,16 +25,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
@@ -43,24 +45,41 @@ import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
+import kotlinx.coroutines.launch
 
 object QuestlinesDestination : NavigationDestination {
     override val route = "questlines"
     override val titleRes = R.string.questlines
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuestlinesScreen(
+    navigateToQuestCreate: () -> Unit,
     viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    val pagerState = rememberPagerState(
+        initialPage = uiState.selectedQuestSection.ordinal,
+        pageCount = { QuestType.entries.size }
+    )
+    val coroutineScope = rememberCoroutineScope()
 
     Scaffold(
         topBar = {
             ModusVivendiAppBar(
                 titleRes = QuestlinesDestination.titleRes,
-                onNavigationClicked = { /*TODO*/ },
                 sections = QuestType.entries.map { it.textResId },
+                navigation = {
+                    IconButton(onClick = { /*TODO: Navigation*/ }) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                },
                 actions = {
                     IconButton(
                         onClick = { /*TODO: Search functionality*/ }
@@ -81,16 +100,18 @@ fun QuestlinesScreen(
                         )
                     }
                 },
-                selectedSection = uiState.selectedQuestSection.ordinal,
-                onTabClicked = { index: Int -> viewModel.onTabClick(index) },
-                tabCounter = { index ->
-                    viewModel.sectionCounter(index)
-                }
+                selectedSection = pagerState.currentPage,
+                onTabClicked = { index: Int ->
+                    coroutineScope.launch {
+                        pagerState.animateScrollToPage(index)
+                    }
+                },
+                tabCounter = { index -> viewModel.sectionCounter(index) }
             )
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { /*TODO*/ },
+                onClick = {  },
                 modifier = Modifier.padding(8.dp),
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -103,24 +124,34 @@ fun QuestlinesScreen(
             }
         }
     ) { innerPadding ->
-        val modifier = Modifier
-            .padding(innerPadding)
-            .fillMaxSize()
-//            .onSizeChanged { size ->
-//                screenWidth = size.width.toFloat()
-//            }
-//            .swipeable(
-//                state = swipeableState,
-//                anchors = (0 until sectionsCount).associateWith { it * screenWidth }, // точки для переключения
-//                thresholds = { _, _ -> FractionalThreshold(0.3f) }, // порог срабатывания свайпа
-//                orientation = Orientation.Horizontal
-//            )
 
-        if (uiState.allQuests.none { it.type == uiState.selectedQuestSection }) {
-            EmptyQuestSection(modifier = modifier)
-        } else {
-            QuestSection(uiState = uiState, modifier = modifier)
+        LaunchedEffect(pagerState.currentPage) {
+            viewModel.switchQuestSection(pagerState.currentPage) // Update ViewModel when page changes
         }
+
+        HorizontalPager(
+            state = pagerState,
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) { page ->
+            QuestSection(
+                uiState = uiState.copy(selectedQuestSection = QuestType.entries[page]),
+                modifier = Modifier.fillMaxSize()
+            )
+        }
+    }
+}
+
+@Composable
+fun QuestSection(
+    uiState: QuestlinesUiState,
+    modifier: Modifier = Modifier
+) {
+    if (uiState.allQuests.none { it.type == uiState.selectedQuestSection }) {
+        EmptyQuestSection(modifier = modifier)
+    } else {
+        NotEmptyQuestSection(uiState = uiState, modifier = modifier)
     }
 }
 
@@ -170,7 +201,7 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun QuestSection(
+fun NotEmptyQuestSection(
     uiState: QuestlinesUiState,
     modifier: Modifier = Modifier
 ) {

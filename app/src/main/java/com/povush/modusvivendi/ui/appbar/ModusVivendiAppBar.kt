@@ -37,8 +37,8 @@ import androidx.compose.ui.unit.dp
 @Composable
 fun ModusVivendiAppBar(
     @StringRes titleRes: Int,
-    onNavigationClicked: () -> Unit,
     @StringRes sections: List<Int> = listOf(),
+    navigation: @Composable () -> Unit = {},
     actions: @Composable () -> Unit = {},
     selectedSection: Int = 0,
     onTabClicked: (Int) -> Unit = {},
@@ -67,15 +67,7 @@ fun ModusVivendiAppBar(
                 )
             },
             modifier = Modifier.heightIn(max = 45.dp),
-            navigationIcon = {
-                IconButton(onClick = onNavigationClicked) {
-                    Icon(
-                        imageVector = Icons.Filled.Menu,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onPrimary,
-                    )
-                }
-            },
+            navigationIcon = { navigation() },
             actions = { actions() },
             colors = TopAppBarDefaults.topAppBarColors(
                 containerColor = MaterialTheme.colorScheme.primary,

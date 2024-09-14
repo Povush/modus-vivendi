@@ -11,4 +11,6 @@
     <string name="additional_quest_section" translatable="false">Additional</string>
     <string name="completed_quest_section" translatable="false">Completed</string>
     <string name="failed_quest_section" translatable="false">Failed</string>
+    <string name="create_quest">Create quest</string>
+    <string name="title">Title</string>
 </resources>

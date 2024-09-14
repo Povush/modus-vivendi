@@ -5,6 +5,8 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.povush.modusvivendi.ui.questlines.QuestCreateDestination
+import com.povush.modusvivendi.ui.questlines.QuestCreateScreen
 import com.povush.modusvivendi.ui.questlines.QuestlinesDestination
 import com.povush.modusvivendi.ui.questlines.QuestlinesScreen
 
@@ -20,7 +22,14 @@ fun ModusVivendiNavHost(
         modifier = modifier
     ) {
         composable(route = QuestlinesDestination.route) {
-            QuestlinesScreen()
+            QuestlinesScreen(
+                navigateToQuestCreate = { navController.navigate(QuestCreateDestination.route) }
+            )
+        }
+        composable(route = QuestCreateDestination.route) {
+            QuestCreateScreen(
+                navigateBack = navController.popBackStack()
+            )
         }
     }
 }

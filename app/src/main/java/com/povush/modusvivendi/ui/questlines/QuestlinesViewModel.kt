@@ -4,17 +4,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
-import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import com.povush.modusvivendi.data.repository.QuestSortingMethod
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.single
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -44,7 +39,7 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
         }
     }
 
-    fun onTabClick(index: Int) {
+    fun switchQuestSection(index: Int) {
         _uiState.update {
             it.copy(selectedQuestSection = QuestType.entries[index])
         }
