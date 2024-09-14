@@ -2,24 +2,14 @@ package com.povush.modusvivendi.ui.questlines
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.CreationExtras
-import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.data.model.QuestType
-import com.povush.modusvivendi.data.model.Subtask
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.filterNotNull
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import java.util.Date
 
 data class QuestUiState(
     val quest: Quest = Quest(),
