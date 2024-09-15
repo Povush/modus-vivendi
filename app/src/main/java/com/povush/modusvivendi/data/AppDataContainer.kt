@@ -8,7 +8,7 @@ import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import com.povush.modusvivendi.ui.questlines.QuestViewModel
 
 class AppDataContainer(private val context: Context) {
-    val offlineQuestsRepository: OfflineQuestsRepository by lazy {
+    val offlineQuestsRepository: OfflineQuestsRepository =
         OfflineQuestsRepository(ModusVivendiDatabase.getDatabase(context).questDao())
-    }
+
 }
