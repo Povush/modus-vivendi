@@ -19,7 +19,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class QuestlinesUiState(
-    val allQuests: List<Quest> = emptyList(),
+    val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
     val selectedQuestSection: QuestType = QuestType.MAIN,
     val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_NAME_UP
 )
@@ -39,7 +39,8 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
 
         viewModelScope.launch {
             allQuestsStream.collect { allQuests ->
-                _uiState.update { it.copy(allQuests = allQuests) }
+                val groupedQuests = allQuests.groupBy { it.type }
+                _uiState.update { it.copy(allQuestsByType = groupedQuests) }
             }
         }
     }
@@ -52,8 +53,8 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
 
     fun sectionCounter(index: Int): Int {
         val currentType = QuestType.entries[index]
-        val numberOfQuests = uiState.value.allQuests.filter { it.type == currentType }.size
-        return numberOfQuests
+        val numberOfQuests = uiState.value.allQuestsByType[currentType]?.size
+        return numberOfQuests ?: 0
     }
 
     /*TODO: The sorting method according to the current sorting criterion*/

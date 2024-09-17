@@ -42,6 +42,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
+import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
@@ -61,11 +62,14 @@ fun QuestlinesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val pagerState = rememberPagerState(
-        initialPage = uiState.selectedQuestSection.ordinal,
-        pageCount = { QuestType.entries.size }
-    )
+    val pagerState = rememberPagerState(pageCount = { QuestType.entries.size })
     val coroutineScope = rememberCoroutineScope()
+
+    LaunchedEffect(pagerState.currentPage) {
+        if (uiState.selectedQuestSection.ordinal != pagerState.currentPage) {
+            viewModel.switchQuestSection(pagerState.currentPage)
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -101,7 +105,7 @@ fun QuestlinesScreen(
                         )
                     }
                 },
-                selectedSection = pagerState.currentPage,
+                selectedSection = uiState.selectedQuestSection.ordinal,
                 onTabClicked = { index: Int ->
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(index)
@@ -129,10 +133,10 @@ fun QuestlinesScreen(
             state = pagerState,
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
+                .fillMaxSize(),
         ) { page ->
             QuestSection(
-                uiState = uiState.copy(selectedQuestSection = QuestType.entries[page]),
+                quests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList(),
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -141,13 +145,13 @@ fun QuestlinesScreen(
 
 @Composable
 fun QuestSection(
-    uiState: QuestlinesUiState,
+    quests: List<Quest>,
     modifier: Modifier = Modifier
 ) {
-    if (uiState.allQuests.none { it.type == uiState.selectedQuestSection }) {
+    if (quests.isEmpty()) {
         EmptyQuestSection(modifier = modifier)
     } else {
-        NotEmptyQuestSection(uiState = uiState, modifier = modifier)
+        NotEmptyQuestSection(quests = quests, modifier = modifier)
     }
 }
 
@@ -198,7 +202,7 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
 
 @Composable
 fun NotEmptyQuestSection(
-    uiState: QuestlinesUiState,
+    quests: List<Quest>,
     modifier: Modifier = Modifier
 ) {
     LazyColumn(
@@ -206,7 +210,7 @@ fun NotEmptyQuestSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
-        items(uiState.allQuests.filter { it.type == uiState.selectedQuestSection }) { quest ->
+        items(quests) { quest ->
             QuestCard(quest = quest)
         }
     }
