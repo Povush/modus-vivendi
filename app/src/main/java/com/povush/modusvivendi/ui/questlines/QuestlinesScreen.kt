@@ -1,7 +1,10 @@
 package com.povush.modusvivendi.ui.questlines
 
+import android.nfc.Tag
+import android.util.Log
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -34,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -73,6 +77,7 @@ fun QuestlinesScreen(
     }
 
     Scaffold(
+        modifier = Modifier,
         topBar = {
             ModusVivendiAppBar(
                 titleRes = QuestlinesDestination.titleRes,
@@ -138,7 +143,8 @@ fun QuestlinesScreen(
         ) { page ->
             QuestSection(
                 quests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList(),
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier
+                    .fillMaxSize()
             )
         }
     }

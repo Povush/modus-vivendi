@@ -8,10 +8,13 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 class MainActivity : ComponentActivity() {
+    @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -23,7 +26,8 @@ class MainActivity : ComponentActivity() {
                         .statusBarsPadding()
                         .navigationBarsPadding()
                 ) {
-                    ModusVivendiApp()
+                    val windowSize = calculateWindowSizeClass(this)
+                    ModusVivendiApp(windowSize = windowSize)
                 }
             }
         }

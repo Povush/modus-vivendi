@@ -57,6 +57,7 @@ android {
 }
 
 dependencies {
+    implementation("androidx.compose.material3:material3-window-size-class")
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
