@@ -10,19 +10,26 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.PathEffect
 import androidx.compose.ui.graphics.drawscope.Stroke
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -33,27 +40,48 @@ import com.povush.modusvivendi.R
 
 @Composable
 fun MainParametersBar() {
+    var screenWidth by remember { mutableFloatStateOf(0f) }
+    var mainParametersWidth by remember { mutableFloatStateOf(0f) }
+
+    val scale = if (screenWidth != 0f && mainParametersWidth != 0f) {
+        screenWidth/mainParametersWidth
+    } else 1f
+
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .background(color = MaterialTheme.colorScheme.primary)
-            .padding(8.dp),
-        horizontalArrangement = Arrangement.SpaceAround
+            .onGloballyPositioned { coordinates ->
+                screenWidth = coordinates.size.width.toFloat()
+            }
+            .background(color = MaterialTheme.colorScheme.primary),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
-        /*TODO: Make parameters interactive*/
-        MainParameter(value = "3944", iconIdRes = R.drawable.ic_money)
-        MainParameter(value = "242", iconIdRes = R.drawable.ic_development_5)
-        MainParameter(value = "560", iconIdRes = R.drawable.ic_willpower)
-        MainParameter(value = "+3", iconIdRes = R.drawable.ic_stability)
-        MainParameter(value = "86", iconIdRes = R.drawable.ic_crown_2)
-        MainParameter(value = "31", iconIdRes = R.drawable.ic_innovativeness)
+        Row(
+            modifier = Modifier
+                .wrapContentSize()
+                .onGloballyPositioned { coordinates ->
+                    mainParametersWidth = coordinates.size.width.toFloat()
+                }
+                .padding(vertical = 8.dp, horizontal = 12.dp)
+                .scale(scale),
+            horizontalArrangement = Arrangement.spacedBy(6.dp)
+        ) {
+            /*TODO: Make parameters interactive*/
+            MainParameter(value = "3944",iconIdRes = R.drawable.ic_money)
+            MainParameter(value = "242",iconIdRes = R.drawable.ic_development_5)
+            MainParameter(value = "560",iconIdRes = R.drawable.ic_willpower)
+            MainParameter(value = "+3",iconIdRes = R.drawable.ic_stability)
+            MainParameter(value = "86",iconIdRes = R.drawable.ic_crown_2)
+            MainParameter(value = "31",iconIdRes = R.drawable.ic_innovativeness)
+        }
     }
 }
 
 @Composable
 fun MainParameter(
     value: String,
-    @DrawableRes iconIdRes: Int
+    @DrawableRes iconIdRes: Int,
 ) {
     /**
      * This is dotted line for MainParameter stroke.
@@ -66,6 +94,7 @@ fun MainParameter(
     Surface(
         modifier = Modifier
             .height(24.dp)
+
             .drawBehind {
                 drawRoundRect(
                     color = Color.Gray,
@@ -103,6 +132,7 @@ fun MainParameter(
             )
             Text(
                 text = text,
+                modifier = Modifier,
                 color = Color.White,
                 style = MaterialTheme.typography.labelMedium
             )

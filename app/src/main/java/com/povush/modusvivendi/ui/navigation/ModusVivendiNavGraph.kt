@@ -13,6 +13,7 @@ import com.povush.modusvivendi.ui.questlines.QuestlinesScreen
 @Composable
 fun ModusVivendiNavHost(
     navController: NavHostController,
+    onNavigationClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     NavHost(
@@ -23,12 +24,13 @@ fun ModusVivendiNavHost(
     ) {
         composable(route = QuestlinesDestination.route) {
             QuestlinesScreen(
+                onNavigationClick = onNavigationClick,
                 navigateToQuestCreate = { navController.navigate(QuestCreateDestination.route) }
             )
         }
         composable(route = QuestCreateDestination.route) {
             QuestCreateScreen(
-                navigateBack = navController.popBackStack()
+                navigateBack = { navController.popBackStack() }
             )
         }
     }

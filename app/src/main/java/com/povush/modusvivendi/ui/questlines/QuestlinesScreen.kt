@@ -57,6 +57,7 @@ object QuestlinesDestination : NavigationDestination {
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuestlinesScreen(
+    onNavigationClick: () -> Unit,
     navigateToQuestCreate: () -> Unit,
     viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
@@ -77,7 +78,7 @@ fun QuestlinesScreen(
                 titleRes = QuestlinesDestination.titleRes,
                 sections = QuestType.entries.map { it.textResId },
                 navigation = {
-                    IconButton(onClick = { /*TODO: Navigation*/ }) {
+                    IconButton(onClick = { onNavigationClick() }) {
                         Icon(
                             imageVector = Icons.Filled.Menu,
                             contentDescription = null,
@@ -116,7 +117,7 @@ fun QuestlinesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = {  },
+                onClick = { navigateToQuestCreate() },
                 modifier = Modifier.padding(8.dp),
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,

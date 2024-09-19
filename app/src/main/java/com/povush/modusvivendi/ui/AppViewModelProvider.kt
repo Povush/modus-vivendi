@@ -8,6 +8,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.povush.modusvivendi.ModusVivendiApplication
 import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.ui.questlines.QuestCreateScreen
+import com.povush.modusvivendi.ui.questlines.QuestCreateViewModel
 import com.povush.modusvivendi.ui.questlines.QuestViewModel
 import com.povush.modusvivendi.ui.questlines.QuestlinesViewModel
 
@@ -22,6 +24,11 @@ object AppViewModelProvider {
             QuestViewModel(
                 modusVivendiApplication().container.offlineQuestsRepository,
                 this[QuestKey] ?: throw IllegalStateException("Quest data missing")
+            )
+        }
+        initializer {
+            QuestCreateViewModel(
+                modusVivendiApplication().container.offlineQuestsRepository
             )
         }
     }
