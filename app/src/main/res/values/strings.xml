@@ -13,4 +13,5 @@
     <string name="failed_quest_section" translatable="false">Failed</string>
     <string name="create_quest">Create quest</string>
     <string name="title">Title</string>
+    <string name="difficulty">Difficulty</string>
 </resources>

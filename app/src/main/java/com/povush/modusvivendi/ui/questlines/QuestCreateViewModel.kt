@@ -2,12 +2,10 @@ package com.povush.modusvivendi.ui.questlines
 
 import androidx.lifecycle.ViewModel
 import com.povush.modusvivendi.data.model.Difficulty
-import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Subtask
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
-import com.povush.modusvivendi.data.repository.QuestSortingMethod
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +24,7 @@ class QuestCreateViewModel(private val questsRepository: OfflineQuestsRepository
     private val _uiState = MutableStateFlow(QuestCreateUiState())
     val uiState: StateFlow<QuestCreateUiState> = _uiState.asStateFlow()
 
-    fun changeQuestName(input: String) {
+    fun updateQuestName(input: String) {
         _uiState.update {
             uiState.value.copy(name = input)
         }
