@@ -23,6 +23,8 @@ private val lightScheme = lightColorScheme(
     onBackground = onBackgroundLight,
     surface = surfaceLight,
     onSurface = onSurfaceLight,
+    surfaceVariant = surfaceVariantLight,
+    onSurfaceVariant = onSurfaceVariantLight,
     surfaceContainerLowest = surfaceContainerLowestLight,
     surfaceContainerLow = surfaceContainerLowLight
 )

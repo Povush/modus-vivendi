@@ -68,12 +68,12 @@ fun MainParametersBar() {
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             /*TODO: Make parameters interactive*/
-            MainParameter(value = "3944",iconIdRes = R.drawable.ic_money)
-            MainParameter(value = "242",iconIdRes = R.drawable.ic_development_5)
-            MainParameter(value = "560",iconIdRes = R.drawable.ic_willpower)
-            MainParameter(value = "+3",iconIdRes = R.drawable.ic_stability)
+            MainParameter(value = "4820",iconIdRes = R.drawable.ic_money)
+            MainParameter(value = "240",iconIdRes = R.drawable.ic_development_5)
+            MainParameter(value = "105",iconIdRes = R.drawable.ic_willpower)
+            MainParameter(value = "+2",iconIdRes = R.drawable.ic_stability)
             MainParameter(value = "86",iconIdRes = R.drawable.ic_crown_2)
-            MainParameter(value = "31",iconIdRes = R.drawable.ic_innovativeness)
+            MainParameter(value = "37",iconIdRes = R.drawable.ic_innovativeness)
         }
     }
 }

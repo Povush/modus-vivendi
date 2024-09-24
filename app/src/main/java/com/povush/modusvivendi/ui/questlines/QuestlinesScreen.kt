@@ -177,7 +177,7 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
         ) {
             item {
                 Image(
-                    painter = painterResource(R.drawable.img_empty_quest_section),
+                    painter = painterResource(R.drawable.img_empty_quest_section_2),
                     contentDescription = null,
                     modifier = Modifier
                         .size(200.dp)

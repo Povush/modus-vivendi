@@ -13,8 +13,11 @@ import kotlinx.coroutines.flow.update
 
 data class QuestCreateUiState(
     val name: String = "",
+
     /*TODO: From screen that we go here*/
     val type: QuestType = QuestType.ADDITIONAL,
+    val typeExpanded: Boolean = false,
+
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Sample description.",
     val tasks: Map<Task, List<Subtask>> = emptyMap()
@@ -27,6 +30,18 @@ class QuestCreateViewModel(private val questsRepository: OfflineQuestsRepository
     fun updateQuestName(input: String) {
         _uiState.update {
             uiState.value.copy(name = input)
+        }
+    }
+
+    fun updateType(questType: QuestType) {
+        _uiState.update {
+            uiState.value.copy(type = questType)
+        }
+    }
+
+    fun updateTypeExpanded(typeExpanded: Boolean) {
+        _uiState.update {
+            uiState.value.copy(typeExpanded = typeExpanded)
         }
     }
 }
