@@ -62,7 +62,7 @@ object QuestlinesDestination : NavigationDestination {
 @Composable
 fun QuestlinesScreen(
     onNavigationClick: () -> Unit,
-    navigateToQuestCreate: () -> Unit,
+    navigateToQuestCreate: (Int) -> Unit,
     viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -122,7 +122,7 @@ fun QuestlinesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToQuestCreate() },
+                onClick = { navigateToQuestCreate(uiState.selectedQuestSection.ordinal) },
                 modifier = Modifier.padding(8.dp),
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,

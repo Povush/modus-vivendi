@@ -28,7 +28,8 @@ object AppViewModelProvider {
         }
         initializer {
             QuestCreateViewModel(
-                modusVivendiApplication().container.offlineQuestsRepository
+                modusVivendiApplication().container.offlineQuestsRepository,
+                this[CurrentQuestSectionNumberKey] ?: throw IllegalStateException("CurrentQuestSectionNumber data missing")
             )
         }
     }
@@ -38,10 +39,18 @@ fun CreationExtras.modusVivendiApplication(): ModusVivendiApplication =
     this[AndroidViewModelFactory.APPLICATION_KEY] as ModusVivendiApplication
 
 val QuestKey = object : CreationExtras.Key<Quest> {}
+val CurrentQuestSectionNumberKey = object : CreationExtras.Key<Int> {}
 
-fun createQuestViewModelExtras(quest: Quest,context: Context): CreationExtras {
+fun createQuestViewModelExtras(quest: Quest, context: Context): CreationExtras {
     val extras = MutableCreationExtras()
     extras[AndroidViewModelFactory.APPLICATION_KEY] = context as ModusVivendiApplication
     extras[QuestKey] = quest
+    return extras
+}
+
+fun createQuestCreateViewModelExtras(currentQuestSectionNumber: Int, context: Context): CreationExtras {
+    val extras = MutableCreationExtras()
+    extras[AndroidViewModelFactory.APPLICATION_KEY] = context as ModusVivendiApplication
+    extras[CurrentQuestSectionNumberKey] = currentQuestSectionNumber
     return extras
 }

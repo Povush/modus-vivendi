@@ -23,8 +23,11 @@ data class QuestCreateUiState(
     val tasks: Map<Task, List<Subtask>> = emptyMap()
 )
 
-class QuestCreateViewModel(private val questsRepository: OfflineQuestsRepository) : ViewModel() {
-    private val _uiState = MutableStateFlow(QuestCreateUiState())
+class QuestCreateViewModel(
+    private val questsRepository: OfflineQuestsRepository,
+    private val currentQuestSectionNumber: Int
+) : ViewModel() {
+    private val _uiState = MutableStateFlow(QuestCreateUiState(type = QuestType.entries[currentQuestSectionNumber]))
     val uiState: StateFlow<QuestCreateUiState> = _uiState.asStateFlow()
 
     fun updateQuestName(input: String) {

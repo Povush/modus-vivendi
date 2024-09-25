@@ -1,31 +1,25 @@
 package com.povush.modusvivendi.ui.questlines
 
-import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AccountCircle
-import androidx.compose.material.icons.filled.AddCircle
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Checklist
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.Info
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -34,10 +28,11 @@ import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.ui.Alignment
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -46,6 +41,8 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.createQuestCreateViewModelExtras
+import com.povush.modusvivendi.ui.createQuestViewModelExtras
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
@@ -57,7 +54,11 @@ object QuestCreateDestination : NavigationDestination {
 @Composable
 fun QuestCreateScreen(
     navigateBack: () -> Boolean,
-    viewModel: QuestCreateViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    currentQuestSectionNumber: Int,
+    viewModel: QuestCreateViewModel = viewModel(
+        factory = AppViewModelProvider.Factory,
+        extras = createQuestCreateViewModelExtras(currentQuestSectionNumber, LocalContext.current.applicationContext)
+    )
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -112,22 +113,37 @@ fun QuestTitle(
     value: String,
     onValueChange: (String) -> Unit
 ) {
+    val isFocused = remember { mutableStateOf(false) }
+
     TextField(
         value = value,
         onValueChange = { onValueChange(it) },
-        label = { Text(stringResource(R.string.quest_title)) },
+        label = {
+            Text(
+                text = stringResource(R.string.quest_title),
+                style = if (value.isEmpty() && !isFocused.value) {
+                    MaterialTheme.typography.headlineSmall
+                } else {
+                    LocalTextStyle.current
+                }
+            )
+        },
         colors = OutlinedTextFieldDefaults.colors(
-            focusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            unfocusedContainerColor = MaterialTheme.colorScheme.secondaryContainer,
-            disabledContainerColor = MaterialTheme.colorScheme.secondaryContainer,
+            focusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            unfocusedContainerColor = MaterialTheme.colorScheme.primaryContainer,
+            disabledContainerColor = MaterialTheme.colorScheme.primaryContainer,
         ),
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier
+            .fillMaxWidth()
+            .onFocusChanged { focusState ->
+                isFocused.value = focusState.isFocused
+            },
         textStyle = MaterialTheme.typography.headlineSmall,
         singleLine = true,
     )
 }
 
-@OptIn(ExperimentalMaterial3Api::class,ExperimentalFoundationApi::class)
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun QuestType(
     expanded: Boolean,
@@ -138,7 +154,7 @@ fun QuestType(
     ExposedDropdownMenuBox(
         expanded = expanded,
         onExpandedChange = { onExpandedChange(it) },
-        modifier = Modifier
+        modifier = Modifier.padding(horizontal = 4.dp)
     ) {
         TextField(
             value = stringResource(questType.textResId),
@@ -152,25 +168,36 @@ fun QuestType(
                 Icon(
                     imageVector = Icons.Default.Checklist,
                     contentDescription = null,
-                    modifier = Modifier.size(30.dp)
+                    modifier = Modifier
                 )
             },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             colors = ExposedDropdownMenuDefaults.textFieldColors()
         )
-        ExposedDropdownMenu(
+        DropdownMenu(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
             modifier = Modifier
+                .background(MaterialTheme.colorScheme.primaryContainer)
+                .exposedDropdownSize()
         ) {
-            QuestType.entries.forEach { questType ->
+            QuestType.entries.forEach { currentQuestType ->
                 DropdownMenuItem(
-                    text = { Text(stringResource(questType.textResId)) },
+                    text = { Text(stringResource(currentQuestType.textResId)) },
                     onClick = {
-                        onQuestTypeChange(questType)
+                        onQuestTypeChange(currentQuestType)
                         onExpandedChange(false)
                     },
-                    modifier = Modifier
+                    modifier = Modifier,
+                    trailingIcon = {
+                        if (currentQuestType == questType) {
+                            Icon(
+                                imageVector = Icons.Default.Check,
+                                contentDescription = null,
+                                modifier = Modifier
+                            )
+                        }
+                    }
                 )
             }
         }

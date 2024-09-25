@@ -25,12 +25,16 @@ fun ModusVivendiNavHost(
         composable(route = QuestlinesDestination.route) {
             QuestlinesScreen(
                 onNavigationClick = onNavigationClick,
-                navigateToQuestCreate = { navController.navigate(QuestCreateDestination.route) }
+                navigateToQuestCreate = { currentQuestSectionNumber ->
+                    navController.currentBackStackEntry?.savedStateHandle?.set("currentQuestSectionNumber", currentQuestSectionNumber)
+                    navController.navigate(QuestCreateDestination.route)
+                }
             )
         }
         composable(route = QuestCreateDestination.route) {
             QuestCreateScreen(
-                navigateBack = { navController.popBackStack() }
+                navigateBack = { navController.popBackStack() },
+                currentQuestSectionNumber = navController.previousBackStackEntry?.savedStateHandle?.get<Int>("currentQuestSectionNumber") ?: 1
             )
         }
     }
