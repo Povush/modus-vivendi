@@ -160,7 +160,7 @@ fun Tasks(
 
 /*TODO: Replace it with something normal*/
 @Composable
-fun DynamicPaddingText(text: String) {
+fun DynamicPaddingText(text: String, modifier: Modifier = Modifier) {
     var lineCount by remember { mutableIntStateOf(0) }
 
     val paddingValues = when (lineCount) {
@@ -170,7 +170,7 @@ fun DynamicPaddingText(text: String) {
 
     Text(
         text = text,
-        modifier = Modifier.padding(paddingValues),
+        modifier = modifier.padding(paddingValues),
         onTextLayout = { textLayoutResult: TextLayoutResult ->
             lineCount = textLayoutResult.lineCount
         },

@@ -53,10 +53,10 @@ enum class QuestType(val textResId: Int) {
     FAILED(R.string.failed_quest_section)
 }
 
-enum class Difficulty(val textResId: Int, val color: Color, val imgResId: Int) {
-    VERY_LOW(R.string.very_low_difficulty, Color(0xFF767171), R.drawable.img_difficulty_very_low),
-    LOW(R.string.low_difficulty, Color(0xFF00B050), R.drawable.img_difficulty_low),
-    MEDIUM(R.string.medium_difficulty, Color(0xFFBF8F00), R.drawable.img_difficulty_medium),
-    HIGH(R.string.high_difficulty, Color(0xFFC45911), R.drawable.img_difficulty_high),
-    VERY_HIGH(R.string.very_high_difficulty, Color(0xFFFF0000), R.drawable.img_difficulty_very_high)
+enum class Difficulty(val textResId: Int, val color: Color) {
+    VERY_LOW(R.string.very_low_difficulty, Color(0xFF767171)),
+    LOW(R.string.low_difficulty, Color(0xFF00B050)),
+    MEDIUM(R.string.medium_difficulty, Color(0xFFBF8F00)),
+    HIGH(R.string.high_difficulty, Color(0xFFC45911)),
+    VERY_HIGH(R.string.very_high_difficulty, Color(0xFFFF0000))
 }

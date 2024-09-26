@@ -2,6 +2,7 @@ package com.povush.modusvivendi.ui.questlines
 
 import androidx.lifecycle.ViewModel
 import com.povush.modusvivendi.data.model.Difficulty
+import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Subtask
 import com.povush.modusvivendi.data.model.Task
@@ -19,7 +20,7 @@ data class QuestCreateUiState(
     val typeExpanded: Boolean = false,
 
     val difficulty: Difficulty = Difficulty.MEDIUM,
-    val description: String = "Sample description.",
+    val description: String = "",
     val tasks: Map<Task, List<Subtask>> = emptyMap()
 )
 
@@ -45,6 +46,52 @@ class QuestCreateViewModel(
     fun updateTypeExpanded(typeExpanded: Boolean) {
         _uiState.update {
             uiState.value.copy(typeExpanded = typeExpanded)
+        }
+    }
+
+    fun updateDifficulty(difficulty: Difficulty) {
+        _uiState.update {
+            uiState.value.copy(difficulty = difficulty)
+        }
+    }
+
+    fun updateDescription(input: String) {
+        _uiState.update {
+            uiState.value.copy(description = input)
+        }
+    }
+
+    fun updateTaskStatus(task: Task) {
+        val subtasksOfThisTask = uiState.value.tasks[task] ?: emptyList()
+        val updatedTask = task.copy(isCompleted = !task.isCompleted)
+        val updatedTasks = uiState.value.tasks
+            .minus(task)
+            .plus(updatedTask to subtasksOfThisTask)
+
+        _uiState.update {
+            uiState.value.copy(
+                tasks = updatedTasks
+            )
+        }
+    }
+
+    /*TODO: CURSED CURSED CURSED!*/
+    fun updateSubtaskStatus(subtask: Subtask) {
+        val taskOfThisSubtask: Task = uiState.value.tasks.keys.firstOrNull {
+            subtask in (uiState.value.tasks[it] ?: emptyList())
+        } ?: Task(questId = 0)
+        val otherSubtasks: List<Subtask> = uiState.value.tasks[taskOfThisSubtask] ?: emptyList()
+        val updatedSubtask = subtask.copy(isCompleted = !subtask.isCompleted)
+        val updatedSubtasks = otherSubtasks.map { item ->
+            if (item == subtask) updatedSubtask else item
+        }
+        val updatedTasks = uiState.value.tasks
+            .plus(taskOfThisSubtask to updatedSubtasks)
+
+        _uiState.update {
+            uiState.value.copy(
+                tasks = updatedTasks
+            )
         }
     }
 }

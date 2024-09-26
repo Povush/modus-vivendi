@@ -15,4 +15,6 @@
     <string name="quest_title">Quest title</string>
     <string name="difficulty">Difficulty</string>
     <string name="quest_type">Quest type</string>
+    <string name="description">Description</string>
+    <string name="tasks">Tasks</string>
 </resources>

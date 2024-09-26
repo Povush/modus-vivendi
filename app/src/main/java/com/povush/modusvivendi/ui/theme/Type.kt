@@ -78,7 +78,7 @@ val Typography = Typography(
         ),
         fontWeight = FontWeight.Medium,
         fontSize = 16.sp,
-        lineHeight = 24.sp,
+        lineHeight = 18.sp,
     ),
 
     // Use for general text on the screen.
