@@ -139,11 +139,8 @@ fun QuestCreateScreen(
                 onValueChange = { input -> viewModel.updateDescription(input) }
             )
             QuestTasks(
-                tasks = mapOf(
-                    com.povush.modusvivendi.data.model.Task(id = 11, questId = 0, name = "Veeeeeeery loooooooooooooooooooooong task 1") to emptyList(),
-                    com.povush.modusvivendi.data.model.Task(id = 12, questId = 0, name = "Task 2") to listOf(Subtask(id = 1, taskId = 12, name = "Subtask 1"), Subtask(id = 2, taskId = 12, name = "Subtask 2"))
-                ),
-                onCheckedTaskChange = { task -> viewModel.updateTaskStatus(task) },
+                tasks = uiState.tasks,
+                onCheckedTaskChange = { task, isCompleted -> viewModel.updateTaskStatus(task, isCompleted) },
                 onCheckedSubtaskChange = { subtask -> viewModel.updateSubtaskStatus(subtask) },
                 onTaskTextChange = { input -> }
             )
@@ -316,7 +313,7 @@ fun QuestDescription(
 @Composable
 fun QuestTasks(
     tasks: Map<Task, List<Subtask>>,
-    onCheckedTaskChange: (Task) -> Unit,
+    onCheckedTaskChange: (Task, Boolean) -> Unit,
     onCheckedSubtaskChange: (Subtask) -> Unit,
     onTaskTextChange: (String) -> Unit
 ) {
@@ -347,7 +344,7 @@ fun QuestTasks(
 @Composable
 fun QuestTask(
     task: Task,
-    onCheckedChange: (Task) -> Unit,
+    onCheckedChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -363,7 +360,7 @@ fun QuestTask(
         )
         Checkbox(
             checked = task.isCompleted,
-            onCheckedChange = { onCheckedChange(task) },
+            onCheckedChange = { onCheckedChange(task, it) },
             modifier = Modifier.size(32.dp)
         )
         DynamicPaddingBasicTextField(
@@ -449,9 +446,10 @@ fun QuestCreateScreenPreview() {
         com.povush.modusvivendi.ui.questlines.QuestTasks(
             tasks = mapOf(
                 com.povush.modusvivendi.data.model.Task(id = 11, questId = 0, name = "Veeeeeeery loooooooooooooooooooooong task 1") to emptyList(),
-                com.povush.modusvivendi.data.model.Task(id = 12, questId = 0, name = "Task 2") to listOf(Subtask(id = 1, taskId = 12, name = "Subtask 1"), Subtask(id = 2, taskId = 12, name = "Subtask 2"))
+                com.povush.modusvivendi.data.model.Task(id = 12, questId = 0, name = "Task 2") to listOf(Subtask(id = 1, taskId = 12, name = "Subtask 1"), Subtask(id = 2, taskId = 12, name = "Subtask 2")),
+                com.povush.modusvivendi.data.model.Task(id = 13, questId = 0, name = "Task 3") to emptyList()
             ),
-            onCheckedTaskChange = {},
+            onCheckedTaskChange = { _, _ -> },
             onCheckedSubtaskChange = {},
             onTaskTextChange = {}
         )
