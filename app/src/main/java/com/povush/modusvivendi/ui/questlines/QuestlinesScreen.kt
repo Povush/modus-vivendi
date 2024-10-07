@@ -141,25 +141,24 @@ fun QuestlinesScreen(
         }
     ) { innerPadding ->
 //        var userScrollEnabled by remember { mutableStateOf(true) }
-        val nestedScrollConnection = remember {
-            object : NestedScrollConnection {
-                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+//        val nestedScrollConnection = remember {
+//            object : NestedScrollConnection {
+//                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
 //                    if (available.x > 0 && pagerState.currentPage == 0) {
 //                        userScrollEnabled = false
 //                    } else if (available.x < 0 || pagerState.currentPage != 0) {
 //                        userScrollEnabled = true
 //                    }
-                    return Offset.VisibilityThreshold
-                }
-            }
-        }
+//                    return Offset.VisibilityThreshold
+//                }
+//            }
+//        }
 
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize()
-                .nestedScroll(nestedScrollConnection),
+                .fillMaxSize(),
             userScrollEnabled = true
         ) { page ->
             QuestSection(
