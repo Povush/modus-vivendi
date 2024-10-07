@@ -27,8 +27,7 @@ data class Task(
     val questId: Int,
     val name: String = "New Task",
     val isCompleted: Boolean = false,
-    /*TODO: Need conversation*/
-//    val counter: Pair<Int, Int>? = null,
+    val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
     val orderIndex: Int = 0
 )

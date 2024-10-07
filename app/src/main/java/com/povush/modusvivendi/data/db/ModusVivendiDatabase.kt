@@ -4,6 +4,7 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import androidx.room.TypeConverters
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.Subtask
 import com.povush.modusvivendi.data.model.Task
@@ -14,9 +15,10 @@ import com.povush.modusvivendi.data.model.Task
         Task::class,
         Subtask::class
     ],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
+@TypeConverters(ModusVivendiDatabaseConverter::class)
 abstract class ModusVivendiDatabase : RoomDatabase() {
 
     abstract fun questDao(): QuestDao

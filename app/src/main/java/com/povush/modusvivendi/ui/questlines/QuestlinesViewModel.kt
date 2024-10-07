@@ -4,6 +4,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.google.accompanist.pager.PagerState
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
@@ -28,6 +29,8 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
     /*TODO: Remember sortingMethod in repository*/
     private val _uiState = MutableStateFlow(QuestlinesUiState())
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
+
+    val pagerState = PagerState()
 
     init {
         loadQuests()

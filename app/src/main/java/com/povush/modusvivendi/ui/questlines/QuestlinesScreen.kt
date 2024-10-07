@@ -1,10 +1,9 @@
 package com.povush.modusvivendi.ui.questlines
 
-import android.nfc.Tag
-import android.util.Log
+import android.widget.Toast
+import androidx.compose.animation.core.VisibilityThreshold
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -16,7 +15,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
-import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
@@ -34,13 +32,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
+import androidx.compose.ui.input.nestedscroll.NestedScrollSource
+import androidx.compose.ui.input.nestedscroll.nestedScroll
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.Font
-import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -138,16 +140,31 @@ fun QuestlinesScreen(
             }
         }
     ) { innerPadding ->
+//        var userScrollEnabled by remember { mutableStateOf(true) }
+        val nestedScrollConnection = remember {
+            object : NestedScrollConnection {
+                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
+//                    if (available.x > 0 && pagerState.currentPage == 0) {
+//                        userScrollEnabled = false
+//                    } else if (available.x < 0 || pagerState.currentPage != 0) {
+//                        userScrollEnabled = true
+//                    }
+                    return Offset.VisibilityThreshold
+                }
+            }
+        }
+
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .padding(innerPadding)
-                .fillMaxSize(),
+                .fillMaxSize()
+                .nestedScroll(nestedScrollConnection),
+            userScrollEnabled = true
         ) { page ->
             QuestSection(
                 quests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList(),
-                modifier = Modifier
-                    .fillMaxSize()
+                modifier = Modifier.fillMaxSize()
             )
         }
     }
@@ -180,29 +197,23 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
         ) {
             item {
                 Image(
-                    painter = painterResource(R.drawable.img_empty_quest_section_2),
+                    painter = painterResource(R.drawable.img_empty_quest_section_9),
                     contentDescription = null,
                     modifier = Modifier
                         .size(200.dp)
                 )
-                Spacer(modifier = Modifier.size(16.dp))
+                Spacer(modifier = Modifier.size(8.dp))
                 Text(
                     text = "Section is empty",
                     modifier = Modifier.fillMaxWidth(),
-                    fontSize = 26.sp,
-                    fontFamily = FontFamily(
-                        Font(R.font.avenir_next_bold)
-                    ),
                     textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.headlineSmall.copy(fontSize = 28.sp)
                 )
                 Text(
                     text = "There is no quests in this section!",
                     modifier = Modifier.fillMaxWidth(),
-                    fontSize = 18.sp,
-                    fontFamily = FontFamily(
-                        Font(R.font.avenir_next_regular)
-                    ),
                     textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
                 Spacer(modifier = Modifier.size(50.dp))
             }
