@@ -67,7 +67,10 @@ fun QuestlinesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    val pagerState = rememberPagerState(pageCount = { QuestType.entries.size })
+    val pagerState = rememberPagerState(
+        initialPage = uiState.selectedQuestSection.ordinal,
+        pageCount = { QuestType.entries.size }
+    )
     val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState.currentPage) {
@@ -117,7 +120,7 @@ fun QuestlinesScreen(
                         pagerState.animateScrollToPage(index)
                     }
                 },
-                tabCounter = { index -> viewModel.sectionCounter(index) }
+                tabCounter = viewModel::sectionCounter
             )
         },
         floatingActionButton = {
