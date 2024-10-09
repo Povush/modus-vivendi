@@ -9,6 +9,9 @@ import com.povush.modusvivendi.ui.questlines.QuestViewModel
 
 class AppDataContainer(private val context: Context) {
     val offlineQuestsRepository: OfflineQuestsRepository by lazy {
-        OfflineQuestsRepository(ModusVivendiDatabase.getDatabase(context).questDao())
+        OfflineQuestsRepository(
+            ModusVivendiDatabase.getDatabase(context).questDao(),
+            ModusVivendiDatabase.getDatabase(context).taskDao()
+        )
     }
 }

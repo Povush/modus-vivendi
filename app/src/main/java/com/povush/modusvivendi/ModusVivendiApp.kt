@@ -1,7 +1,6 @@
 package com.povush.modusvivendi
 
 import android.content.res.Configuration
-import androidx.compose.animation.ExperimentalAnimationApi
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material3.DrawerValue
@@ -19,9 +18,12 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.ui.appbar.MainParametersBar
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
+import com.povush.modusvivendi.ui.questlines.QuestCreateDestination
+import com.povush.modusvivendi.ui.questlines.QuestlinesDestination
 import kotlinx.coroutines.launch
 
 @Composable
@@ -56,7 +58,7 @@ fun ModusVivendiApp(
                 }
             },
             modifier = Modifier.padding(innerPadding),
-            gesturesEnabled = true
+            gesturesEnabled = isNavigationGesturesEnabled(navController)
         ) {
             ModusVivendiNavHost(
                 navController = navController,
@@ -71,4 +73,17 @@ fun ModusVivendiApp(
             )
         }
     }
+}
+
+@Composable
+fun isNavigationGesturesEnabled(navController: NavHostController): Boolean {
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentDestination = currentBackStackEntry?.destination?.route
+
+    val isGesturesEnabled = mapOf(
+        QuestlinesDestination.route to true,
+        QuestCreateDestination.route to false
+    )
+
+    return isGesturesEnabled[currentDestination] ?: true
 }

@@ -1,17 +1,26 @@
 package com.povush.modusvivendi.ui.questlines
 
-import android.widget.Toast
-import androidx.compose.animation.core.VisibilityThreshold
+import android.util.Log
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.HorizontalPager
@@ -38,11 +47,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
 import androidx.compose.ui.input.nestedscroll.NestedScrollSource
 import androidx.compose.ui.input.nestedscroll.nestedScroll
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -141,16 +155,23 @@ fun QuestlinesScreen(
         }
     ) { innerPadding ->
 //        var userScrollEnabled by remember { mutableStateOf(true) }
+//
 //        val nestedScrollConnection = remember {
 //            object : NestedScrollConnection {
-//                override fun onPreScroll(available: Offset, source: NestedScrollSource): Offset {
-//                    if (available.x > 0 && pagerState.currentPage == 0) {
+//                override fun onPreScroll(available: Offset,source: NestedScrollSource): Offset {
+//                    if (available.x > 0f && pagerState.currentPage == 0 && pagerState.targetPage == 0) {
 //                        userScrollEnabled = false
-//                    } else if (available.x < 0 || pagerState.currentPage != 0) {
+//                    } else {
 //                        userScrollEnabled = true
 //                    }
-//                    return Offset.VisibilityThreshold
+//                    return super.onPreScroll(available,source)
 //                }
+//            }
+//        }
+//
+//        LaunchedEffect(pagerState.isScrollInProgress) {
+//            if (!pagerState.isScrollInProgress) {
+//                userScrollEnabled = true
 //            }
 //        }
 
@@ -161,7 +182,7 @@ fun QuestlinesScreen(
                 .fillMaxSize(),
             userScrollEnabled = true
         ) { page ->
-            QuestSection(
+            QuestContent(
                 quests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList(),
                 modifier = Modifier.fillMaxSize()
             )
@@ -170,14 +191,14 @@ fun QuestlinesScreen(
 }
 
 @Composable
-fun QuestSection(
+fun QuestContent(
     quests: List<Quest>,
     modifier: Modifier = Modifier
 ) {
-    if (quests.isEmpty()) {
-        EmptyQuestSection(modifier = modifier)
+    if (quests.isNotEmpty()) {
+        QuestSection(quests = quests, modifier = modifier)
     } else {
-        NotEmptyQuestSection(quests = quests, modifier = modifier)
+        EmptyQuestSection(modifier = modifier)
     }
 }
 
@@ -195,21 +216,56 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             item {
+                val infiniteTransition = rememberInfiniteTransition(label = "Eeyore and his shadow")
+
+                val offsetY by infiniteTransition.animateFloat(
+                    initialValue = -5f,
+                    targetValue = 5f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(3000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "Eeyore"
+                )
+                val scaleX by infiniteTransition.animateFloat(
+                    initialValue = 0.95f,
+                    targetValue = 1.05f,
+                    animationSpec = infiniteRepeatable(
+                        animation = tween(3000, easing = LinearEasing),
+                        repeatMode = RepeatMode.Reverse
+                    ),
+                    label = "Shadow"
+                )
+
                 Image(
-                    painter = painterResource(R.drawable.img_empty_quest_section_9),
+                    painter = painterResource(R.drawable.img_empty_quest_section_9_eeyore),
                     contentDescription = null,
+                    contentScale = ContentScale.Fit,
                     modifier = Modifier
-                        .size(200.dp)
+                        .offset(y = offsetY.dp)
+                        .width(200.dp)
+                        .aspectRatio(1.18f)
+                )
+                Image(
+                    painter = painterResource(R.drawable.img_empty_quest_section_9_shadow),
+                    contentDescription = null,
+                    contentScale = ContentScale.Fit,
+                    modifier = Modifier
+                        .graphicsLayer(scaleX = scaleX)
+                        .width(200.dp)
+                        .aspectRatio(7.27f)
+
                 )
                 Spacer(modifier = Modifier.size(8.dp))
                 Text(
-                    text = "Section is empty",
+                    text = stringResource(R.string.section_is_empty),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.headlineSmall.copy(fontSize = 28.sp)
                 )
+                Spacer(modifier = Modifier.size(4.dp))
                 Text(
-                    text = "There is no quests in this section!",
+                    text = stringResource(R.string.no_quests_message),
                     modifier = Modifier.fillMaxWidth(),
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
@@ -221,7 +277,7 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
 }
 
 @Composable
-fun NotEmptyQuestSection(
+fun QuestSection(
     quests: List<Quest>,
     modifier: Modifier = Modifier
 ) {

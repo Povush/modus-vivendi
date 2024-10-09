@@ -94,7 +94,6 @@ fun MainParameter(
     Surface(
         modifier = Modifier
             .height(24.dp)
-
             .drawBehind {
                 drawRoundRect(
                     color = Color.Gray,

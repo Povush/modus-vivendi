@@ -6,4 +6,11 @@
     <string name="high_difficulty">Высокая</string>
     <string name="very_high_difficulty">Очень высокая</string>
     <string name="quest_difficulty">Сложность: %1$s</string>
+    <string name="quest_title">Название квеста</string>
+    <string name="difficulty">Сложность</string>
+    <string name="quest_type">Тип квеста</string>
+    <string name="description">Умопомрачительное описание.</string>
+    <string name="tasks">Задачи</string>
+    <string name="section_is_empty">Раздел пуст</string>
+    <string name="no_quests_message">Здесь нет ни единого квеста!</string>
 </resources>

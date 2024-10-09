@@ -6,22 +6,21 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
 import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.data.model.Subtask
 import com.povush.modusvivendi.data.model.Task
 
 @Database(
     entities = [
         Quest::class,
-        Task::class,
-        Subtask::class
+        Task::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 @TypeConverters(ModusVivendiDatabaseConverter::class)
 abstract class ModusVivendiDatabase : RoomDatabase() {
 
     abstract fun questDao(): QuestDao
+    abstract fun taskDao(): TaskDao
 
     companion object {
         @Volatile

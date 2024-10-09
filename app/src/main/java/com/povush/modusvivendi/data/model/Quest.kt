@@ -1,6 +1,16 @@
 package com.povush.modusvivendi.data.model
 
+import android.graphics.drawable.Icon
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.FactCheck
+import androidx.compose.material.icons.filled.CreateNewFolder
+import androidx.compose.material.icons.filled.DoneAll
+import androidx.compose.material.icons.filled.FactCheck
+import androidx.compose.material.icons.filled.FolderOff
+import androidx.compose.material.icons.filled.FolderSpecial
+import androidx.compose.material.icons.filled.Task
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.povush.modusvivendi.R
@@ -20,36 +30,11 @@ data class Quest(
     val pinned: Boolean = false
 )
 
-@Entity(tableName = "tasks")
-data class Task(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val questId: Int,
-    val name: String = "New Task",
-    val isCompleted: Boolean = false,
-    val counter: Pair<Int, Int>? = null,
-    val isAdditional: Boolean = false,
-    val orderIndex: Int = 0
-)
-
-@Entity(tableName = "subtasks")
-data class Subtask(
-    @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val taskId: Int,
-    val name: String = "New Task",
-    val isCompleted: Boolean = false,
-    /*TODO: Need conversation*/
-//    val counter: Pair<Int, Int>? = null,
-    val isAdditional: Boolean = false,
-    val orderIndex: Int = 0
-)
-
-enum class QuestType(val textResId: Int) {
-    MAIN(R.string.main_quest_section),
-    ADDITIONAL(R.string.additional_quest_section),
-    COMPLETED(R.string.completed_quest_section),
-    FAILED(R.string.failed_quest_section)
+enum class QuestType(val textResId: Int, val iconImageVector: ImageVector) {
+    MAIN(R.string.main_quest_section, Icons.Default.FolderSpecial),
+    ADDITIONAL(R.string.additional_quest_section, Icons.Default.CreateNewFolder),
+    COMPLETED(R.string.completed_quest_section,Icons.Default.Task),
+    FAILED(R.string.failed_quest_section, Icons.Default.FolderOff)
 }
 
 enum class Difficulty(val textResId: Int, val color: Color) {

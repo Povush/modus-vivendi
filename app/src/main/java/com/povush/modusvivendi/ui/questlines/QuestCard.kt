@@ -50,6 +50,7 @@ import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.createQuestViewModelExtras
+import com.povush.modusvivendi.ui.questlines.component.TaskItem
 import com.povush.modusvivendi.ui.theme.NationalTheme
 
 @Composable
@@ -126,9 +127,8 @@ fun QuestCard(
                 style = MaterialTheme.typography.bodyMedium
             )
             Tasks(
-                quest = quest,
                 tasks = uiState.tasks,
-                changeTaskStatus = { task: Task -> viewModel.changeTaskStatus(task) }
+                onCheckedChange = { task, isCompleted -> viewModel.updateTaskStatus(task, isCompleted) }
             )
         }
     }
@@ -136,44 +136,19 @@ fun QuestCard(
 
 @Composable
 fun Tasks(
-    quest: Quest,
     tasks: List<Task>,
-    changeTaskStatus: (Task) -> Unit
+    onCheckedChange: (Task, Boolean) -> Unit
 ) {
     Column(
         modifier = Modifier.padding(4.dp)
     ) {
         tasks.forEach { task ->
-            Row {
-                Checkbox(
-                    checked = task.isCompleted,
-                    onCheckedChange = { changeTaskStatus(task) },
-                    modifier = Modifier
-                        .size(32.dp),
-                    enabled = quest.type !in listOf(QuestType.COMPLETED, QuestType.FAILED)
-                )
-                DynamicPaddingText(task.name)
-            }
+            TaskItem(
+                task = task,
+                isEdit = false,
+                onCheckedChange = onCheckedChange,
+                onTaskTextChange = {}
+            )
         }
     }
-}
-
-/*TODO: Replace it with something normal*/
-@Composable
-fun DynamicPaddingText(text: String, modifier: Modifier = Modifier) {
-    var lineCount by remember { mutableIntStateOf(0) }
-
-    val paddingValues = when (lineCount) {
-        1 -> PaddingValues(top = 8.dp)
-        else -> PaddingValues(top = 4.dp)
-    }
-
-    Text(
-        text = text,
-        modifier = modifier.padding(paddingValues),
-        onTextLayout = { textLayoutResult: TextLayoutResult ->
-            lineCount = textLayoutResult.lineCount
-        },
-        style = MaterialTheme.typography.bodyLarge
-    )
 }

@@ -53,10 +53,10 @@ class QuestViewModel(
         }
     }
 
-    fun changeTaskStatus(task: Task) {
-        viewModelScope.launch {
-            questsRepository.updateTask(task.copy(isCompleted = !task.isCompleted))
-        }
+    fun updateTaskStatus(task: Task, isCompleted: Boolean) {
+//        viewModelScope.launch {
+//            questsRepository.updateTask(task.copy(isCompleted = !task.isCompleted))
+//        }
     }
 
     fun changeQuestPinStatus() {

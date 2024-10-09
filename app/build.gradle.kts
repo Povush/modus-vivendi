@@ -57,7 +57,7 @@ android {
 }
 
 dependencies {
-    implementation("androidx.compose.material:material-icons-extended:1.7.2")
+    implementation("androidx.compose.material:material-icons-extended:1.7.3")
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation(libs.androidx.material3)
     implementation(libs.androidx.lifecycle.runtime.ktx)
