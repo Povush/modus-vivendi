@@ -99,9 +99,9 @@ fun DynamicPaddingText(text: String, modifier: Modifier = Modifier) {
         Text(
             text = text,
             modifier = Modifier,
-            onTextLayout = { textLayoutResult: TextLayoutResult ->
-                lineCount = textLayoutResult.lineCount
-            },
+//            onTextLayout = { textLayoutResult: TextLayoutResult ->
+//                lineCount = textLayoutResult.lineCount
+//            },
             style = MaterialTheme.typography.bodyLarge
         )
     }
@@ -116,7 +116,6 @@ fun DynamicPaddingBasicTextField(
 ) {
     var lineCount by remember { mutableIntStateOf(0) }
     var isFocused by remember { mutableStateOf(false) }
-    var taskText by remember { mutableStateOf(value) }
 
 //    val animatedHeight by animateDpAsState(
 //        targetValue = when (lineCount) {
@@ -128,16 +127,12 @@ fun DynamicPaddingBasicTextField(
 
     Box(modifier = modifier.padding(top = 7.dp)) {
         BasicTextField(
-            value = taskText,
-            onValueChange = { taskText = it },
-            modifier = Modifier
-                .onFocusChanged { focusState ->
-                    if (!focusState.isFocused && isFocused) { onValueChange(taskText) }
-                    isFocused = focusState.isFocused
-                },
-            onTextLayout = { textLayoutResult: TextLayoutResult ->
-                lineCount = textLayoutResult.lineCount
-            },
+            value = value,
+            onValueChange = { onValueChange(it) },
+            modifier = Modifier,
+//            onTextLayout = { textLayoutResult: TextLayoutResult ->
+//                lineCount = textLayoutResult.lineCount
+//            },
             textStyle = MaterialTheme.typography.bodyLarge
         )
     }
