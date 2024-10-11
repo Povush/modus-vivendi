@@ -8,8 +8,8 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.povush.modusvivendi.ModusVivendiApplication
 import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.ui.questlines.QuestCreateScreen
-import com.povush.modusvivendi.ui.questlines.QuestCreateViewModel
+import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.ui.questlines.QuestEditViewModel
 import com.povush.modusvivendi.ui.questlines.QuestViewModel
 import com.povush.modusvivendi.ui.questlines.QuestlinesViewModel
 
@@ -27,9 +27,10 @@ object AppViewModelProvider {
             )
         }
         initializer {
-            QuestCreateViewModel(
+            QuestEditViewModel(
                 modusVivendiApplication().container.offlineQuestsRepository,
-                this[CurrentQuestSectionNumberKey] ?: throw IllegalStateException("CurrentQuestSectionNumber data missing")
+                this[QuestIdKey],
+                this[CurrentQuestSectionNumberKey]
             )
         }
     }
@@ -39,7 +40,8 @@ fun CreationExtras.modusVivendiApplication(): ModusVivendiApplication =
     this[AndroidViewModelFactory.APPLICATION_KEY] as ModusVivendiApplication
 
 val QuestKey = object : CreationExtras.Key<Quest> {}
-val CurrentQuestSectionNumberKey = object : CreationExtras.Key<Int> {}
+val QuestIdKey = object : CreationExtras.Key<Int?> {}
+val CurrentQuestSectionNumberKey = object : CreationExtras.Key<Int?> {}
 
 fun createQuestViewModelExtras(quest: Quest, context: Context): CreationExtras {
     val extras = MutableCreationExtras()
@@ -48,9 +50,10 @@ fun createQuestViewModelExtras(quest: Quest, context: Context): CreationExtras {
     return extras
 }
 
-fun createQuestCreateViewModelExtras(currentQuestSectionNumber: Int, context: Context): CreationExtras {
+fun createQuestEditViewModelExtras(questId: Int?, currentQuestSectionNumberKey: Int?, context: Context): CreationExtras {
     val extras = MutableCreationExtras()
     extras[AndroidViewModelFactory.APPLICATION_KEY] = context as ModusVivendiApplication
-    extras[CurrentQuestSectionNumberKey] = currentQuestSectionNumber
+    extras[QuestIdKey] = questId
+    extras[CurrentQuestSectionNumberKey] = currentQuestSectionNumberKey
     return extras
 }

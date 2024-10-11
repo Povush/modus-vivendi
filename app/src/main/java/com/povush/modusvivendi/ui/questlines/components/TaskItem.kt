@@ -1,15 +1,12 @@
-package com.povush.modusvivendi.ui.questlines.component
+package com.povush.modusvivendi.ui.questlines.components
 
-import androidx.compose.foundation.Canvas
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material3.Checkbox
@@ -18,24 +15,25 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.ui.theme.VerticalSubtaskLine
 
 @Composable
 fun TaskItem(
     task: Task,
     isEdit: Boolean,
     onCheckedChange: (Task, Boolean) -> Unit,
-    onTaskTextChange: (String) -> Unit,
+    onTaskTextChange: (Task, String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isSubtask = task.parentTaskId != null
@@ -54,18 +52,7 @@ fun TaskItem(
                 modifier = Modifier.size(32.dp,taskHeightDp),
                 contentAlignment = Alignment.Center
             ) {
-                Canvas(
-                    modifier = Modifier
-                        .fillMaxHeight()
-                        .width(2.dp)
-                ) {
-                    drawLine(
-                        color = Color.Black,
-                        start = Offset(size.width / 2,0f),
-                        end = Offset(size.width / 2,size.height),
-                        strokeWidth = size.width
-                    )
-                }
+                VerticalSubtaskLine()
             }
         }
         Row(
@@ -84,7 +71,7 @@ fun TaskItem(
             if (isEdit) {
                 DynamicPaddingBasicTextField(
                     value = task.name,
-                    onValueChange = { input -> onTaskTextChange(input) },
+                    onValueChange = { input -> onTaskTextChange(task, input) },
                     modifier = Modifier.weight(1f)
                 )
             } else {
@@ -100,19 +87,25 @@ fun TaskItem(
 fun DynamicPaddingText(text: String, modifier: Modifier = Modifier) {
     var lineCount by remember { mutableIntStateOf(0) }
 
-    val paddingValues = when (lineCount) {
-        1 -> PaddingValues(top = 8.dp)
-        else -> PaddingValues(top = 4.dp)
+//    val animatedHeight by animateDpAsState(
+//        targetValue = when (lineCount) {
+//            1 -> 8.dp
+//            else -> 4.dp
+//        },
+//        label = "DynamicPaddingText"
+//    )
+
+    Box(modifier = modifier.padding(top = 7.dp)) {
+        Text(
+            text = text,
+            modifier = Modifier,
+            onTextLayout = { textLayoutResult: TextLayoutResult ->
+                lineCount = textLayoutResult.lineCount
+            },
+            style = MaterialTheme.typography.bodyLarge
+        )
     }
 
-    Text(
-        text = text,
-        modifier = modifier.padding(paddingValues),
-        onTextLayout = { textLayoutResult: TextLayoutResult ->
-            lineCount = textLayoutResult.lineCount
-        },
-        style = MaterialTheme.typography.bodyLarge
-    )
 }
 
 @Composable
@@ -122,20 +115,31 @@ fun DynamicPaddingBasicTextField(
     modifier: Modifier = Modifier
 ) {
     var lineCount by remember { mutableIntStateOf(0) }
+    var isFocused by remember { mutableStateOf(false) }
+    var taskText by remember { mutableStateOf(value) }
 
-    val paddingValues = when (lineCount) {
-        1 -> PaddingValues(top = 8.dp)
-        else -> PaddingValues(top = 4.dp)
+//    val animatedHeight by animateDpAsState(
+//        targetValue = when (lineCount) {
+//            1 -> 8.dp
+//            else -> 4.dp
+//        },
+//        label = "DynamicPaddingBasicTextField"
+//    )
+
+    Box(modifier = modifier.padding(top = 7.dp)) {
+        BasicTextField(
+            value = taskText,
+            onValueChange = { taskText = it },
+            modifier = Modifier
+                .onFocusChanged { focusState ->
+                    if (!focusState.isFocused && isFocused) { onValueChange(taskText) }
+                    isFocused = focusState.isFocused
+                },
+            onTextLayout = { textLayoutResult: TextLayoutResult ->
+                lineCount = textLayoutResult.lineCount
+            },
+            textStyle = MaterialTheme.typography.bodyLarge
+        )
     }
-
-    BasicTextField(
-        value = value,
-        onValueChange = { onValueChange(it) },
-        modifier = modifier.padding(paddingValues),
-        onTextLayout = { textLayoutResult: TextLayoutResult ->
-            lineCount = textLayoutResult.lineCount
-        },
-        textStyle = MaterialTheme.typography.bodyLarge
-    )
 }
 

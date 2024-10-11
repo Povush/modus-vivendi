@@ -30,8 +30,6 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
     private val _uiState = MutableStateFlow(QuestlinesUiState())
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
 
-    val pagerState = PagerState()
-
     init {
         loadQuests()
     }
@@ -47,6 +45,13 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
             }
         }
     }
+
+//    fun createNewQuest(): Int {
+//        viewModelScope.launch {
+//            questsRepository.insertQuest(Quest())
+//        }
+//        return
+//    }
 
     fun switchQuestSection(index: Int) {
         _uiState.update {

@@ -27,6 +27,7 @@ navigationCompose = "2.7.7"
 testng = "6.9.6"
 roomCommon = "2.6.1"
 roomKtx = "2.6.1"
+reorderable = "2.3.3"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -68,6 +69,7 @@ androidx-room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = 
 ui = { module = "androidx.compose.ui:ui" }
 ui-tooling = { module = "androidx.compose.ui:ui-tooling" }
 ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
+reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -5,8 +5,10 @@ import androidx.room.Delete
 import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
+import androidx.room.Transaction
 import androidx.room.Update
 import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -22,6 +24,10 @@ interface TaskDao {
 
     @Query("SELECT * FROM tasks WHERE questId = :questId")
     fun getAllTasksByQuestId(questId: Int): Flow<List<Task>>
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE parentTaskId IS NULL and questId = :questId")
+    fun getAllTasksWithSubtasksByQuestId(questId: Int): Flow<List<TaskWithSubtasks>>
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     fun getTaskStreamById(taskId: Int): Flow<Task>

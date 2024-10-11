@@ -64,6 +64,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
@@ -78,7 +79,7 @@ object QuestlinesDestination : NavigationDestination {
 @Composable
 fun QuestlinesScreen(
     onNavigationClick: () -> Unit,
-    navigateToQuestCreate: (Int) -> Unit,
+    navigateToQuestEdit: (Int?, Int?) -> Unit,
     viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -141,7 +142,7 @@ fun QuestlinesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToQuestCreate(uiState.selectedQuestSection.ordinal) },
+                onClick = { navigateToQuestEdit(null, uiState.selectedQuestSection.ordinal) },
                 modifier = Modifier.padding(8.dp),
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,

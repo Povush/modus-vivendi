@@ -1,51 +1,28 @@
 package com.povush.modusvivendi.ui.questlines
 
-import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.Image
+import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.consumeWindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.ime
 import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.safeContentPadding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AddTask
-import androidx.compose.material.icons.filled.Cancel
 import androidx.compose.material.icons.filled.Castle
 import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.filled.Checklist
-import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Done
-import androidx.compose.material.icons.filled.DragHandle
 import androidx.compose.material.icons.filled.DragIndicator
-import androidx.compose.material.icons.filled.Edit
-import androidx.compose.material.icons.filled.MoreVert
-import androidx.compose.material.icons.filled.Task
-import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -53,51 +30,28 @@ import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
-import androidx.compose.material3.ListItem
-import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
-import androidx.compose.material3.RadioButton
-import androidx.compose.material3.RadioButtonColors
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldColors
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.TextLayoutResult
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.BaselineShift
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -105,12 +59,15 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
-import com.povush.modusvivendi.ui.createQuestCreateViewModelExtras
+import com.povush.modusvivendi.ui.createQuestEditViewModelExtras
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
-import com.povush.modusvivendi.ui.questlines.component.TaskItem
+import com.povush.modusvivendi.ui.questlines.components.TaskItem
 import com.povush.modusvivendi.ui.theme.NationalTheme
+import sh.calvin.reorderable.ReorderableColumn
+import sh.calvin.reorderable.ReorderableScope
 
 object QuestCreateDestination : NavigationDestination {
     override val route = "create_quest"
@@ -118,15 +75,20 @@ object QuestCreateDestination : NavigationDestination {
 }
 
 @Composable
-fun QuestCreateScreen(
+fun QuestEditScreen(
     navigateBack: () -> Boolean,
-    currentQuestSectionNumber: Int,
-    viewModel: QuestCreateViewModel = viewModel(
+    questId: Int? = null,
+    currentQuestSectionNumber: Int? = null,
+    viewModel: QuestEditViewModel = viewModel(
         factory = AppViewModelProvider.Factory,
-        extras = createQuestCreateViewModelExtras(currentQuestSectionNumber, LocalContext.current.applicationContext)
+        extras = createQuestEditViewModelExtras(questId, currentQuestSectionNumber, LocalContext.current.applicationContext)
     )
 ) {
     val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(uiState) {
+        viewModel.validate()
+    }
 
     Scaffold(
         topBar = {
@@ -187,8 +149,10 @@ fun QuestCreateScreen(
                 )
                 QuestTasks(
                     tasks = uiState.tasks,
-                    onCheckedTaskChange = { task, isCompleted -> viewModel.updateTaskStatus(task, isCompleted) },
-                    onTaskTextChange = { input -> }
+                    onCheckedTaskChange = { task, isCompleted -> viewModel.onCheckedTaskChange(task, isCompleted) },
+                    onTaskTextChange = { task, input -> viewModel.onTaskTextChange(task, input) },
+                    onReorderingTask = { fromIndex, toIndex -> viewModel.onReorderingTask(fromIndex, toIndex) },
+                    onReorderingSubtask = { taskIndex, fromIndex, toIndex -> viewModel.onReorderingSubtask(taskIndex, fromIndex, toIndex) }
                 )
             }
         }
@@ -389,30 +353,72 @@ fun QuestDescription(
 
 @Composable
 fun QuestTasks(
-    tasks: Map<Task, List<Task>>,
+    tasks: List<TaskWithSubtasks>,
     onCheckedTaskChange: (Task, Boolean) -> Unit,
-    onTaskTextChange: (String) -> Unit
+    onTaskTextChange: (Task, String) -> Unit,
+    onReorderingTask: (Int, Int) -> Unit,
+    onReorderingSubtask: (Int, Int, Int) -> Unit,
 ) {
+    val numberOfTasks: Int = tasks.size
+    val numberOfCompletedTasks: Int = tasks.count { it.task.isCompleted }
+
     Column {
         Text(
-            text = stringResource(R.string.tasks) + " (0/5)",
+            text = stringResource(R.string.tasks) + " ($numberOfCompletedTasks/$numberOfTasks)",
             modifier = Modifier.padding(8.dp),
             style = MaterialTheme.typography.bodySmall
         )
-        tasks.forEach { (task, subtasks) ->
-            QuestTask(
-                task = task,
-                isEdit = true,
-                onCheckedChange = onCheckedTaskChange,
-                onTaskTextChange = onTaskTextChange
-            )
-            subtasks.forEach { subtask ->
-                QuestTask(
-                    task = subtask,
-                    isEdit = true,
-                    onCheckedChange = onCheckedTaskChange,
-                    onTaskTextChange = onTaskTextChange
-                )
+        Surface {
+            ReorderableColumn(
+                list = tasks,
+                onSettle = { fromIndex,toIndex ->
+                    onReorderingTask(fromIndex,toIndex)
+                }
+            ) { taskIndex, taskWithSubtasks, isDragging ->
+                key(taskWithSubtasks) {
+                    val taskElevation by animateDpAsState(
+                        if (isDragging) 4.dp else 0.dp,
+                        label = "Dragging"
+                    )
+                    val scope = this
+
+                    Surface(shadowElevation = taskElevation) {
+                        Column {
+                            QuestTask(
+                                task = taskWithSubtasks.task,
+                                isEdit = true,
+                                onCheckedChange = onCheckedTaskChange,
+                                onTaskTextChange = onTaskTextChange,
+                                scope = scope
+                            )
+                            Surface {
+                                ReorderableColumn(
+                                    list = taskWithSubtasks.subtasks,
+                                    onSettle = { fromIndex,toIndex ->
+                                        onReorderingSubtask(taskIndex, fromIndex, toIndex)
+                                    }
+                                ) { subtaskIndex, subtask, isDragging ->
+                                    key(subtask) {
+                                        val subtaskElevation by animateDpAsState(
+                                            if (isDragging) 4.dp else 0.dp,
+                                            label = "Dragging"
+                                        )
+
+                                        Surface(shadowElevation = subtaskElevation) {
+                                            QuestTask(
+                                                task = subtask,
+                                                isEdit = true,
+                                                onCheckedChange = onCheckedTaskChange,
+                                                onTaskTextChange = onTaskTextChange,
+                                                scope = this
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -423,8 +429,9 @@ fun QuestTask(
     task: Task,
     isEdit: Boolean,
     onCheckedChange: (Task, Boolean) -> Unit,
-    onTaskTextChange: (String) -> Unit,
-    modifier: Modifier = Modifier
+    onTaskTextChange: (Task, String) -> Unit,
+    modifier: Modifier = Modifier,
+    scope: ReorderableScope? = null
 ) {
     Row(
         modifier = modifier
@@ -435,25 +442,8 @@ fun QuestTask(
         Icon(
             imageVector = Icons.Default.DragIndicator,
             contentDescription = null,
-            modifier = Modifier
-                .height(32.dp)
-//                .clickable(onClick = {})
-                .pointerInput(Unit) {
-                    detectDragGestures(
-                        onDragStart = { offset ->
+            modifier = if (scope != null) with(scope) { Modifier.draggableHandle() } else Modifier
 
-                        },
-                        onDrag = { change, dragAmount ->
-
-                        },
-                        onDragEnd = {
-
-                        },
-                        onDragCancel = {
-
-                        },
-                    )
-                }
         )
         Spacer(modifier = Modifier.size(4.dp))
         TaskItem(
@@ -470,13 +460,24 @@ fun QuestTask(
 fun QuestCreateScreenPreview() {
     NationalTheme {
         com.povush.modusvivendi.ui.questlines.QuestTasks(
-            tasks = mapOf(
-                com.povush.modusvivendi.data.model.Task(id = 11, questId = 0, name = "Veeeeeeery-very-very loooooooooooooooooooooong task 1 and its huge description (add'l)") to emptyList(),
-                com.povush.modusvivendi.data.model.Task(id = 12, questId = 0, name = "Task 2") to listOf(com.povush.modusvivendi.data.model.Task(id = 1, parentTaskId = 12, name = "Subtask 1", questId = 0), com.povush.modusvivendi.data.model.Task(id = 2, parentTaskId = 12, name = "Subtask 2", questId = 0)),
-                com.povush.modusvivendi.data.model.Task(id = 13, questId = 0, name = "Task 3") to emptyList()
+            tasks = listOf(
+                TaskWithSubtasks(
+                    task = Task(id = 11, questId = 0, name = "Veeeeeeery-very-very loooooooooooooooooooooong task 1 and its huge description (add'l)"),
+                    subtasks = listOf()
+                ),
+                TaskWithSubtasks(
+                    task = Task(id = 12, questId = 0, name = "Task 2"),
+                    subtasks = listOf(com.povush.modusvivendi.data.model.Task(id = 1, parentTaskId = 12, name = "Subtask 1", questId = 0), com.povush.modusvivendi.data.model.Task(id = 2, parentTaskId = 12, name = "Subtask 2", questId = 0))
+                ),
+                TaskWithSubtasks(
+                    task = Task(id = 13, questId = 0, name = "Task 3"),
+                    subtasks = listOf()
+                )
             ),
             onCheckedTaskChange = { _, _ -> },
-            onTaskTextChange = {}
+            onTaskTextChange = { _, _ -> },
+            onReorderingTask = { _, _ -> },
+            onReorderingSubtask = { _, _, _ -> }
         )
     }
 }

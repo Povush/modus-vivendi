@@ -4,6 +4,7 @@ import com.povush.modusvivendi.data.db.QuestDao
 import com.povush.modusvivendi.data.db.TaskDao
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import kotlinx.coroutines.flow.Flow
 
 class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDao: TaskDao) {
@@ -22,6 +23,9 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
     }
     fun getAllTasksStream(questId: Int): Flow<List<Task>> =
         taskDao.getAllTasksByQuestId(questId)
+
+    fun getAllTasksWithSubtasksByQuestId(questId: Int): Flow<List<TaskWithSubtasks>> =
+        taskDao.getAllTasksWithSubtasksByQuestId(questId)
 
     fun getQuestStreamById(questId: Int): Flow<Quest> = questDao.getQuestStreamById(questId)
     fun getTaskStreamById(taskId: Int): Flow<Task> = taskDao.getTaskStreamById(taskId)

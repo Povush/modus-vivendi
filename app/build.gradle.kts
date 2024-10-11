@@ -57,6 +57,9 @@ android {
 }
 
 dependencies {
+    // Library for reordering items
+    implementation(libs.reorderable)
+
     implementation("androidx.compose.material:material-icons-extended:1.7.3")
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation(libs.androidx.material3)
