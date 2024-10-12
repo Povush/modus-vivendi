@@ -21,6 +21,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.ui.appbar.MainParametersBar
+import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
 import com.povush.modusvivendi.ui.questlines.screens.QuestCreateDestination
 import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
@@ -48,15 +49,7 @@ fun ModusVivendiApp(
     ) { innerPadding ->
         ModalNavigationDrawer(
             drawerState = drawerState,
-            drawerContent = {
-                ModalDrawerSheet(
-                    modifier = Modifier.width(300.dp),
-                    drawerShape = RectangleShape,
-                    drawerContainerColor = MaterialTheme.colorScheme.primary
-                ) {
-                /*TODO: Drawer content */
-                }
-            },
+            drawerContent = { ModusVivendiModalDrawerSheet() },
             modifier = Modifier.padding(innerPadding),
             gesturesEnabled = isNavigationGesturesEnabled(navController)
         ) {

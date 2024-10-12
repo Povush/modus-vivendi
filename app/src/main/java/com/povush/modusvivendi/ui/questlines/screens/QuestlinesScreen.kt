@@ -185,6 +185,7 @@ fun QuestlinesScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
+            beyondBoundsPageCount = 3,
             userScrollEnabled = true
         ) { page ->
             QuestContent(
