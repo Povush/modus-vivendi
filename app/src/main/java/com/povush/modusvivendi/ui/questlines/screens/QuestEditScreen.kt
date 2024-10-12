@@ -1,5 +1,8 @@
-package com.povush.modusvivendi.ui.questlines
+package com.povush.modusvivendi.ui.questlines.screens
 
+import android.os.Build
+import android.view.HapticFeedbackConstants
+import android.view.View
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -23,6 +26,7 @@ import androidx.compose.material.icons.filled.Castle
 import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DragIndicator
+import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -49,9 +53,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -65,7 +69,7 @@ import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.createQuestEditViewModelExtras
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.TaskItem
-import com.povush.modusvivendi.ui.theme.NationalTheme
+import com.povush.modusvivendi.ui.questlines.viewmodel.QuestEditViewModel
 import sh.calvin.reorderable.ReorderableColumn
 import sh.calvin.reorderable.ReorderableScope
 
@@ -77,7 +81,7 @@ object QuestCreateDestination : NavigationDestination {
 @Composable
 fun QuestEditScreen(
     navigateBack: () -> Boolean,
-    questId: Int? = null,
+    questId: Long? = null,
     currentQuestSectionNumber: Int? = null,
     viewModel: QuestEditViewModel = viewModel(
         factory = AppViewModelProvider.Factory,
@@ -86,8 +90,12 @@ fun QuestEditScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(uiState) {
+    LaunchedEffect(uiState.name, uiState.description, uiState.tasks) {
         viewModel.validate()
+    }
+
+    LaunchedEffect(uiState.tasks) {
+        viewModel.checkCompletionStatus()
     }
 
     Scaffold(
@@ -105,7 +113,10 @@ fun QuestEditScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { /*TODO: Save quest*/ },
+                        onClick = {
+                            viewModel.saveQuest()
+                            navigateBack()
+                        },
                         enabled = uiState.isValid
                     ) {
                         Icon(
@@ -151,8 +162,9 @@ fun QuestEditScreen(
                     tasks = uiState.tasks,
                     onCheckedTaskChange = { task, isCompleted -> viewModel.onCheckedTaskChange(task, isCompleted) },
                     onTaskTextChange = { task, input -> viewModel.onTaskTextChange(task, input) },
-                    onReorderingTask = { fromIndex, toIndex -> viewModel.onReorderingTask(fromIndex, toIndex) },
-                    onReorderingSubtask = { taskIndex, fromIndex, toIndex -> viewModel.onReorderingSubtask(taskIndex, fromIndex, toIndex) }
+                    onReorderingTasks = { fromIndex, toIndex -> viewModel.onReorderingTasks(fromIndex, toIndex) },
+                    onReorderingSubtasks = { parentTaskId, fromIndex, toIndex -> viewModel.onReorderingSubtasks(parentTaskId, fromIndex, toIndex) },
+                    onCreateNewTaskButtonClicked = { viewModel.createNewTask() }
                 )
             }
         }
@@ -353,14 +365,17 @@ fun QuestDescription(
 
 @Composable
 fun QuestTasks(
-    tasks: List<TaskWithSubtasks>,
+    tasks: List<Task>,
     onCheckedTaskChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (Task, String) -> Unit,
-    onReorderingTask: (Int, Int) -> Unit,
-    onReorderingSubtask: (Int, Int, Int) -> Unit,
+    onReorderingTasks: (Int, Int) -> Unit,
+    onReorderingSubtasks: (Long, Int, Int) -> Unit,
+    onCreateNewTaskButtonClicked: () -> Unit
 ) {
     val numberOfTasks: Int = tasks.size
-    val numberOfCompletedTasks: Int = tasks.count { it.task.isCompleted }
+    val numberOfCompletedTasks: Int = tasks.count { it.isCompleted && it.parentTaskId == null }
+
+    val view = LocalView.current
 
     Column {
         Text(
@@ -368,14 +383,23 @@ fun QuestTasks(
             modifier = Modifier.padding(8.dp),
             style = MaterialTheme.typography.bodySmall
         )
-        Surface {
+        Surface(modifier = Modifier.padding(bottom = 4.dp)) {
             ReorderableColumn(
-                list = tasks,
+                list = tasks
+                    .filter { it.parentTaskId == null }
+                    .sortedBy { it.orderIndex },
                 onSettle = { fromIndex,toIndex ->
-                    onReorderingTask(fromIndex,toIndex)
+                    onReorderingTasks(fromIndex,toIndex)
+                },
+                onMove = {
+                    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                        view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_FREQUENT_TICK)
+                    } else {
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                    }
                 }
-            ) { taskIndex, taskWithSubtasks, isDragging ->
-                key(taskWithSubtasks) {
+            ) { taskIndex, task, isDragging ->
+                key(task.id) {
                     val taskElevation by animateDpAsState(
                         if (isDragging) 4.dp else 0.dp,
                         label = "Dragging"
@@ -385,20 +409,28 @@ fun QuestTasks(
                     Surface(shadowElevation = taskElevation) {
                         Column {
                             QuestTask(
-                                task = taskWithSubtasks.task,
+                                task = task,
                                 isEdit = true,
                                 onCheckedChange = onCheckedTaskChange,
                                 onTaskTextChange = onTaskTextChange,
-                                scope = scope
+                                scope = scope,
+                                view = view
                             )
                             Surface {
                                 ReorderableColumn(
-                                    list = taskWithSubtasks.subtasks,
+                                    list = tasks
+                                        .filter { it.parentTaskId == task.id }
+                                        .sortedBy { it.orderIndex },
                                     onSettle = { fromIndex,toIndex ->
-                                        onReorderingSubtask(taskIndex, fromIndex, toIndex)
+                                        onReorderingSubtasks(task.id, fromIndex,toIndex)
+                                    },
+                                    onMove = {
+                                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                            view.performHapticFeedback(HapticFeedbackConstants.SEGMENT_FREQUENT_TICK)
+                                        }
                                     }
                                 ) { subtaskIndex, subtask, isDragging ->
-                                    key(subtask) {
+                                    key(subtask.id) {
                                         val subtaskElevation by animateDpAsState(
                                             if (isDragging) 4.dp else 0.dp,
                                             label = "Dragging"
@@ -410,7 +442,8 @@ fun QuestTasks(
                                                 isEdit = true,
                                                 onCheckedChange = onCheckedTaskChange,
                                                 onTaskTextChange = onTaskTextChange,
-                                                scope = this
+                                                scope = this,
+                                                view = view
                                             )
                                         }
                                     }
@@ -420,6 +453,14 @@ fun QuestTasks(
                     }
                 }
             }
+        }
+        Button(
+            onClick = { onCreateNewTaskButtonClicked() },
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight()
+        ) {
+            Text(text = stringResource(R.string.create_new_task), style = MaterialTheme.typography.bodyLarge)
         }
     }
 }
@@ -431,7 +472,8 @@ fun QuestTask(
     onCheckedChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (Task, String) -> Unit,
     modifier: Modifier = Modifier,
-    scope: ReorderableScope? = null
+    scope: ReorderableScope? = null,
+    view: View? = null
 ) {
     Row(
         modifier = modifier
@@ -442,8 +484,22 @@ fun QuestTask(
         Icon(
             imageVector = Icons.Default.DragIndicator,
             contentDescription = null,
-            modifier = if (scope != null) with(scope) { Modifier.draggableHandle() } else Modifier
-
+            modifier = if (scope != null && view != null) {
+                with(scope) {
+                    Modifier.draggableHandle(
+                        onDragStarted = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
+                                }
+                        },
+                        onDragStopped = {
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                view.performHapticFeedback(HapticFeedbackConstants.GESTURE_END)
+                            }
+                        },
+                    )
+                }
+            } else Modifier
         )
         Spacer(modifier = Modifier.size(4.dp))
         TaskItem(
@@ -455,29 +511,30 @@ fun QuestTask(
     }
 }
 
-@Preview(showBackground = true)
-@Composable
-fun QuestCreateScreenPreview() {
-    NationalTheme {
-        com.povush.modusvivendi.ui.questlines.QuestTasks(
-            tasks = listOf(
-                TaskWithSubtasks(
-                    task = Task(id = 11, questId = 0, name = "Veeeeeeery-very-very loooooooooooooooooooooong task 1 and its huge description (add'l)"),
-                    subtasks = listOf()
-                ),
-                TaskWithSubtasks(
-                    task = Task(id = 12, questId = 0, name = "Task 2"),
-                    subtasks = listOf(com.povush.modusvivendi.data.model.Task(id = 1, parentTaskId = 12, name = "Subtask 1", questId = 0), com.povush.modusvivendi.data.model.Task(id = 2, parentTaskId = 12, name = "Subtask 2", questId = 0))
-                ),
-                TaskWithSubtasks(
-                    task = Task(id = 13, questId = 0, name = "Task 3"),
-                    subtasks = listOf()
-                )
-            ),
-            onCheckedTaskChange = { _, _ -> },
-            onTaskTextChange = { _, _ -> },
-            onReorderingTask = { _, _ -> },
-            onReorderingSubtask = { _, _, _ -> }
-        )
-    }
-}
+//@Preview(showBackground = true)
+//@Composable
+//fun QuestCreateScreenPreview() {
+//    NationalTheme {
+//        com.povush.modusvivendi.ui.questlines.QuestTasks(
+//            tasks = listOf(
+//                TaskWithSubtasks(
+//                    task = Task(id = 11, questId = 0, name = "Veeeeeeery-very-very loooooooooooooooooooooong task 1 and its huge description (add'l)"),
+//                    subtasks = listOf()
+//                ),
+//                TaskWithSubtasks(
+//                    task = Task(id = 12, questId = 0, name = "Task 2"),
+//                    subtasks = listOf(com.povush.modusvivendi.data.model.Task(id = 1, parentTaskId = 12, name = "Subtask 1", questId = 0), com.povush.modusvivendi.data.model.Task(id = 2, parentTaskId = 12, name = "Subtask 2", questId = 0))
+//                ),
+//                TaskWithSubtasks(
+//                    task = Task(id = 13, questId = 0, name = "Task 3"),
+//                    subtasks = listOf()
+//                )
+//            ),
+//            onCheckedTaskChange = { _, _ -> },
+//            onTaskTextChange = { _, _ -> },
+//            onReorderingTask = { _, _ -> },
+//            onReorderingSubtask = { _, _, _ -> },
+//            onCreateNewTaskButtonClicked = {  }
+//        )
+//    }
+//}

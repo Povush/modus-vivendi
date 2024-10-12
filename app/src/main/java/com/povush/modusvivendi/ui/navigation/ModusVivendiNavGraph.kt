@@ -12,12 +12,10 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.data.model.Task
-import com.povush.modusvivendi.ui.questlines.QuestCreateDestination
-import com.povush.modusvivendi.ui.questlines.QuestEditScreen
-import com.povush.modusvivendi.ui.questlines.QuestlinesDestination
-import com.povush.modusvivendi.ui.questlines.QuestlinesScreen
+import com.povush.modusvivendi.ui.questlines.screens.QuestCreateDestination
+import com.povush.modusvivendi.ui.questlines.screens.QuestEditScreen
+import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
+import com.povush.modusvivendi.ui.questlines.screens.QuestlinesScreen
 
 @Composable
 fun ModusVivendiNavHost(
@@ -58,7 +56,7 @@ fun ModusVivendiNavHost(
         ) {
             QuestEditScreen(
                 navigateBack = { navController.popBackStack() },
-                questId = navController.previousBackStackEntry?.savedStateHandle?.get<Int?>("questId"),
+                questId = navController.previousBackStackEntry?.savedStateHandle?.get<Long?>("questId"),
                 currentQuestSectionNumber = navController.previousBackStackEntry?.savedStateHandle?.get<Int?>("currentQuestSectionNumber"),
             )
         }

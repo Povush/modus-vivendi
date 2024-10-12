@@ -13,7 +13,7 @@ import com.povush.modusvivendi.data.model.Task
         Quest::class,
         Task::class
     ],
-    version = 3,
+    version = 5,
     exportSchema = false
 )
 @TypeConverters(ModusVivendiDatabaseConverter::class)

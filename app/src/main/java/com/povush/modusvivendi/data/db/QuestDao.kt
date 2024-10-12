@@ -13,7 +13,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface QuestDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertQuest(quest: Quest)
+    suspend fun insertQuest(quest: Quest): Long
 
     @Update
     suspend fun updateQuest(quest: Quest)
@@ -34,5 +34,5 @@ interface QuestDao {
     fun getAllQuestsByDifficultyDown(): Flow<List<Quest>>
 
     @Query("SELECT * FROM quests WHERE id = :questId")
-    fun getQuestStreamById(questId: Int): Flow<Quest>
+    fun getQuestStreamById(questId: Long): Flow<Quest>
 }

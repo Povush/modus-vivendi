@@ -22,8 +22,8 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.ui.appbar.MainParametersBar
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
-import com.povush.modusvivendi.ui.questlines.QuestCreateDestination
-import com.povush.modusvivendi.ui.questlines.QuestlinesDestination
+import com.povush.modusvivendi.ui.questlines.screens.QuestCreateDestination
+import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
 import kotlinx.coroutines.launch
 
 @Composable

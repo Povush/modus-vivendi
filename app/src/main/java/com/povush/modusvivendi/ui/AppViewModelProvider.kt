@@ -8,10 +8,9 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.povush.modusvivendi.ModusVivendiApplication
 import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.data.model.Task
-import com.povush.modusvivendi.ui.questlines.QuestEditViewModel
-import com.povush.modusvivendi.ui.questlines.QuestViewModel
-import com.povush.modusvivendi.ui.questlines.QuestlinesViewModel
+import com.povush.modusvivendi.ui.questlines.viewmodel.QuestEditViewModel
+import com.povush.modusvivendi.ui.questlines.viewmodel.QuestViewModel
+import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
 
 object AppViewModelProvider {
     val Factory = viewModelFactory {
@@ -40,7 +39,7 @@ fun CreationExtras.modusVivendiApplication(): ModusVivendiApplication =
     this[AndroidViewModelFactory.APPLICATION_KEY] as ModusVivendiApplication
 
 val QuestKey = object : CreationExtras.Key<Quest> {}
-val QuestIdKey = object : CreationExtras.Key<Int?> {}
+val QuestIdKey = object : CreationExtras.Key<Long?> {}
 val CurrentQuestSectionNumberKey = object : CreationExtras.Key<Int?> {}
 
 fun createQuestViewModelExtras(quest: Quest, context: Context): CreationExtras {
@@ -50,7 +49,7 @@ fun createQuestViewModelExtras(quest: Quest, context: Context): CreationExtras {
     return extras
 }
 
-fun createQuestEditViewModelExtras(questId: Int?, currentQuestSectionNumberKey: Int?, context: Context): CreationExtras {
+fun createQuestEditViewModelExtras(questId: Long?, currentQuestSectionNumberKey: Int?, context: Context): CreationExtras {
     val extras = MutableCreationExtras()
     extras[AndroidViewModelFactory.APPLICATION_KEY] = context as ModusVivendiApplication
     extras[QuestIdKey] = questId

@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.questlines
+package com.povush.modusvivendi.ui.questlines.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -27,16 +27,7 @@ class QuestViewModel(
     val uiState: StateFlow<QuestUiState> = _uiState.asStateFlow()
 
     init {
-        loadQuest()
         loadTasks()
-    }
-
-    private fun loadQuest() {
-        viewModelScope.launch {
-            questsRepository.getQuestStreamById(uiState.value.quest.id).collect { quest ->
-                _uiState.value = _uiState.value.copy(quest = quest)
-            }
-        }
     }
 
     private fun loadTasks() {
@@ -47,6 +38,16 @@ class QuestViewModel(
         }
     }
 
+    fun deleteQuest() {
+        viewModelScope.launch {
+            questsRepository.deleteQuest(quest)
+            uiState.value.tasks.forEach { task ->
+                questsRepository.deleteTask(task)
+            }
+        }
+
+    }
+
     fun changeQuestExpandStatus() {
         _uiState.update {
             it.copy(expanded = !it.expanded)
@@ -54,12 +55,8 @@ class QuestViewModel(
     }
 
     fun updateTaskStatus(task: Task, isCompleted: Boolean) {
-//        viewModelScope.launch {
-//            questsRepository.updateTask(task.copy(isCompleted = !task.isCompleted))
-//        }
-    }
-
-    fun changeQuestPinStatus() {
-        /*TODO: Not yet implemented*/
+        viewModelScope.launch {
+            questsRepository.updateTask(task.copy(isCompleted = isCompleted))
+        }
     }
 }

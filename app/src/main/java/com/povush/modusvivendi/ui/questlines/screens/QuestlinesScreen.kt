@@ -1,6 +1,5 @@
-package com.povush.modusvivendi.ui.questlines
+package com.povush.modusvivendi.ui.questlines.screens
 
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -9,7 +8,6 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.gestures.detectHorizontalDragGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.PaddingValues
@@ -23,6 +21,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.foundation.shape.CircleShape
@@ -41,19 +40,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.nestedscroll.NestedScrollConnection
-import androidx.compose.ui.input.nestedscroll.NestedScrollSource
-import androidx.compose.ui.input.nestedscroll.nestedScroll
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -64,10 +58,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
-import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
+import com.povush.modusvivendi.ui.questlines.components.QuestCard
+import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
 import kotlinx.coroutines.launch
 
 object QuestlinesDestination : NavigationDestination {
@@ -79,11 +74,12 @@ object QuestlinesDestination : NavigationDestination {
 @Composable
 fun QuestlinesScreen(
     onNavigationClick: () -> Unit,
-    navigateToQuestEdit: (Int?, Int?) -> Unit,
+    navigateToQuestEdit: (Long?, Int?) -> Unit,
     viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    var menuExpanded by remember { mutableStateOf(false) }
 
+    val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(
         initialPage = uiState.selectedQuestSection.ordinal,
         pageCount = { QuestType.entries.size }
@@ -122,7 +118,7 @@ fun QuestlinesScreen(
                         )
                     }
                     IconButton(
-                        onClick = { /*TODO: Add quest, Collapse/expand, Sort by*/ }
+                        onClick = { menuExpanded = true }
                     ) {
                         Icon(
                             imageVector = Icons.Filled.MoreVert,
@@ -130,6 +126,15 @@ fun QuestlinesScreen(
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
+//                    DropdownMenu(
+//                        expanded = menuExpanded,
+//                        onDismissRequest = { menuExpanded = false }
+//                    ) {
+//                        DropdownMenuItem(
+//                            text = { Text("Option 1") },
+//                            onClick = { menuExpanded = false }
+//                        )
+//                    }
                 },
                 selectedSection = uiState.selectedQuestSection.ordinal,
                 onTabClicked = { index: Int ->
@@ -160,12 +165,11 @@ fun QuestlinesScreen(
 //        val nestedScrollConnection = remember {
 //            object : NestedScrollConnection {
 //                override fun onPreScroll(available: Offset,source: NestedScrollSource): Offset {
-//                    if (available.x > 0f && pagerState.currentPage == 0 && pagerState.targetPage == 0) {
-//                        userScrollEnabled = false
+//                    if (available.x > 0f && pagerState.currentPage == 0) {
+//                        return Offset.Zero
 //                    } else {
-//                        userScrollEnabled = true
+//                        return super.onPreScroll(available, source)
 //                    }
-//                    return super.onPreScroll(available,source)
 //                }
 //            }
 //        }
@@ -185,6 +189,7 @@ fun QuestlinesScreen(
         ) { page ->
             QuestContent(
                 quests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList(),
+                navigateToQuestEdit = navigateToQuestEdit,
                 modifier = Modifier.fillMaxSize()
             )
         }
@@ -194,10 +199,11 @@ fun QuestlinesScreen(
 @Composable
 fun QuestContent(
     quests: List<Quest>,
+    navigateToQuestEdit: (Long?, Int?) -> Unit,
     modifier: Modifier = Modifier
 ) {
     if (quests.isNotEmpty()) {
-        QuestSection(quests = quests, modifier = modifier)
+        QuestSection(quests = quests, navigateToQuestEdit = navigateToQuestEdit, modifier = modifier)
     } else {
         EmptyQuestSection(modifier = modifier)
     }
@@ -280,15 +286,21 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
 @Composable
 fun QuestSection(
     quests: List<Quest>,
+    navigateToQuestEdit: (Long?, Int?) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val lazyListState = rememberLazyListState()
+
     LazyColumn(
         modifier = modifier,
+        state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(8.dp)
     ) {
         items(quests) { quest ->
-            QuestCard(quest = quest)
+            key(quest.id) {
+                QuestCard(quest = quest, navigateToQuestEdit = navigateToQuestEdit)
+            }
         }
     }
 }

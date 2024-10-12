@@ -1,17 +1,11 @@
-package com.povush.modusvivendi.ui.questlines
+package com.povush.modusvivendi.ui.questlines.viewmodel
 
-import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
-import com.google.accompanist.pager.PagerState
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
-import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import com.povush.modusvivendi.data.repository.QuestSortingMethod
-import com.povush.modusvivendi.ui.AppViewModelProvider
-import com.povush.modusvivendi.ui.createQuestViewModelExtras
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,7 +16,7 @@ import kotlinx.coroutines.launch
 data class QuestlinesUiState(
     val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
     val selectedQuestSection: QuestType = QuestType.MAIN,
-    val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_NAME_UP
+    val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN
 )
 
 class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository) : ViewModel() {
@@ -45,13 +39,6 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
             }
         }
     }
-
-//    fun createNewQuest(): Int {
-//        viewModelScope.launch {
-//            questsRepository.insertQuest(Quest())
-//        }
-//        return
-//    }
 
     fun switchQuestSection(index: Int) {
         _uiState.update {

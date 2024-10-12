@@ -19,4 +19,8 @@
     <string name="section_is_empty">Section is empty</string>
     <string name="no_quests_message">There is no quests in this section!</string>
     <string name="description">Mind-blowing description.</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="new_task">New task</string>
+    <string name="create_new_task">Create new task</string>
 </resources>

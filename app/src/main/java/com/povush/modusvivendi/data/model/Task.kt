@@ -8,10 +8,10 @@ import androidx.room.Relation
 @Entity(tableName = "tasks")
 data class Task(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
-    val questId: Int,
-    val parentTaskId: Int? = null,
-    val name: String = "New Task",
+    val id: Long = 0,
+    val questId: Long,
+    val parentTaskId: Long? = null,
+    val name: String = "",
     val isCompleted: Boolean = false,
     val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,

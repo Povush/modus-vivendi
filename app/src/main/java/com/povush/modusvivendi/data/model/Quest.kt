@@ -14,19 +14,19 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.povush.modusvivendi.R
+import java.util.Date
 
 @Entity(tableName = "quests")
 data class Quest(
     @PrimaryKey(autoGenerate = true)
-    val id: Int = 0,
+    val id: Long = 0,
     val name: String = "New Quest",
     val type: QuestType = QuestType.ADDITIONAL,
     /*TODO: Need conversation*/
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "Sample description.",
     val isCompleted: Boolean = false,
-    /*TODO: Need conversation*/
-//    val dateOfCompletion: Date? = null,
+    val dateOfCompletion: Date? = null,
     val pinned: Boolean = false
 )
 

@@ -1,6 +1,8 @@
 package com.povush.modusvivendi.data.db
 
 import androidx.room.TypeConverter
+import com.povush.modusvivendi.data.model.Difficulty
+import java.util.Date
 
 class ModusVivendiDatabaseConverter {
     @TypeConverter
@@ -14,5 +16,25 @@ class ModusVivendiDatabaseConverter {
             val parts = it.split("/")
             Pair(parts[0].toInt(), parts[1].toInt())
         }
+    }
+
+    @TypeConverter
+    fun fromTimestamp(value: Long?): Date? {
+        return value?.let { Date(it) }
+    }
+
+    @TypeConverter
+    fun dateToTimestamp(date: Date?): Long? {
+        return date?.time
+    }
+
+    @TypeConverter
+    fun fromDifficulty(difficulty: Difficulty): Int {
+        return difficulty.ordinal
+    }
+
+    @TypeConverter
+    fun toDifficulty(ordinal: Int): Difficulty {
+        return Difficulty.entries[ordinal]
     }
 }

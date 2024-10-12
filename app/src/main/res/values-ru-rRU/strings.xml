@@ -13,4 +13,8 @@
     <string name="tasks">Задачи</string>
     <string name="section_is_empty">Раздел пуст</string>
     <string name="no_quests_message">Здесь нет ни единого квеста!</string>
+    <string name="edit">Отредактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="new_task">Новая задача</string>
+    <string name="create_new_task">Создать новую задачу</string>
 </resources>
