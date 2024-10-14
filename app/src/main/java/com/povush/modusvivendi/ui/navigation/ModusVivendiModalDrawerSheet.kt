@@ -1,9 +1,7 @@
 package com.povush.modusvivendi.ui.navigation
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.Indication
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.indication
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -18,27 +16,23 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Checkroom
-import androidx.compose.material.icons.filled.DisabledByDefault
-import androidx.compose.material.icons.filled.EventAvailable
+import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ExpandMore
-import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Money
+import androidx.compose.material.icons.filled.PlaylistAddCheckCircle
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Stream
-import androidx.compose.material.icons.filled.Style
-import androidx.compose.material.icons.filled.Task
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.filled.Workspaces
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
@@ -51,10 +45,8 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -91,19 +83,19 @@ private fun GameSections() {
             .fillMaxSize()
             .padding(vertical = 8.dp)
     ) {
-        GameMechanics(Icons.Default.Gavel, "Thoughtrealm")
-        GameMechanics(Icons.Default.Stream, "Skills")
-        GameMechanics(Icons.Default.Home, "Domain")
-        GameMechanics(Icons.Default.Money, "Treasure")
-        GameMechanics(Icons.Default.Workspaces, "Live modus")
-        GameMechanics(Icons.Default.Checkroom, "Appearance")
-        GameMechanics(Icons.Default.Task, "Questlines")
-        GameMechanics(Icons.Default.Map, "Map")
-        GameMechanics(Icons.Default.Groups, "Ecumene")
+        GameMechanicsRoute(Icons.Default.Psychology, "Thoughtrealm")
+        GameMechanicsRoute(Icons.Default.Home, "Domain")
+        GameMechanicsRoute(Icons.Default.Money, "Treasure")
+        GameMechanicsRoute(Icons.Default.Stream, "Skills")
+        GameMechanicsRoute(Icons.Default.Workspaces, "Live modus")
+        GameMechanicsRoute(Icons.Default.AutoAwesome, "Appearance")
+        GameMechanicsRoute(Icons.Default.PlaylistAddCheckCircle, "Questlines")
+        GameMechanicsRoute(Icons.Default.Map, "Map")
+        GameMechanicsRoute(Icons.Default.Groups, "Ecumene")
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        GameMechanics(Icons.Default.WorkspacePremium, "Modifiers")
-        GameMechanics(Icons.Default.Settings, "Settings")
-        GameMechanics(Icons.Default.Info, "About Universe")
+        GameMechanicsRoute(Icons.Default.WorkspacePremium, "Modifiers")
+        GameMechanicsRoute(Icons.Default.Settings, "Settings")
+        GameMechanicsRoute(Icons.Default.Info, "About Universe")
     }
 }
 
@@ -147,7 +139,7 @@ private fun AvatarAndHandle() {
             .clickable { handleExpand = !handleExpand },
         verticalAlignment = Alignment.CenterVertically
     ) {
-        Column(modifier = Modifier.padding(bottom = 16.dp)) {
+        Column {
             Text(
                 text = "Imperial Direction",
                 style = MaterialTheme.typography.titleSmall.copy(fontSize = 24.sp)
@@ -166,10 +158,11 @@ private fun AvatarAndHandle() {
             modifier = Modifier.padding(8.dp)
         )
     }
+    Spacer(modifier = Modifier.size(16.dp))
 }
 
 @Composable
-fun GameMechanics(iconImageVector: ImageVector, title: String) {
+fun GameMechanicsRoute(iconImageVector: ImageVector, title: String) {
     val interactionSource = remember { MutableInteractionSource() }
     val indication = rememberRipple(color = Color.Red)
 

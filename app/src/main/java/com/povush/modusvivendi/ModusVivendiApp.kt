@@ -20,7 +20,7 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.povush.modusvivendi.ui.appbar.MainParametersBar
+import com.povush.modusvivendi.ui.common.appbar.MainParametersBar
 import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
 import com.povush.modusvivendi.ui.questlines.screens.QuestCreateDestination

@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import com.povush.modusvivendi.data.repository.QuestSortingMethod
 import kotlinx.coroutines.flow.Flow
@@ -14,7 +15,8 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
 data class QuestlinesUiState(
-    val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
+    val allQuests: List<Quest> = emptyList(),
+    val allTasksByQuestId: Map<Long, List<Task>> = emptyMap(),
     val selectedQuestSection: QuestType = QuestType.MAIN,
     val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN
 )
@@ -29,14 +31,18 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
     }
 
     private fun loadQuests() {
-        val allQuestsStream: Flow<List<Quest>> =
-            questsRepository.getAllQuestsStream(uiState.value.sortingMethod)
-
         viewModelScope.launch {
-            allQuestsStream.collect { allQuests ->
-                val groupedQuests = allQuests.groupBy { it.type }
-                _uiState.update { it.copy(allQuestsByType = groupedQuests) }
+            questsRepository.getAllQuestsStream(uiState.value.sortingMethod).collect { allQuests ->
+                _uiState.update {
+                    it.copy(allQuests = allQuests)
+                }
             }
+        }
+    }
+
+    fun updateTaskStatus(task: Task, isCompleted: Boolean) {
+        viewModelScope.launch {
+            questsRepository.updateTask(task.copy(isCompleted = isCompleted))
         }
     }
 
@@ -47,10 +53,15 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
     }
 
     fun sectionCounter(index: Int): Int {
-        val currentType = QuestType.entries[index]
-        val numberOfQuests = uiState.value.allQuestsByType[currentType]?.size
+        val numberOfQuests = uiState.value.allQuests
+            .filter { it.type == QuestType.entries[index] }.size
         return numberOfQuests ?: 0
     }
 
-    /*TODO: The sorting method according to the current sorting criterion*/
+    fun changeSortingMethod(sortingMethod: QuestSortingMethod) {
+        _uiState.update {
+            it.copy(sortingMethod = sortingMethod)
+        }
+        loadQuests()
+    }
 }

@@ -23,4 +23,7 @@
     <string name="delete">Delete</string>
     <string name="new_task">New task</string>
     <string name="create_new_task">Create new task</string>
+    <string name="create_subtask">Create subtask</string>
+    <string name="delete_task">Delete task</string>
+    <string name="delete_subtask">Delete subtask</string>
 </resources>

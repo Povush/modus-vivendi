@@ -32,11 +32,19 @@ class QuestViewModel(
 
     private fun loadTasks() {
         viewModelScope.launch {
-            questsRepository.getAllTasksStream(uiState.value.quest.id).collect { tasks ->
+            questsRepository.getAllTasksStream(quest.id).collect { tasks ->
                 _uiState.value = _uiState.value.copy(tasks = tasks)
             }
         }
     }
+
+//    fun loadTasks(questId: Long) {
+//        viewModelScope.launch {
+//            questsRepository.getAllTasksStream(questId).collect { tasks ->
+//                _uiState.value = _uiState.value.copy(tasks = tasks)
+//            }
+//        }
+//    }
 
     fun deleteQuest() {
         viewModelScope.launch {

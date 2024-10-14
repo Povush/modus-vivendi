@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -39,8 +40,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -58,8 +61,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.AppViewModelProvider
-import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.QuestCard
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
@@ -188,32 +192,51 @@ fun QuestlinesScreen(
             beyondBoundsPageCount = 3,
             userScrollEnabled = true
         ) { page ->
-            QuestContent(
-                quests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList(),
-                navigateToQuestEdit = navigateToQuestEdit,
-                modifier = Modifier.fillMaxSize()
-            )
+            val currentPageQuests by remember {
+                derivedStateOf { uiState.allQuests.filter { it.type == QuestType.entries[page] } }
+            }
+
+            if (currentPageQuests.isNotEmpty()) {
+                QuestSection(
+                    quests = currentPageQuests,
+                    navigateToQuestEdit = navigateToQuestEdit,
+                )
+            } else {
+                EmptyQuestSection()
+            }
         }
     }
 }
 
 @Composable
-fun QuestContent(
+fun QuestSection(
     quests: List<Quest>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    if (quests.isNotEmpty()) {
-        QuestSection(quests = quests, navigateToQuestEdit = navigateToQuestEdit, modifier = modifier)
-    } else {
-        EmptyQuestSection(modifier = modifier)
+    val lazyListState = rememberLazyListState()
+
+    LazyColumn(
+        modifier = modifier.fillMaxSize(),
+        state = lazyListState,
+        verticalArrangement = Arrangement.spacedBy(8.dp),
+        contentPadding = PaddingValues(8.dp)
+    ) {
+        items(quests) { quest ->
+            key(quest.id) {
+                QuestCard(
+                    quest = quest,
+                    navigateToQuestEdit = navigateToQuestEdit,
+                )
+            }
+        }
     }
 }
 
 @Composable
 fun EmptyQuestSection(modifier: Modifier = Modifier) {
     Box(
-        modifier = modifier,
+        modifier = modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
         LazyColumn(
@@ -279,28 +302,6 @@ fun EmptyQuestSection(modifier: Modifier = Modifier) {
                     style = MaterialTheme.typography.bodyMedium.copy(fontSize = 16.sp)
                 )
                 Spacer(modifier = Modifier.size(50.dp))
-            }
-        }
-    }
-}
-
-@Composable
-fun QuestSection(
-    quests: List<Quest>,
-    navigateToQuestEdit: (Long?, Int?) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val lazyListState = rememberLazyListState()
-
-    LazyColumn(
-        modifier = modifier,
-        state = lazyListState,
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(8.dp)
-    ) {
-        items(quests) { quest ->
-            key(quest.id) {
-                QuestCard(quest = quest, navigateToQuestEdit = navigateToQuestEdit)
             }
         }
     }

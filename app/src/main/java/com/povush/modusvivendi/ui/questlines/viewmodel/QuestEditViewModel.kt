@@ -83,6 +83,7 @@ class QuestEditViewModel(
                        isCompleted = uiState.value.isCompleted
                    )
                )
+               questsRepository.deleteTasksByQuestId(questId)
                uiState.value.tasks.forEach { task ->
                    saveTask(task, questId)
                }
@@ -106,7 +107,7 @@ class QuestEditViewModel(
     private fun saveTask(task: Task, questId: Long) {
         viewModelScope.launch {
             if (task.id >= 0) {
-                questsRepository.updateTask(
+                questsRepository.insertTask(
                     Task(
                         id = task.id,
                         questId = questId,
@@ -147,7 +148,12 @@ class QuestEditViewModel(
     }
 
     fun validate() {
-        if (with(uiState.value) { name.isNotBlank() && description.isNotBlank() && tasks.isNotEmpty() }) {
+        if (with(uiState.value) {
+            name.isNotBlank()
+            && description.isNotBlank()
+            && tasks.isNotEmpty()
+            && tasks.all { it.name.isNotBlank() }
+            }) {
             _uiState.update {
                 it.copy(isValid = true)
             }
@@ -229,6 +235,19 @@ class QuestEditViewModel(
                 .size
             add(Task(id = lastUnusedTaskId, questId = questId ?: -1, orderIndex = currentLastOrderIndex, parentTaskId = parentTaskId))
             lastUnusedTaskId -= 1
+        }
+
+        _uiState.update {
+            it.copy(tasks = updatedTasks)
+        }
+    }
+
+    fun deleteTask(task: Task) {
+        val updatedTasks = uiState.value.tasks.toMutableList().apply {
+            remove(task)
+            uiState.value.tasks.filter { it.parentTaskId == task.id }.forEach { subtask ->
+                remove(subtask)
+            }
         }
 
         _uiState.update {

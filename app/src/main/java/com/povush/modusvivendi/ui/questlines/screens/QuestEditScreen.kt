@@ -65,7 +65,7 @@ import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.AppViewModelProvider
-import com.povush.modusvivendi.ui.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.createQuestEditViewModelExtras
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.TaskItem
@@ -162,6 +162,8 @@ fun QuestEditScreen(
                     tasks = uiState.tasks,
                     onCheckedTaskChange = { task, isCompleted -> viewModel.onCheckedTaskChange(task, isCompleted) },
                     onTaskTextChange = { task, input -> viewModel.onTaskTextChange(task, input) },
+                    onCreateSubtask = { task -> viewModel.createNewSubtask(task.id) },
+                    onTaskDelete = { task -> viewModel.deleteTask(task) },
                     onReorderingTasks = { fromIndex, toIndex -> viewModel.onReorderingTasks(fromIndex, toIndex) },
                     onReorderingSubtasks = { parentTaskId, fromIndex, toIndex -> viewModel.onReorderingSubtasks(parentTaskId, fromIndex, toIndex) },
                     onCreateNewTaskButtonClicked = { viewModel.createNewTask() }
@@ -368,6 +370,8 @@ fun QuestTasks(
     tasks: List<Task>,
     onCheckedTaskChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (Task, String) -> Unit,
+    onCreateSubtask: (Task) -> Unit,
+    onTaskDelete: (Task) -> Unit,
     onReorderingTasks: (Int, Int) -> Unit,
     onReorderingSubtasks: (Long, Int, Int) -> Unit,
     onCreateNewTaskButtonClicked: () -> Unit
@@ -413,6 +417,8 @@ fun QuestTasks(
                                 isEdit = true,
                                 onCheckedChange = onCheckedTaskChange,
                                 onTaskTextChange = onTaskTextChange,
+                                onCreateSubtask = onCreateSubtask,
+                                onTaskDelete = onTaskDelete,
                                 scope = scope,
                                 view = view
                             )
@@ -442,6 +448,8 @@ fun QuestTasks(
                                                 isEdit = true,
                                                 onCheckedChange = onCheckedTaskChange,
                                                 onTaskTextChange = onTaskTextChange,
+                                                onCreateSubtask = onCreateSubtask,
+                                                onTaskDelete = onTaskDelete,
                                                 scope = this,
                                                 view = view
                                             )
@@ -471,6 +479,8 @@ fun QuestTask(
     isEdit: Boolean,
     onCheckedChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (Task, String) -> Unit,
+    onCreateSubtask: (Task) -> Unit,
+    onTaskDelete: (Task) -> Unit,
     modifier: Modifier = Modifier,
     scope: ReorderableScope? = null,
     view: View? = null
@@ -506,35 +516,9 @@ fun QuestTask(
             task = task,
             isEdit = isEdit,
             onCheckedChange = onCheckedChange,
-            onTaskTextChange = onTaskTextChange
+            onTaskTextChange = onTaskTextChange,
+            onCreateSubtask = onCreateSubtask,
+            onTaskDelete = onTaskDelete
         )
     }
 }
-
-//@Preview(showBackground = true)
-//@Composable
-//fun QuestCreateScreenPreview() {
-//    NationalTheme {
-//        com.povush.modusvivendi.ui.questlines.QuestTasks(
-//            tasks = listOf(
-//                TaskWithSubtasks(
-//                    task = Task(id = 11, questId = 0, name = "Veeeeeeery-very-very loooooooooooooooooooooong task 1 and its huge description (add'l)"),
-//                    subtasks = listOf()
-//                ),
-//                TaskWithSubtasks(
-//                    task = Task(id = 12, questId = 0, name = "Task 2"),
-//                    subtasks = listOf(com.povush.modusvivendi.data.model.Task(id = 1, parentTaskId = 12, name = "Subtask 1", questId = 0), com.povush.modusvivendi.data.model.Task(id = 2, parentTaskId = 12, name = "Subtask 2", questId = 0))
-//                ),
-//                TaskWithSubtasks(
-//                    task = Task(id = 13, questId = 0, name = "Task 3"),
-//                    subtasks = listOf()
-//                )
-//            ),
-//            onCheckedTaskChange = { _, _ -> },
-//            onTaskTextChange = { _, _ -> },
-//            onReorderingTask = { _, _ -> },
-//            onReorderingSubtask = { _, _, _ -> },
-//            onCreateNewTaskButtonClicked = {  }
-//        )
-//    }
-//}

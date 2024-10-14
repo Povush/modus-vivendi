@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.appbar
+package com.povush.modusvivendi.ui.common.appbar
 
 import androidx.annotation.StringRes
 import androidx.compose.foundation.background

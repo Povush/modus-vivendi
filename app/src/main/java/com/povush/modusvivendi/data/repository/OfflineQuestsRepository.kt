@@ -29,6 +29,8 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
 
     fun getQuestStreamById(questId: Long): Flow<Quest> = questDao.getQuestStreamById(questId)
     fun getTaskStreamById(taskId: Long): Flow<Task> = taskDao.getTaskStreamById(taskId)
+
+    suspend fun deleteTasksByQuestId(questId: Long) = taskDao.deleteTasksByQuestId(questId)
 }
 
 enum class QuestSortingMethod {

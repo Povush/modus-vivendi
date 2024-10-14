@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.appbar
+package com.povush.modusvivendi.ui.common.appbar
 
 import androidx.annotation.DrawableRes
 import androidx.compose.foundation.BorderStroke

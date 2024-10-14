@@ -22,6 +22,9 @@ interface TaskDao {
     @Delete
     suspend fun deleteTask(task: Task)
 
+    @Query("DELETE FROM tasks WHERE questId = :questId")
+    suspend fun deleteTasksByQuestId(questId: Long)
+
     @Query("SELECT * FROM tasks WHERE questId = :questId")
     fun getAllTasksByQuestId(questId: Long): Flow<List<Task>>
 
