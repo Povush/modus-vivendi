@@ -26,10 +26,13 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
     fun getAllTasksStream(questId: Long): Flow<List<Task>> =
         taskDao.getAllTasksByQuestId(questId)
 
-    fun getAllTasksWithSubtasksByQuestId(questId: Long): Flow<List<TaskWithSubtasks>> =
+    fun getAllTasksWithSubtasksStreamByQuestId(questId: Long): Flow<List<TaskWithSubtasks>> =
+        taskDao.getAllTasksWithSubtasksStreamByQuestId(questId)
+    fun getAllTasksWithSubtasksByQuestId(questId: Long): List<TaskWithSubtasks> =
         taskDao.getAllTasksWithSubtasksByQuestId(questId)
 
     fun getQuestStreamById(questId: Long): Flow<Quest> = questDao.getQuestStreamById(questId)
+    fun getQuestById(questId: Long): Quest = questDao.getQuestById(questId)
     fun getTaskStreamById(taskId: Long): Flow<Task> = taskDao.getTaskStreamById(taskId)
 
     suspend fun deleteTasksByQuestId(questId: Long) = taskDao.deleteTasksByQuestId(questId)

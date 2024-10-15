@@ -14,7 +14,7 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TaskDao {
     @Insert(onConflict = OnConflictStrategy.IGNORE)
-    suspend fun insertTask(task: Task)
+    suspend fun insertTask(task: Task): Long
 
     @Update
     suspend fun updateTask(task: Task)
@@ -30,7 +30,11 @@ interface TaskDao {
 
     @Transaction
     @Query("SELECT * FROM tasks WHERE parentTaskId IS NULL and questId = :questId")
-    fun getAllTasksWithSubtasksByQuestId(questId: Long): Flow<List<TaskWithSubtasks>>
+    fun getAllTasksWithSubtasksStreamByQuestId(questId: Long): Flow<List<TaskWithSubtasks>>
+
+    @Transaction
+    @Query("SELECT * FROM tasks WHERE parentTaskId IS NULL and questId = :questId ORDER BY orderIndex")
+    fun getAllTasksWithSubtasksByQuestId(questId: Long): List<TaskWithSubtasks>
 
     @Query("SELECT * FROM tasks WHERE id = :taskId")
     fun getTaskStreamById(taskId: Long): Flow<Task>

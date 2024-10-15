@@ -95,7 +95,7 @@ fun QuestEditScreen(
     }
 
     LaunchedEffect(uiState.tasks) {
-        viewModel.checkCompletionStatus()
+        viewModel.checkQuestCompletionStatus()
     }
 
     Scaffold(
@@ -114,7 +114,7 @@ fun QuestEditScreen(
                 actions = {
                     IconButton(
                         onClick = {
-                            viewModel.saveQuest()
+                            viewModel.saveQuestAndTasks()
                             navigateBack()
                         },
                         enabled = uiState.isValid
@@ -377,7 +377,7 @@ fun QuestTasks(
     onCreateNewTaskButtonClicked: () -> Unit
 ) {
     val numberOfTasks: Int = tasks.size
-    val numberOfCompletedTasks: Int = 0
+    val numberOfCompletedTasks: Int = tasks.map { it.task }.filter { it.isCompleted }.size
 
     val view = LocalView.current
 
@@ -412,7 +412,6 @@ fun QuestTasks(
                         Column {
                             QuestTask(
                                 task = task,
-                                isEdit = true,
                                 onCheckedChange = onCheckedTaskChange,
                                 onTaskTextChange = onTaskTextChange,
                                 onCreateSubtask = onCreateSubtask,
@@ -441,7 +440,6 @@ fun QuestTasks(
                                         Surface(shadowElevation = subtaskElevation) {
                                             QuestTask(
                                                 task = subtask,
-                                                isEdit = true,
                                                 onCheckedChange = onCheckedTaskChange,
                                                 onTaskTextChange = onTaskTextChange,
                                                 onCreateSubtask = onCreateSubtask,
@@ -472,7 +470,6 @@ fun QuestTasks(
 @Composable
 fun QuestTask(
     task: Task,
-    isEdit: Boolean,
     onCheckedChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (Task, String) -> Unit,
     onCreateSubtask: (Task) -> Unit,
@@ -496,7 +493,7 @@ fun QuestTask(
                         onDragStarted = {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             view.performHapticFeedback(HapticFeedbackConstants.DRAG_START)
-                                }
+                            }
                         },
                         onDragStopped = {
                             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
@@ -510,7 +507,6 @@ fun QuestTask(
         Spacer(modifier = Modifier.size(4.dp))
         TaskEdit(
             task = task,
-            isEdit = isEdit,
             onCheckedChange = onCheckedChange,
             onTaskTextChange = onTaskTextChange,
             onCreateSubtask = onCreateSubtask,

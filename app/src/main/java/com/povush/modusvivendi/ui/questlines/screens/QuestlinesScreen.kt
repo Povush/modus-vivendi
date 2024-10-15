@@ -10,7 +10,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -184,16 +183,19 @@ fun QuestSection(
         modifier = modifier.fillMaxSize(),
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(8.dp)
     ) {
+        item { Spacer(modifier = Modifier.size(0.dp)) }
+
         items(quests) { quest ->
             key(quest.id) {
                 QuestCard(
                     quest = quest,
-                    navigateToQuestEdit = navigateToQuestEdit,
+                    navigateToQuestEdit = navigateToQuestEdit
                 )
             }
         }
+
+        item { Spacer(modifier = Modifier.size(0.dp)) }
     }
 }
 

@@ -37,4 +37,7 @@ interface QuestDao {
 
     @Query("SELECT * FROM quests WHERE id = :questId")
     fun getQuestStreamById(questId: Long): Flow<Quest>
+
+    @Query("SELECT * FROM quests WHERE id = :questId")
+    fun getQuestById(questId: Long): Quest
 }

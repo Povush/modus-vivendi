@@ -5,7 +5,6 @@ import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -51,6 +50,7 @@ import com.povush.modusvivendi.ui.questlines.viewmodel.QuestViewModel
 fun QuestCard(
     quest: Quest,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
+    modifier: Modifier = Modifier,
     viewModel: QuestViewModel = viewModel(
         factory = AppViewModelProvider.Factory,
         key = "questViewModel_${quest.id}",
@@ -62,30 +62,25 @@ fun QuestCard(
 
     var menuExpanded by remember { mutableStateOf(false) }
 
-    Card(
-        modifier = Modifier
+    Column(
+        modifier = modifier
             .fillMaxWidth()
-            .animateContentSize(),
-        shape = RoundedCornerShape(8.dp),
-        colors = CardColors(
-            containerColor = Color.Transparent,
-            contentColor = Color.Black,
-            disabledContainerColor = Color.Transparent,
-            disabledContentColor = Color.Black
-        ),
+            .animateContentSize()
     ) {
         Surface(
+            shape = RoundedCornerShape(8.dp),
             modifier = Modifier
+                .padding(horizontal = 8.dp)
                 .wrapContentSize()
-                .graphicsLayer {
-                    shadowElevation = 4.dp.toPx()
-                    shape = shape
-                    clip = false
-                    translationX = -4f
-                    translationY = -4f
-                },
         ) {
-            Column(
+            Card(
+                shape = RoundedCornerShape(8.dp),
+                colors = CardColors(
+                    containerColor = Color.Transparent,
+                    contentColor = MaterialTheme.colorScheme.onBackground,
+                    disabledContainerColor = Color.Transparent,
+                    disabledContentColor = MaterialTheme.colorScheme.onBackground
+                ),
                 modifier = Modifier
                     .fillMaxWidth()
                     .combinedClickable(
@@ -95,6 +90,13 @@ fun QuestCard(
                             menuExpanded = true
                         }
                     )
+                    .graphicsLayer {
+                        shadowElevation = 4.dp.toPx()
+                        shape = RoundedCornerShape(8.dp)
+                        clip = true
+                        translationX = -4f
+                        translationY = -4f
+                    }
                     .background(
                         brush = Brush.horizontalGradient(
                             colors = listOf(
@@ -103,61 +105,61 @@ fun QuestCard(
                             )
                         )
                     )
-                    .padding(8.dp),
-                verticalArrangement = Arrangement.spacedBy(4.dp),
             ) {
-                Text(
-                    text = quest.name,
-                    modifier = Modifier,
-                    overflow = TextOverflow.Ellipsis,
-                    maxLines = 2,
-                    style = MaterialTheme.typography.headlineSmall
-                )
-                Text(
-                    text = stringResource(
-                        R.string.quest_difficulty,
-                        stringResource(id = quest.difficulty.textResId)
-                    ).uppercase(),
-                    modifier = Modifier,
-                    style = MaterialTheme.typography.bodyLarge.copy(
-                        color = quest.difficulty.color,
-                        fontWeight = FontWeight.SemiBold,
-                        shadow = Shadow(
-                            color = Color.Black,
-                            offset = Offset(0.05f, 0.05f),
-                            blurRadius = 0.15f
+                Column(modifier = Modifier.padding(top = 10.dp, bottom = 6.dp, start = 8.dp, end = 8.dp)) {
+                    Text(
+                        text = quest.name,
+                        modifier = Modifier,
+                        overflow = TextOverflow.Ellipsis,
+                        maxLines = 2,
+                        style = MaterialTheme.typography.headlineSmall
+                    )
+                    Text(
+                        text = stringResource(
+                            R.string.quest_difficulty,
+                            stringResource(id = quest.difficulty.textResId)
+                        ).uppercase(),
+                        modifier = Modifier,
+                        style = MaterialTheme.typography.bodyLarge.copy(
+                            color = quest.difficulty.color,
+                            fontWeight = FontWeight.SemiBold,
+                            shadow = Shadow(
+                                color = Color.Black,
+                                offset = Offset(0.05f, 0.05f),
+                                blurRadius = 0.15f
+                            )
                         )
                     )
-                )
-            }
-        }
-        DropdownMenu(
-            expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false },
-            modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .wrapContentHeight()
-        ) {
-            ModusVivendiDropdownMenuItem(R.string.edit) {
-                menuExpanded = false
-                navigateToQuestEdit(quest.id, null)
-            }
-            ModusVivendiDropdownMenuItem(R.string.delete) {
-                menuExpanded = false
-                viewModel.deleteQuest()
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .wrapContentHeight()
+                    ) {
+                        ModusVivendiDropdownMenuItem(R.string.edit) {
+                            menuExpanded = false
+                            navigateToQuestEdit(quest.id, null)
+                        }
+                        ModusVivendiDropdownMenuItem(R.string.delete) {
+                            menuExpanded = false
+                            viewModel.deleteQuest()
+                        }
+                    }
+                }
             }
         }
         if (uiState.isExpanded) {
             Text(
                 text = quest.description,
-                modifier = Modifier.padding(8.dp),
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 style = MaterialTheme.typography.bodyMedium
             )
             uiState.tasks.forEach { taskWithSubtasks ->
                 TaskDisplay(taskWithSubtasks)
                 { task, isCompleted -> viewModel.updateTaskStatus(task, isCompleted) }
             }
-            Spacer(modifier = Modifier.size(8.dp))
+            Spacer(modifier = Modifier.size(4.dp))
         }
     }
 }
