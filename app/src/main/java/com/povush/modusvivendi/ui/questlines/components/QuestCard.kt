@@ -20,6 +20,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -50,6 +51,8 @@ import com.povush.modusvivendi.ui.questlines.viewmodel.QuestViewModel
 fun QuestCard(
     quest: Quest,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
+    onExpandToggle: (Long, Boolean) -> Unit,
+    expandAll: Boolean?,
     modifier: Modifier = Modifier,
     viewModel: QuestViewModel = viewModel(
         factory = AppViewModelProvider.Factory,
@@ -61,6 +64,15 @@ fun QuestCard(
     val view = LocalView.current
 
     var menuExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(uiState.isExpanded) {
+        onExpandToggle(quest.id, uiState.isExpanded)
+    }
+
+    LaunchedEffect(expandAll) {
+        if (expandAll == true && !uiState.isExpanded) viewModel.changeQuestExpandStatus()
+        else if (expandAll == false && uiState.isExpanded) viewModel.changeQuestExpandStatus()
+    }
 
     Column(
         modifier = modifier

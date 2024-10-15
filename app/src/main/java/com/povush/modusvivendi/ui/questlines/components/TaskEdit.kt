@@ -4,6 +4,7 @@ import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -54,7 +55,7 @@ fun TaskEdit(
     var taskHeightPx by remember { mutableIntStateOf(0) }
     val taskHeightDp = with(LocalDensity.current) { taskHeightPx.toDp() }
 
-    Row(modifier = Modifier.padding(vertical = 2.dp)) {
+    Row {
         if (isSubtask) {
             Box(
                 modifier = Modifier.size(17.dp,taskHeightDp),
@@ -64,58 +65,64 @@ fun TaskEdit(
             }
             Spacer(modifier = Modifier.size(4.dp))
         }
-        Row(
+        Column(
             modifier = Modifier
                 .onGloballyPositioned { coordinates ->
                     taskHeightPx = coordinates.size.height
                 }
-                .background(
-                    color = MaterialTheme.colorScheme.primaryContainer,
-                    shape = RoundedCornerShape(8.dp)
-                )
         ) {
-            Checkbox(
-                checked = task.isCompleted,
-                onCheckedChange = { onCheckedChange(task,it) },
-                modifier = Modifier.size(32.dp)
-            )
-            DynamicPaddingBasicTextField(
-                value = task.name,
-                onValueChange = { input -> onTaskTextChange(task, input) },
-                modifier = Modifier.weight(1f)
-            )
-            Box(
+            Spacer(modifier = Modifier.size(2.dp))
+            Row(
                 modifier = Modifier
-                    .wrapContentSize(Alignment.TopEnd)
+                    .background(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(8.dp)
+                    )
             ) {
-                DropdownMenu(
-                    expanded = menuExpanded,
-                    onDismissRequest = { menuExpanded = false },
+                Checkbox(
+                    checked = task.isCompleted,
+                    onCheckedChange = { onCheckedChange(task,it) },
+                    modifier = Modifier.size(32.dp)
+                )
+                DynamicPaddingBasicTextField(
+                    value = task.name,
+                    onValueChange = { input -> onTaskTextChange(task, input) },
+                    modifier = Modifier.weight(1f)
+                )
+                Box(
                     modifier = Modifier
-                        .background(MaterialTheme.colorScheme.primaryContainer)
-                        .wrapContentHeight()
-                        .padding(4.dp)
+                        .wrapContentSize(Alignment.TopEnd)
                 ) {
-                    if (task.parentTaskId == null) {
-                        ModusVivendiDropdownMenuItem(R.string.create_subtask) {
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false },
+                        modifier = Modifier
+                            .background(MaterialTheme.colorScheme.primaryContainer)
+                            .wrapContentHeight()
+                            .padding(4.dp)
+                    ) {
+                        if (task.parentTaskId == null) {
+                            ModusVivendiDropdownMenuItem(R.string.create_subtask) {
+                                menuExpanded = false
+                                onCreateSubtask(task)
+                            }
+                        }
+                        ModusVivendiDropdownMenuItem(
+                            if (task.parentTaskId == null) R.string.delete_task
+                            else R.string.delete_subtask
+                        ) {
                             menuExpanded = false
-                            onCreateSubtask(task)
+                            onTaskDelete(task)
                         }
                     }
-                    ModusVivendiDropdownMenuItem(
-                        if (task.parentTaskId == null) R.string.delete_task
-                        else R.string.delete_subtask
-                    ) {
-                        menuExpanded = false
-                        onTaskDelete(task)
-                    }
                 }
-            }
-            TaskEditButton(
-                onClicked = { menuExpanded = !menuExpanded },
-                modifier = Modifier.padding(6.dp)
-            )
+                TaskEditButton(
+                    onClicked = { menuExpanded = !menuExpanded },
+                    modifier = Modifier.padding(6.dp)
+                )
 
+            }
+            Spacer(modifier = Modifier.size(2.dp))
         }
     }
 }

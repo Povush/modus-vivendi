@@ -38,7 +38,6 @@ class QuestEditViewModel(
     val uiState: StateFlow<QuestEditUiState> = _uiState.asStateFlow()
 
     private var _lastUnusedTaskId: Long = -1
-    private var _newQuestId: Long = -1
 
     init {
         loadData()
@@ -69,7 +68,7 @@ class QuestEditViewModel(
     }
 
     fun saveQuestAndTasks() {
-        viewModelScope.launch {
+        viewModelScope.launch(Dispatchers.IO) {
             if (questId != null) { questsRepository.deleteQuestById(questId) }
 
             val questId = questsRepository.insertQuest(Quest(

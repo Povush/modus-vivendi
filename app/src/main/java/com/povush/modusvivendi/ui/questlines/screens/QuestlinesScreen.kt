@@ -77,6 +77,7 @@ fun QuestlinesScreen(
     viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
     val uiState by viewModel.uiState.collectAsState()
+    val expandedQuests by viewModel.expandedQuests.collectAsState()
     val pagerState = rememberPagerState(
         initialPage = uiState.selectedQuestSection.ordinal,
         pageCount = { QuestType.entries.size }
@@ -88,6 +89,14 @@ fun QuestlinesScreen(
     LaunchedEffect(pagerState.currentPage) {
         if (uiState.selectedQuestSection.ordinal != pagerState.currentPage) {
             viewModel.switchQuestSection(pagerState.currentPage)
+        }
+    }
+
+    LaunchedEffect(expandedQuests) {
+        if (expandedQuests.isNotEmpty()) {
+            viewModel.changeCollapseEnabled(true)
+        } else {
+            viewModel.changeCollapseEnabled(false)
         }
     }
 
@@ -112,6 +121,22 @@ fun QuestlinesScreen(
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    IconButton(
+                        onClick = {
+                            if (uiState.collapseEnabled) viewModel.collapseAll()
+                            else viewModel.expandAll()
+                        }
+                    ) {
+                        Icon(
+                            painter = if (uiState.collapseEnabled) {
+                                painterResource(R.drawable.ic_collapse_all)
+                            } else {
+                                painterResource(R.drawable.ic_expand_all)
+                            },
                             contentDescription = null,
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
@@ -163,6 +188,8 @@ fun QuestlinesScreen(
                 QuestSection(
                     quests = currentPageQuests,
                     navigateToQuestEdit = navigateToQuestEdit,
+                    onExpandToggle = { questId, isExpanded -> viewModel.onExpandToggle(questId, isExpanded) },
+                    expandAll = uiState.expandAll
                 )
             } else {
                 EmptyQuestSection()
@@ -175,6 +202,8 @@ fun QuestlinesScreen(
 fun QuestSection(
     quests: List<Quest>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
+    onExpandToggle: (Long, Boolean) -> Unit,
+    expandAll: Boolean?,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -184,18 +213,20 @@ fun QuestSection(
         state = lazyListState,
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
-        item { Spacer(modifier = Modifier.size(0.dp)) }
+        item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
 
         items(quests) { quest ->
             key(quest.id) {
                 QuestCard(
                     quest = quest,
-                    navigateToQuestEdit = navigateToQuestEdit
+                    navigateToQuestEdit = navigateToQuestEdit,
+                    onExpandToggle = onExpandToggle,
+                    expandAll = expandAll
                 )
             }
         }
 
-        item { Spacer(modifier = Modifier.size(0.dp)) }
+        item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
     }
 }
 
