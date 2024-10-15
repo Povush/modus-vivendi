@@ -18,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.ExpandMore
+import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.Info
@@ -27,7 +28,6 @@ import androidx.compose.material.icons.filled.PlaylistAddCheckCircle
 import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.filled.Stream
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.filled.Workspaces
 import androidx.compose.material.ripple.rememberRipple
@@ -51,15 +51,27 @@ import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.ui.theme.NationalTheme
+import com.povush.modusvivendi.ui.aboutuniverse.AboutUniverseDestination
+import com.povush.modusvivendi.ui.appearance.AppearanceDestination
+import com.povush.modusvivendi.ui.domain.DomainDestination
+import com.povush.modusvivendi.ui.ecumene.EcumeneDestination
+import com.povush.modusvivendi.ui.livemodus.LiveModusDestination
+import com.povush.modusvivendi.ui.map.MapDestination
+import com.povush.modusvivendi.ui.modifiers.ModifiersDestination
+import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
+import com.povush.modusvivendi.ui.settings.SettingsDestination
+import com.povush.modusvivendi.ui.skills.SkillsDestination
+import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
+import com.povush.modusvivendi.ui.treasure.TreasureDestination
 
 @Composable
-fun ModusVivendiModalDrawerSheet() {
+fun ModusVivendiModalDrawerSheet(navController: NavHostController, closeDrawerState: () -> Unit) {
     ModalDrawerSheet(
         modifier = Modifier
             .width(300.dp)
@@ -71,31 +83,61 @@ fun ModusVivendiModalDrawerSheet() {
         drawerContainerColor = MaterialTheme.colorScheme.primary
     ) {
         AvatarAndHandle()
-        GameSections()
+        GameSections(navController, closeDrawerState)
     }
 }
 
 @Composable
-private fun GameSections() {
+private fun GameSections(navController: NavHostController, closeDrawerState: () -> Unit) {
+    val gameMechanicsRoutes: List<Pair<ImageVector, NavigationDestination>> = listOf(
+        Icons.Default.Gavel to ThoughtrealmDestination,
+        Icons.Default.Home to DomainDestination,
+        Icons.Default.Money to TreasureDestination,
+        Icons.Default.Psychology to SkillsDestination,
+        Icons.Default.Workspaces to LiveModusDestination,
+        Icons.Default.AutoAwesome to AppearanceDestination,
+        Icons.Default.PlaylistAddCheckCircle to QuestlinesDestination,
+        Icons.Default.Map to MapDestination,
+        Icons.Default.Groups to EcumeneDestination,
+    )
+
+    val otherRoutes: List<Pair<ImageVector, NavigationDestination>> = listOf(
+        Icons.Default.WorkspacePremium to ModifiersDestination,
+        Icons.Default.Settings to SettingsDestination,
+        Icons.Default.Info to AboutUniverseDestination
+    )
+
     Column(
         modifier = Modifier
             .background(color = MaterialTheme.colorScheme.primaryContainer)
             .fillMaxSize()
             .padding(vertical = 8.dp)
     ) {
-        GameMechanicsRoute(Icons.Default.Psychology, "Thoughtrealm")
-        GameMechanicsRoute(Icons.Default.Home, "Domain")
-        GameMechanicsRoute(Icons.Default.Money, "Treasure")
-        GameMechanicsRoute(Icons.Default.Stream, "Skills")
-        GameMechanicsRoute(Icons.Default.Workspaces, "Live modus")
-        GameMechanicsRoute(Icons.Default.AutoAwesome, "Appearance")
-        GameMechanicsRoute(Icons.Default.PlaylistAddCheckCircle, "Questlines")
-        GameMechanicsRoute(Icons.Default.Map, "Map")
-        GameMechanicsRoute(Icons.Default.Groups, "Ecumene")
+        gameMechanicsRoutes.forEach { pair ->
+            val icon = pair.first
+            val destination = pair.second
+
+            GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
+                if (navController.currentDestination?.route != destination.route) {
+                    navController.navigate(destination.route)
+                }
+                closeDrawerState()
+            }
+        }
+
         HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
-        GameMechanicsRoute(Icons.Default.WorkspacePremium, "Modifiers")
-        GameMechanicsRoute(Icons.Default.Settings, "Settings")
-        GameMechanicsRoute(Icons.Default.Info, "About Universe")
+
+        otherRoutes.forEach { pair ->
+            val icon = pair.first
+            val destination = pair.second
+
+            GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
+                if (navController.currentDestination?.route != destination.route) {
+                    navController.navigate(destination.route)
+                }
+                closeDrawerState()
+            }
+        }
     }
 }
 
@@ -162,7 +204,11 @@ private fun AvatarAndHandle() {
 }
 
 @Composable
-fun GameMechanicsRoute(iconImageVector: ImageVector, title: String) {
+fun GameMechanicsRoute(
+    iconImageVector: ImageVector,
+    title: String,
+    onClicked: () -> Unit
+) {
     val interactionSource = remember { MutableInteractionSource() }
     val indication = rememberRipple(color = Color.Red)
 
@@ -170,7 +216,7 @@ fun GameMechanicsRoute(iconImageVector: ImageVector, title: String) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp, horizontal = 8.dp)
-            .clickable {  }
+            .clickable { onClicked() }
             .indication(
                 interactionSource = interactionSource,
                 indication = indication
@@ -196,10 +242,10 @@ fun GameMechanicsRoute(iconImageVector: ImageVector, title: String) {
     }
 }
 
-@Preview
-@Composable
-fun ModusVivendiModalDrawerSheetPreview() {
-    NationalTheme {
-        ModusVivendiModalDrawerSheet()
-    }
-}
+//@Preview
+//@Composable
+//fun ModusVivendiModalDrawerSheetPreview() {
+//    NationalTheme {
+//        ModusVivendiModalDrawerSheet()
+//    }
+//}

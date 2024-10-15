@@ -68,14 +68,14 @@ import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.createQuestEditViewModelExtras
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
-import com.povush.modusvivendi.ui.questlines.components.TaskItem
+import com.povush.modusvivendi.ui.questlines.components.TaskEdit
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestEditViewModel
 import sh.calvin.reorderable.ReorderableColumn
 import sh.calvin.reorderable.ReorderableScope
 
-object QuestCreateDestination : NavigationDestination {
-    override val route = "create_quest"
-    override val titleRes = R.string.create_quest
+object QuestEditDestination : NavigationDestination {
+    override val route = "edit_quest"
+    override val titleRes = R.string.edit_quest
 }
 
 @Composable
@@ -101,7 +101,7 @@ fun QuestEditScreen(
     Scaffold(
         topBar = {
             ModusVivendiAppBar(
-                titleRes = QuestCreateDestination.titleRes,
+                titleRes = if (questId != null) QuestEditDestination.titleRes else R.string.create_quest,
                 navigation = {
                     IconButton(onClick = { navigateBack() }) {
                         Icon(
@@ -367,7 +367,7 @@ fun QuestDescription(
 
 @Composable
 fun QuestTasks(
-    tasks: List<Task>,
+    tasks: List<TaskWithSubtasks>,
     onCheckedTaskChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (Task, String) -> Unit,
     onCreateSubtask: (Task) -> Unit,
@@ -377,7 +377,7 @@ fun QuestTasks(
     onCreateNewTaskButtonClicked: () -> Unit
 ) {
     val numberOfTasks: Int = tasks.size
-    val numberOfCompletedTasks: Int = tasks.count { it.isCompleted && it.parentTaskId == null }
+    val numberOfCompletedTasks: Int = 0
 
     val view = LocalView.current
 
@@ -389,9 +389,7 @@ fun QuestTasks(
         )
         Surface(modifier = Modifier.padding(bottom = 4.dp)) {
             ReorderableColumn(
-                list = tasks
-                    .filter { it.parentTaskId == null }
-                    .sortedBy { it.orderIndex },
+                list = tasks.map { it.task },
                 onSettle = { fromIndex,toIndex ->
                     onReorderingTasks(fromIndex,toIndex)
                 },
@@ -424,9 +422,7 @@ fun QuestTasks(
                             )
                             Surface {
                                 ReorderableColumn(
-                                    list = tasks
-                                        .filter { it.parentTaskId == task.id }
-                                        .sortedBy { it.orderIndex },
+                                    list = tasks.find { it.task.id == task.id }?.subtasks ?: emptyList(),
                                     onSettle = { fromIndex,toIndex ->
                                         onReorderingSubtasks(task.id, fromIndex,toIndex)
                                     },
@@ -512,7 +508,7 @@ fun QuestTask(
             } else Modifier
         )
         Spacer(modifier = Modifier.size(4.dp))
-        TaskItem(
+        TaskEdit(
             task = task,
             isEdit = isEdit,
             onCheckedChange = onCheckedChange,

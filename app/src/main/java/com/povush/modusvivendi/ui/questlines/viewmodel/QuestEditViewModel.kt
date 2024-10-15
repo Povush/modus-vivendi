@@ -22,7 +22,7 @@ data class QuestEditUiState(
     val difficulty: Difficulty = Difficulty.MEDIUM,
     val description: String = "",
     val isCompleted: Boolean = false,
-    val tasks: List<Task> = emptyList()
+    val tasks: List<TaskWithSubtasks> = emptyList()
 )
 
 class QuestEditViewModel(
@@ -42,31 +42,23 @@ class QuestEditViewModel(
             viewModelScope.launch {
                 launch {
                     questsRepository.getQuestStreamById(questId).collect { quest ->
-                        _uiState.update {
-                            it.copy(
+                        _uiState.update { it.copy(
                                 name = quest.name,
                                 type = quest.type,
                                 difficulty = quest.difficulty,
                                 description = quest.description,
                                 isCompleted = quest.isCompleted
-                            )
-                        }
+                        ) }
                     }
                 }
                 launch {
-                    questsRepository.getAllTasksStream(questId).collect { tasks ->
-                        _uiState.update {
-                            it.copy(
-                                tasks = tasks
-                            )
-                        }
+                    questsRepository.getAllTasksWithSubtasksByQuestId(questId).collect { tasks ->
+                        _uiState.update { it.copy(tasks = tasks) }
                     }
                 }
             }
         } else if (currentQuestSectionNumber != null) {
-            _uiState.update {
-                it.copy(type = QuestType.entries[currentQuestSectionNumber])
-            }
+            _uiState.update { it.copy(type = QuestType.entries[currentQuestSectionNumber]) }
         }
     }
 
@@ -84,8 +76,8 @@ class QuestEditViewModel(
                    )
                )
                questsRepository.deleteTasksByQuestId(questId)
-               uiState.value.tasks.forEach { task ->
-                   saveTask(task, questId)
+               uiState.value.tasks.forEach { taskWithSubtasks ->
+                   saveTask(taskWithSubtasks.task, questId)
                }
            } else {
                newQuestId = questsRepository.insertQuest(
@@ -97,8 +89,8 @@ class QuestEditViewModel(
                        isCompleted = uiState.value.isCompleted
                    )
                )
-               uiState.value.tasks.forEach { task ->
-                   saveTask(task, newQuestId)
+               uiState.value.tasks.forEach { taskWithSubtasks ->
+                   saveTask(taskWithSubtasks.task, newQuestId)
                }
            }
         }
@@ -136,32 +128,32 @@ class QuestEditViewModel(
     }
 
     fun checkCompletionStatus() {
-        if (uiState.value.tasks.filter { !it.isCompleted && it.parentTaskId == null } == emptyList<Task>()) {
-            _uiState.update {
-                it.copy(isCompleted = true)
-            }
-        } else {
-            _uiState.update {
-                it.copy(isCompleted = false)
-            }
-        }
+//        if (uiState.value.tasks.filter { !it.isCompleted && it.parentTaskId == null } == emptyList<Task>()) {
+//            _uiState.update {
+//                it.copy(isCompleted = true)
+//            }
+//        } else {
+//            _uiState.update {
+//                it.copy(isCompleted = false)
+//            }
+//        }
     }
 
     fun validate() {
-        if (with(uiState.value) {
-            name.isNotBlank()
-            && description.isNotBlank()
-            && tasks.isNotEmpty()
-            && tasks.all { it.name.isNotBlank() }
-            }) {
-            _uiState.update {
-                it.copy(isValid = true)
-            }
-        } else {
-            _uiState.update {
-                it.copy(isValid = false)
-            }
-        }
+//        if (with(uiState.value) {
+//            name.isNotBlank()
+//            && description.isNotBlank()
+//            && tasks.isNotEmpty()
+//            && tasks.all { it.name.isNotBlank() }
+//            }) {
+//            _uiState.update {
+//                it.copy(isValid = true)
+//            }
+//        } else {
+//            _uiState.update {
+//                it.copy(isValid = false)
+//            }
+//        }
     }
 
     fun updateQuestName(input: String) {
@@ -195,109 +187,109 @@ class QuestEditViewModel(
     }
 
     fun onCheckedTaskChange(task: Task, isCompleted: Boolean) {
-        val updatedTasks = uiState.value.tasks.map {
-            if (it.id == task.id) it.copy(isCompleted = isCompleted) else it
-        }
-
-        _uiState.update {
-            it.copy(tasks = updatedTasks)
-        }
+//        val updatedTasks = uiState.value.tasks.map {
+//            if (it.id == task.id) it.copy(isCompleted = isCompleted) else it
+//        }
+//
+//        _uiState.update {
+//            it.copy(tasks = updatedTasks)
+//        }
     }
 
     fun onTaskTextChange(task: Task, input: String) {
-        val updatedTasks = uiState.value.tasks.map {
-            if (it.id == task.id) it.copy(name = input) else it
-        }
-
-        _uiState.update {
-            it.copy(tasks = updatedTasks)
-        }
+//        val updatedTasks = uiState.value.tasks.map {
+//            if (it.id == task.id) it.copy(name = input) else it
+//        }
+//
+//        _uiState.update {
+//            it.copy(tasks = updatedTasks)
+//        }
     }
 
     fun createNewTask() {
-        val updatedTasks = uiState.value.tasks.toMutableList().apply {
-            val currentLastOrderIndex = uiState.value.tasks
-                .filter { it.parentTaskId == null }
-                .size
-            add(Task(id = lastUnusedTaskId, questId = questId ?: -1, orderIndex = currentLastOrderIndex))
-            lastUnusedTaskId -= 1
-        }
-
-        _uiState.update {
-            it.copy(tasks = updatedTasks)
-        }
+//        val updatedTasks = uiState.value.tasks.toMutableList().apply {
+//            val currentLastOrderIndex = uiState.value.tasks
+//                .filter { it.parentTaskId == null }
+//                .size
+//            add(Task(id = lastUnusedTaskId, questId = questId ?: -1, orderIndex = currentLastOrderIndex))
+//            lastUnusedTaskId -= 1
+//        }
+//
+//        _uiState.update {
+//            it.copy(tasks = updatedTasks)
+//        }
     }
 
     fun createNewSubtask(parentTaskId: Long) {
-        val updatedTasks = uiState.value.tasks.toMutableList().apply {
-            val currentLastOrderIndex = uiState.value.tasks
-                .filter { it.parentTaskId == parentTaskId }
-                .size
-            add(Task(id = lastUnusedTaskId, questId = questId ?: -1, orderIndex = currentLastOrderIndex, parentTaskId = parentTaskId))
-            lastUnusedTaskId -= 1
-        }
-
-        _uiState.update {
-            it.copy(tasks = updatedTasks)
-        }
+//        val updatedTasks = uiState.value.tasks.toMutableList().apply {
+//            val currentLastOrderIndex = uiState.value.tasks
+//                .filter { it.parentTaskId == parentTaskId }
+//                .size
+//            add(Task(id = lastUnusedTaskId, questId = questId ?: -1, orderIndex = currentLastOrderIndex, parentTaskId = parentTaskId))
+//            lastUnusedTaskId -= 1
+//        }
+//
+//        _uiState.update {
+//            it.copy(tasks = updatedTasks)
+//        }
     }
 
     fun deleteTask(task: Task) {
-        val updatedTasks = uiState.value.tasks.toMutableList().apply {
-            remove(task)
-            uiState.value.tasks.filter { it.parentTaskId == task.id }.forEach { subtask ->
-                remove(subtask)
-            }
-        }
-
-        _uiState.update {
-            it.copy(tasks = updatedTasks)
-        }
+//        val updatedTasks = uiState.value.tasks.toMutableList().apply {
+//            remove(task)
+//            uiState.value.tasks.filter { it.parentTaskId == task.id }.forEach { subtask ->
+//                remove(subtask)
+//            }
+//        }
+//
+//        _uiState.update {
+//            it.copy(tasks = updatedTasks)
+//        }
     }
 
     fun onReorderingTasks(fromIndex: Int, toIndex: Int) {
-        val updatedTasks =
-            if (fromIndex < toIndex) { // Moving down
-                uiState.value.tasks.map { task ->
-                    if (task.parentTaskId == null && task.orderIndex in fromIndex..toIndex) {
-                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
-                        else task.copy(orderIndex = task.orderIndex - 1)
-                    } else task
-                }
-            } else if (fromIndex > toIndex) { // Moving upward
-                uiState.value.tasks.map { task ->
-                    if (task.parentTaskId == null && task.orderIndex in toIndex..fromIndex) {
-                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
-                        else task.copy(orderIndex = task.orderIndex + 1)
-                    } else task
-                }
-            } else uiState.value.tasks
-
-        _uiState.update {
-            it.copy(tasks = updatedTasks)
-        }
+//        val updatedTasks =
+//            if (fromIndex < toIndex) { // Moving down
+//                uiState.value.tasks.map { task ->
+//                    if (task.parentTaskId == null && task.orderIndex in fromIndex..toIndex) {
+//                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
+//                        else task.copy(orderIndex = task.orderIndex - 1)
+//                    } else task
+//                }
+//            } else if (fromIndex > toIndex) { // Moving upward
+//                uiState.value.tasks.map { task ->
+//                    if (task.parentTaskId == null && task.orderIndex in toIndex..fromIndex) {
+//                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
+//                        else task.copy(orderIndex = task.orderIndex + 1)
+//                    } else task
+//                }
+//            } else uiState.value.tasks
+//
+//        _uiState.update {
+//            it.copy(tasks = updatedTasks)
+//        }
     }
 
     fun onReorderingSubtasks(parentTaskId: Long, fromIndex: Int, toIndex: Int) {
-        val updatedTasks =
-            if (fromIndex < toIndex) { // Moving down
-                uiState.value.tasks.map { task ->
-                    if (task.parentTaskId == parentTaskId && task.orderIndex in fromIndex..toIndex) {
-                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
-                        else task.copy(orderIndex = task.orderIndex - 1)
-                    } else task
-                }
-            } else if (fromIndex > toIndex) { // Moving upward
-                uiState.value.tasks.map { task ->
-                    if (task.parentTaskId == parentTaskId && task.orderIndex in toIndex..fromIndex) {
-                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
-                        else task.copy(orderIndex = task.orderIndex + 1)
-                    } else task
-                }
-            } else uiState.value.tasks
-
-        _uiState.update {
-            it.copy(tasks = updatedTasks)
-        }
+//        val updatedTasks =
+//            if (fromIndex < toIndex) { // Moving down
+//                uiState.value.tasks.map { task ->
+//                    if (task.parentTaskId == parentTaskId && task.orderIndex in fromIndex..toIndex) {
+//                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
+//                        else task.copy(orderIndex = task.orderIndex - 1)
+//                    } else task
+//                }
+//            } else if (fromIndex > toIndex) { // Moving upward
+//                uiState.value.tasks.map { task ->
+//                    if (task.parentTaskId == parentTaskId && task.orderIndex in toIndex..fromIndex) {
+//                        if (task.orderIndex == fromIndex) task.copy(orderIndex = toIndex)
+//                        else task.copy(orderIndex = task.orderIndex + 1)
+//                    } else task
+//                }
+//            } else uiState.value.tasks
+//
+//        _uiState.update {
+//            it.copy(tasks = updatedTasks)
+//        }
     }
 }

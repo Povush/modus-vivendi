@@ -2,10 +2,27 @@ package com.povush.modusvivendi.data.model
 
 import androidx.room.Embedded
 import androidx.room.Entity
+import androidx.room.ForeignKey
 import androidx.room.PrimaryKey
 import androidx.room.Relation
 
-@Entity(tableName = "tasks")
+@Entity(
+    tableName = "tasks",
+    foreignKeys = [
+        ForeignKey(
+            entity = Quest::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("questId"),
+            onDelete = ForeignKey.CASCADE
+        ),
+        ForeignKey(
+            entity = Task::class,
+            parentColumns = arrayOf("id"),
+            childColumns = arrayOf("parentTaskId"),
+            onDelete = ForeignKey.CASCADE
+        )
+    ]
+)
 data class Task(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,

@@ -11,6 +11,8 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
     suspend fun insertQuest(quest: Quest) = questDao.insertQuest(quest)
     suspend fun updateQuest(quest: Quest) = questDao.updateQuest(quest)
     suspend fun deleteQuest(quest: Quest) = questDao.deleteQuest(quest)
+    suspend fun deleteQuestById(questId: Long) = questDao.deleteQuestById(questId)
+
     suspend fun insertTask(task: Task) = taskDao.insertTask(task)
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)
     suspend fun deleteTask(task: Task) = taskDao.deleteTask(task)

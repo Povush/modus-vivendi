@@ -7,7 +7,6 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Update
 import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.data.model.Task
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -20,6 +19,9 @@ interface QuestDao {
 
     @Delete
     suspend fun deleteQuest(quest: Quest)
+
+    @Query("DELETE FROM quests WHERE id = :questId")
+    suspend fun deleteQuestById(questId: Long)
 
     @Query("SELECT * FROM quests ORDER BY name ASC")
     fun getAllQuestsByNameUp(): Flow<List<Quest>>

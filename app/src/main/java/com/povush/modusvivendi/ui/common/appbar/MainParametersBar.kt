@@ -36,10 +36,15 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
-import com.povush.modusvivendi.R
+
+data class MainParameterData(
+    @DrawableRes val iconIdRes: Int,
+    val value: String,
+    val navigation: () -> Unit
+)
 
 @Composable
-fun MainParametersBar() {
+fun MainParametersBar(mainParameters: List<MainParameterData>) {
     var screenWidth by remember { mutableFloatStateOf(0f) }
     var mainParametersWidth by remember { mutableFloatStateOf(0f) }
 
@@ -67,21 +72,18 @@ fun MainParametersBar() {
                 .scale(scale),
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
-            /*TODO: Make parameters interactive*/
-            MainParameter(value = "4820",iconIdRes = R.drawable.ic_money)
-            MainParameter(value = "240",iconIdRes = R.drawable.ic_development_5)
-            MainParameter(value = "105",iconIdRes = R.drawable.ic_willpower)
-            MainParameter(value = "+2",iconIdRes = R.drawable.ic_stability)
-            MainParameter(value = "86",iconIdRes = R.drawable.ic_crown_2)
-            MainParameter(value = "37",iconIdRes = R.drawable.ic_innovativeness)
+            mainParameters.forEach { mainParameter ->
+                MainParameter(mainParameter.iconIdRes, mainParameter.value, mainParameter.navigation)
+            }
         }
     }
 }
 
 @Composable
 fun MainParameter(
-    value: String,
     @DrawableRes iconIdRes: Int,
+    value: String,
+    navigation: () -> Unit
 ) {
     /**
      * This is dotted line for MainParameter stroke.
@@ -108,7 +110,7 @@ fun MainParameter(
         Row(
             modifier = Modifier
                 .padding(horizontal = 4.dp, vertical = 2.dp)
-                .clickable { /*TODO*/ },
+                .clickable { navigation() },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

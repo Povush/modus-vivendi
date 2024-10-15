@@ -20,7 +20,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.pager.HorizontalPager
@@ -40,10 +39,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
@@ -61,7 +58,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
-import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
@@ -81,14 +77,14 @@ fun QuestlinesScreen(
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
 ) {
-    var menuExpanded by remember { mutableStateOf(false) }
-
     val uiState by viewModel.uiState.collectAsState()
     val pagerState = rememberPagerState(
         initialPage = uiState.selectedQuestSection.ordinal,
         pageCount = { QuestType.entries.size }
     )
     val coroutineScope = rememberCoroutineScope()
+
+    var menuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState.currentPage) {
         if (uiState.selectedQuestSection.ordinal != pagerState.currentPage) {
@@ -130,15 +126,6 @@ fun QuestlinesScreen(
                             tint = MaterialTheme.colorScheme.onPrimary
                         )
                     }
-//                    DropdownMenu(
-//                        expanded = menuExpanded,
-//                        onDismissRequest = { menuExpanded = false }
-//                    ) {
-//                        DropdownMenuItem(
-//                            text = { Text("Option 1") },
-//                            onClick = { menuExpanded = false }
-//                        )
-//                    }
                 },
                 selectedSection = uiState.selectedQuestSection.ordinal,
                 onTabClicked = { index: Int ->
@@ -164,37 +151,14 @@ fun QuestlinesScreen(
             }
         }
     ) { innerPadding ->
-//        var userScrollEnabled by remember { mutableStateOf(true) }
-//
-//        val nestedScrollConnection = remember {
-//            object : NestedScrollConnection {
-//                override fun onPreScroll(available: Offset,source: NestedScrollSource): Offset {
-//                    if (available.x > 0f && pagerState.currentPage == 0) {
-//                        return Offset.Zero
-//                    } else {
-//                        return super.onPreScroll(available, source)
-//                    }
-//                }
-//            }
-//        }
-//
-//        LaunchedEffect(pagerState.isScrollInProgress) {
-//            if (!pagerState.isScrollInProgress) {
-//                userScrollEnabled = true
-//            }
-//        }
-
         HorizontalPager(
             state = pagerState,
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
             beyondBoundsPageCount = 3,
-            userScrollEnabled = true
         ) { page ->
-            val currentPageQuests by remember {
-                derivedStateOf { uiState.allQuests.filter { it.type == QuestType.entries[page] } }
-            }
+            val currentPageQuests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList()
 
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(

@@ -11,7 +11,7 @@
     <string name="additional_quest_section" translatable="false">Additional</string>
     <string name="completed_quest_section" translatable="false">Completed</string>
     <string name="failed_quest_section" translatable="false">Failed</string>
-    <string name="create_quest" translatable="false">Create quest</string>
+    <string name="edit_quest" translatable="false">Edit quest</string>
     <string name="quest_title">Quest title</string>
     <string name="difficulty">Difficulty</string>
     <string name="quest_type">Quest type</string>
@@ -26,4 +26,17 @@
     <string name="create_subtask">Create subtask</string>
     <string name="delete_task">Delete task</string>
     <string name="delete_subtask">Delete subtask</string>
+    <string name="treasure">Treasure</string>
+    <string name="thoughtrealm">Thoughtrealm</string>
+    <string name="domain">Domain</string>
+    <string name="skills">Skills</string>
+    <string name="live_modus">Live modus</string>
+    <string name="appearance">Appearance</string>
+    <string name="map">Map</string>
+    <string name="ecumene">Ecumene</string>
+    <string name="modifiers">Modifiers</string>
+    <string name="settings">Settings</string>
+    <string name="about_universe">About Universe</string>
+    <string name="create_quest">Create quest</string>
+    <string name="active_subtasks">Mandatory subtasks are active!</string>
 </resources>
