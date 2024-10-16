@@ -8,6 +8,7 @@ import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.povush.modusvivendi.ModusVivendiApplication
 import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.ui.navigation.ModalNavigationViewModel
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestEditViewModel
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestViewModel
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
@@ -31,6 +32,9 @@ object AppViewModelProvider {
                 this[QuestIdKey],
                 this[CurrentQuestSectionNumberKey]
             )
+        }
+        initializer {
+            ModalNavigationViewModel()
         }
     }
 }

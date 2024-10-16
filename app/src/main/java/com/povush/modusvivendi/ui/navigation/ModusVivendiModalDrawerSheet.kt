@@ -1,5 +1,12 @@
 package com.povush.modusvivendi.ui.navigation
 
+import android.os.Build
+import android.view.HapticFeedbackConstants
+import android.widget.Toast
+import androidx.annotation.DrawableRes
+import androidx.compose.animation.animateContentSize
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -9,14 +16,20 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
+import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Groups
@@ -26,7 +39,6 @@ import androidx.compose.material.icons.filled.Map
 import androidx.compose.material.icons.filled.Money
 import androidx.compose.material.icons.filled.PlaylistAddCheckCircle
 import androidx.compose.material.icons.filled.Psychology
-import androidx.compose.material.icons.filled.RocketLaunch
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.filled.Workspaces
@@ -37,6 +49,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,19 +58,26 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.R
+import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.aboutuniverse.AboutUniverseDestination
 import com.povush.modusvivendi.ui.appearance.AppearanceDestination
 import com.povush.modusvivendi.ui.domain.DomainDestination
@@ -67,28 +88,70 @@ import com.povush.modusvivendi.ui.modifiers.ModifiersDestination
 import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
 import com.povush.modusvivendi.ui.settings.SettingsDestination
 import com.povush.modusvivendi.ui.skills.SkillsDestination
+import com.povush.modusvivendi.ui.theme.NationalTheme
 import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
 import com.povush.modusvivendi.ui.treasure.TreasureDestination
+import kotlinx.coroutines.delay
 
 @Composable
-fun ModusVivendiModalDrawerSheet(navController: NavHostController, closeDrawerState: () -> Unit) {
+fun ModusVivendiModalDrawerSheet(
+    navController: NavHostController,
+    closeDrawerState: () -> Unit,
+    viewModel: ModalNavigationViewModel = viewModel(factory = AppViewModelProvider.Factory)
+) {
     ModalDrawerSheet(
         modifier = Modifier
             .width(300.dp)
+            .fillMaxHeight()
             .shadow(
                 elevation = 16.dp,
                 clip = false
             ),
         drawerShape = RectangleShape,
-        drawerContainerColor = MaterialTheme.colorScheme.primary
+        drawerContainerColor = Color.White
     ) {
-        AvatarAndHandle()
-        GameSections(navController, closeDrawerState)
+        val uiState by viewModel.uiState.collectAsState()
+        val scrollState = rememberScrollState()
+
+        Box(modifier = Modifier
+            .background(Color.White)
+            .fillMaxHeight()) {
+            Spacer(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(60.dp)
+                    .background(MaterialTheme.colorScheme.primary)
+            )
+            Column(modifier = Modifier.verticalScroll(scrollState)) {
+                AvatarAndHandle(
+                    coatOfArmsRes = uiState.coatOfArmsRes,
+                    countryName = uiState.countryName,
+                    handle = uiState.handle,
+                    onHandleClicked = viewModel::onHandleClicked,
+                    onGodModeClicked = viewModel::switchGodMode,
+                    isGodMode = uiState.isGodMode
+                )
+                GameSections(
+                    navController = navController,
+                    closeDrawerState = closeDrawerState,
+                    accountsExpanded = uiState.accountsExpanded,
+                    coatOfArmsRes = uiState.coatOfArmsRes,
+                    handle = uiState.handle
+                )
+            }
+        }
+
     }
 }
 
 @Composable
-private fun GameSections(navController: NavHostController, closeDrawerState: () -> Unit) {
+private fun GameSections(
+    navController: NavHostController,
+    closeDrawerState: () -> Unit,
+    accountsExpanded: Boolean,
+    @DrawableRes coatOfArmsRes: Int,
+    handle: String
+) {
     val gameMechanicsRoutes: List<Pair<ImageVector, NavigationDestination>> = listOf(
         Icons.Default.Gavel to ThoughtrealmDestination,
         Icons.Default.Home to DomainDestination,
@@ -109,102 +172,269 @@ private fun GameSections(navController: NavHostController, closeDrawerState: () 
 
     Column(
         modifier = Modifier
-            .background(color = MaterialTheme.colorScheme.primaryContainer)
-            .fillMaxSize()
-            .padding(vertical = 8.dp)
+            .fillMaxHeight()
+            .background(color = Color.White)
     ) {
-        gameMechanicsRoutes.forEach { pair ->
-            val icon = pair.first
-            val destination = pair.second
-
-            GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
-                if (navController.currentDestination?.route != destination.route) {
-                    navController.navigate(destination.route)
-                }
-                closeDrawerState()
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.White)
+                .animateContentSize()
+        ) {
+            if (accountsExpanded) {
+                Accounts(coatOfArmsRes, handle)
             }
         }
 
-        HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+        Column(
+            modifier = Modifier
+                .padding(vertical = 8.dp)
+        ) {
+            gameMechanicsRoutes.forEach { pair ->
+                val icon = pair.first
+                val destination = pair.second
 
-        otherRoutes.forEach { pair ->
-            val icon = pair.first
-            val destination = pair.second
-
-            GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
-                if (navController.currentDestination?.route != destination.route) {
-                    navController.navigate(destination.route)
+                GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
+                    if (navController.currentDestination?.route != destination.route) {
+                        navController.navigate(destination.route)
+                    }
+                    closeDrawerState()
                 }
-                closeDrawerState()
+            }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
+
+            otherRoutes.forEach { pair ->
+                val icon = pair.first
+                val destination = pair.second
+
+                GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
+                    if (navController.currentDestination?.route != destination.route) {
+                        navController.navigate(destination.route)
+                    }
+                    closeDrawerState()
+                }
             }
         }
     }
 }
 
 @Composable
-private fun AvatarAndHandle() {
-    var handleExpand by remember { mutableStateOf(false) }
+private fun AvatarAndHandle(
+    @DrawableRes coatOfArmsRes: Int,
+    countryName: String,
+    handle: String,
+    onHandleClicked: () -> Unit,
+    onGodModeClicked: () -> Unit,
+    isGodMode: Boolean
+) {
+    val context = LocalContext.current
+    val view = LocalView.current
 
-    Row(modifier = Modifier
-        .fillMaxWidth()
-        .padding(top = 16.dp, start = 16.dp, end = 16.dp)) {
-        Box(
+    var isGodModeButtonScaledUp by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(
+        targetValue = if (isGodModeButtonScaledUp) 1.2f else 1f,
+        animationSpec = tween(durationMillis = 300),
+        label = "God mode animation"
+    )
+
+    LaunchedEffect(isGodMode) {
+        isGodModeButtonScaledUp = true
+        delay(150)
+        isGodModeButtonScaledUp = false
+    }
+
+    Column(modifier = Modifier
+        .background(MaterialTheme.colorScheme.primary)
+    ) {
+        Row(
+            verticalAlignment = Alignment.Top,
             modifier = Modifier
-                .size(72.dp)
-                .clip(CircleShape)
-                .background(Color.White),
+                .fillMaxWidth()
+                .padding(top = 16.dp, start = 16.dp, end = 16.dp)
         ) {
-            Image(
-                painter = painterResource(id = R.drawable.img_imperial_direction_coat_of_arms),
-                contentDescription = null,
+            Box(
                 modifier = Modifier
                     .size(72.dp)
-                    .clip(CircleShape),
-                contentScale = ContentScale.Crop
+                    .clip(CircleShape)
+                    .background(Color.White),
+            ) {
+                Image(
+                    painter = painterResource(coatOfArmsRes),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                painter = painterResource(R.drawable.ic_unicorn),
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(36.dp)
+                    .scale(scale)
+                    .padding(4.dp)
+                    .clickable {
+                        val message =
+                            if (!isGodMode) R.string.god_mode_is_on
+                            else R.string.god_mode_is_off
+                        onGodModeClicked()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        }
+                        Toast
+                            .makeText(context, context.getString(message), Toast.LENGTH_SHORT)
+                            .show()
+                    }
             )
+//            Switch(
+//                checked = godMode,
+//                onCheckedChange = { onGodModeClicked(it) },
+//                modifier = Modifier.padding(PaddingValues()),
+//                colors = SwitchDefaults.colors(
+//                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
+//
+//                    checkedBorderColor = MaterialTheme.colorScheme.onPrimary,
+//                    checkedIconColor = MaterialTheme.colorScheme.onPrimary,
+//                    uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
+//
+//                    uncheckedBorderColor = MaterialTheme.colorScheme.onPrimary,
+//                    uncheckedIconColor = MaterialTheme.colorScheme.onPrimary,
+//                    disabledCheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
+//
+//                    disabledCheckedBorderColor = MaterialTheme.colorScheme.onPrimary,
+//                    disabledCheckedIconColor = MaterialTheme.colorScheme.onPrimary,
+//                    disabledUncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
+//
+//                    disabledUncheckedBorderColor = MaterialTheme.colorScheme.onPrimary,
+//                    disabledUncheckedIconColor = MaterialTheme.colorScheme.onPrimary
+//                )
+//            )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(
-            imageVector = Icons.Default.RocketLaunch,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary,
+        Spacer(modifier = Modifier.size(16.dp))
+        Row(
             modifier = Modifier
-                .padding(4.dp)
-                .clickable { /*TODO: GOD MODE*/ }
-        )
-    }
-    Spacer(modifier = Modifier.size(16.dp))
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .clickable { handleExpand = !handleExpand },
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Column {
-            Text(
-                text = "Imperial Direction",
-                style = MaterialTheme.typography.titleSmall.copy(fontSize = 24.sp)
-            )
-            Text(
-                text = "@cosmologicalRenaissance",
-                style = MaterialTheme.typography.titleSmall
-                    .copy(fontSize = 14.sp, shadow = null)
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp)
+                .clickable { onHandleClicked() },
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Column {
+                Text(
+                    text = countryName,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.titleSmall.copy(fontSize = 24.sp)
+                )
+                Text(
+                    text = handle,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    style = MaterialTheme.typography.titleSmall
+                        .copy(fontSize = 14.sp, shadow = null)
+                )
+            }
+            Spacer(modifier = Modifier.weight(1f))
+            Icon(
+                imageVector = Icons.Default.ExpandMore,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.padding(8.dp)
             )
         }
-        Spacer(modifier = Modifier.weight(1f))
-        Icon(
-            imageVector = Icons.Default.ExpandMore,
-            contentDescription = null,
-            tint = MaterialTheme.colorScheme.onPrimary,
-            modifier = Modifier.padding(8.dp)
-        )
+        Spacer(modifier = Modifier.size(16.dp))
     }
-    Spacer(modifier = Modifier.size(16.dp))
 }
 
 @Composable
-fun GameMechanicsRoute(
+private fun Accounts(coatOfArmsRes: Int, handle: String) {
+    Column(
+        modifier = Modifier
+            .background(color = Color.White)
+            .wrapContentSize()
+    ) {
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+        )
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable { }
+                .padding(vertical = 2.dp)
+        ) {
+            Box(
+                contentAlignment = Alignment.BottomEnd,
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .size(36.dp)
+            ) {
+                Image(
+                    painter = painterResource(coatOfArmsRes),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .size(36.dp)
+                        .clip(CircleShape),
+                    contentScale = ContentScale.Crop
+                )
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier
+                        .size(17.dp)
+                        .background(color = Color.White, shape = CircleShape)
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.CheckCircle,
+                        contentDescription = null,
+                        tint = Color(0xFF53CA5E),
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
+            Text(
+                text = handle,
+                color = lerp(Color.Black, Color.White, 0.3f),
+                style = MaterialTheme.typography.titleSmall
+                    .copy(fontSize = 16.sp, shadow = null, fontWeight = FontWeight.Bold)
+            )
+        }
+        Row(
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 2.dp)
+                .clickable { }
+        ) {
+            Icon(
+                imageVector = Icons.Default.Add,
+                contentDescription = null,
+                tint = lerp(Color.Black, Color.White, 0.4f),
+                modifier = Modifier
+                    .padding(horizontal = 10.dp)
+                    .size(36.dp)
+            )
+            Text(
+                text = "Add account",
+                color = lerp(Color.Black, Color.White, 0.3f),
+                style = MaterialTheme.typography.titleSmall
+                    .copy(fontSize = 16.sp, shadow = null, fontWeight = FontWeight.Bold)
+            )
+        }
+        Spacer(
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(8.dp)
+        )
+        HorizontalDivider()
+    }
+}
+
+@Composable
+private fun GameMechanicsRoute(
     iconImageVector: ImageVector,
     title: String,
     onClicked: () -> Unit
@@ -215,8 +445,8 @@ fun GameMechanicsRoute(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(vertical = 4.dp, horizontal = 8.dp)
             .clickable { onClicked() }
+            .padding(vertical = 4.dp, horizontal = 0.dp)
             .indication(
                 interactionSource = interactionSource,
                 indication = indication
@@ -227,25 +457,21 @@ fun GameMechanicsRoute(
             imageVector = iconImageVector,
             contentDescription = null,
             tint = lerp(Color.Black, Color.White, 0.4f),
-            modifier = Modifier.padding(4.dp)
+            modifier = Modifier.padding(horizontal = 16.dp, vertical = 4.dp)
         )
-        Spacer(modifier = Modifier.size(16.dp))
         Text(
             text = title,
-            style = MaterialTheme.typography.titleLarge.copy(
-                color = lerp(Color.Black, Color.White, 0.2f),
-                fontSize = 20.sp,
-                fontWeight = FontWeight.Bold,
-                shadow = null
-                ),
+            style = MaterialTheme.typography.titleMedium
         )
     }
 }
 
-//@Preview
-//@Composable
-//fun ModusVivendiModalDrawerSheetPreview() {
-//    NationalTheme {
-//        ModusVivendiModalDrawerSheet()
-//    }
-//}
+@Preview
+@Composable
+fun ModusVivendiModalDrawerSheetPreview() {
+    val navController = rememberNavController()
+
+    NationalTheme {
+        ModusVivendiModalDrawerSheet(navController, {})
+    }
+}
