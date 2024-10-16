@@ -3,8 +3,6 @@ package com.povush.modusvivendi.ui.questlines.components
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
-import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,16 +12,13 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -33,7 +28,6 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.theme.VerticalSubtaskLine
-import kotlinx.coroutines.delay
 
 @Composable
 fun TaskDisplay(
@@ -56,21 +50,17 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
     val context = LocalContext.current
     val view = LocalView.current
 
-    var isScaledUp by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(
-        targetValue = if (isScaledUp) 1.2f else 1f,
-        animationSpec = tween(durationMillis = 300),
-        label = "Task animation"
-    )
-
     var taskHeightPx by remember { mutableIntStateOf(0) }
     val taskHeightDp = with(LocalDensity.current) { taskHeightPx.toDp() }
 
-    LaunchedEffect(task.isCompleted) {
-        isScaledUp = true
-        delay(150)
-        isScaledUp = false
-    }
+//    var lineCount by remember { mutableIntStateOf(0) }
+//    val animatedHeight by animateDpAsState(
+//        targetValue = when (lineCount) {
+//            1 -> 4.dp
+//            else -> 4.dp
+//        },
+//        label = "DynamicPaddingText"
+//    )
 
     Row(modifier = Modifier.padding(horizontal = 8.dp)) {
         if (isSubtask) {
@@ -101,19 +91,17 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
                             view.performHapticFeedback(HapticFeedbackConstants.REJECT)
                         }
-                    } else {
-                        if (it && Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            view.performHapticFeedback(HapticFeedbackConstants.CONFIRM)
-                        }
                     }
                 },
                 modifier = Modifier
-                    .size(28.dp)
-                    .scale(scale),
+                    .size(28.dp),
             )
             Box(modifier = Modifier.padding(top = 5.dp)) {
                 Text(
                     text = task.name,
+//                    onTextLayout = { textLayoutResult: TextLayoutResult ->
+//                        lineCount = textLayoutResult.lineCount
+//                    },
                     style = MaterialTheme.typography.bodyLarge
                 )
             }

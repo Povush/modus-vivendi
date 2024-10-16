@@ -4,7 +4,6 @@ import androidx.compose.material3.Typography
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -51,17 +50,7 @@ val Typography = Typography(
         )
     ),
 
-    // Use for routes in DrawerSheet.
-    titleMedium = TextStyle(
-        fontFamily = FontFamily(
-            Font(R.font.carima)
-        ),
-        fontWeight = FontWeight.Bold,
-        fontSize = 20.sp,
-        lineHeight = 28.sp,
-        letterSpacing = 0.sp,
-        color = lerp(Color.Black, Color.White, 0.3f),
-    ),
+//    titleMedium
 
     // Use for Tabs in ScrollableSectionsRow.
     titleSmall = TextStyle(
