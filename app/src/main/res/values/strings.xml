@@ -39,4 +39,6 @@
     <string name="about_universe">About Universe</string>
     <string name="create_quest">Create quest</string>
     <string name="has_active_subtasks">Mandatory subtasks are active!</string>
+    <string name="god_mode_is_on">God mode is ON!</string>
+    <string name="god_mode_is_off">God mode is OFF!</string>
 </resources>
