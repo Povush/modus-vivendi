@@ -167,7 +167,7 @@ fun QuestCard(
                 modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                 style = MaterialTheme.typography.bodyMedium
             )
-            uiState.tasks.forEach { taskWithSubtasks ->
+            uiState.tasks.sortedBy { it.task.orderIndex }.forEach { taskWithSubtasks ->
                 TaskDisplay(taskWithSubtasks)
                 { task, isCompleted -> viewModel.updateTaskStatus(task, isCompleted) }
             }

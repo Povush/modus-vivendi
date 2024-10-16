@@ -3,7 +3,6 @@ package com.povush.modusvivendi.ui.questlines.components
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
-import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -24,7 +23,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
-import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Task
@@ -38,7 +36,7 @@ fun TaskDisplay(
 ) {
     key(taskWithSubtasks.task.id) {
         TaskDisplayItem(taskWithSubtasks.task, onCheckedChange)
-        taskWithSubtasks.subtasks.forEach { subtask ->
+        taskWithSubtasks.subtasks.sortedBy { it.orderIndex }.forEach { subtask ->
             key(subtask.id) {
                 TaskDisplayItem(subtask, onCheckedChange)
             }
@@ -55,14 +53,14 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
     var taskHeightPx by remember { mutableIntStateOf(0) }
     val taskHeightDp = with(LocalDensity.current) { taskHeightPx.toDp() }
 
-    var lineCount by remember { mutableIntStateOf(0) }
-    val animatedHeight by animateDpAsState(
-        targetValue = when (lineCount) {
-            1 -> 8.dp
-            else -> 4.dp
-        },
-        label = "DynamicPaddingText"
-    )
+//    var lineCount by remember { mutableIntStateOf(0) }
+//    val animatedHeight by animateDpAsState(
+//        targetValue = when (lineCount) {
+//            1 -> 4.dp
+//            else -> 4.dp
+//        },
+//        label = "DynamicPaddingText"
+//    )
 
     Row(modifier = Modifier.padding(horizontal = 8.dp)) {
         if (isSubtask) {
@@ -96,14 +94,14 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
                     }
                 },
                 modifier = Modifier
-                    .size(32.dp),
+                    .size(28.dp),
             )
-            Box(modifier = Modifier.padding(top = animatedHeight)) {
+            Box(modifier = Modifier.padding(top = 5.dp)) {
                 Text(
                     text = task.name,
-                    onTextLayout = { textLayoutResult: TextLayoutResult ->
-                        lineCount = textLayoutResult.lineCount
-                    },
+//                    onTextLayout = { textLayoutResult: TextLayoutResult ->
+//                        lineCount = textLayoutResult.lineCount
+//                    },
                     style = MaterialTheme.typography.bodyLarge
                 )
             }
