@@ -56,9 +56,9 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
     val context = LocalContext.current
     val view = LocalView.current
 
-    var isScaledUp by remember { mutableStateOf(false) }
+    var isCheckboxScaled by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
-        targetValue = if (isScaledUp) 1.2f else 1f,
+        targetValue = if (isCheckboxScaled) 0.8f else 1f,
         animationSpec = tween(durationMillis = 300),
         label = "Task animation"
     )
@@ -67,9 +67,9 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
     val taskHeightDp = with(LocalDensity.current) { taskHeightPx.toDp() }
 
     LaunchedEffect(task.isCompleted) {
-        isScaledUp = true
+        isCheckboxScaled = true
         delay(150)
-        isScaledUp = false
+        isCheckboxScaled = false
     }
 
     Row(modifier = Modifier.padding(horizontal = 8.dp)) {

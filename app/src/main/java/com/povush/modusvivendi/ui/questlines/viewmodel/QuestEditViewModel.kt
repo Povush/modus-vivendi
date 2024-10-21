@@ -67,7 +67,7 @@ class QuestEditViewModel(
         }
     }
 
-    fun saveQuestAndTasks() {
+    fun saveQuestAndTasks(navigateBack: () -> Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
             if (questId != null) { questsRepository.deleteQuestById(questId) }
 
@@ -105,6 +105,7 @@ class QuestEditViewModel(
                 }
             }
         }
+        navigateBack()
     }
 
     fun checkQuestCompletionStatus() {

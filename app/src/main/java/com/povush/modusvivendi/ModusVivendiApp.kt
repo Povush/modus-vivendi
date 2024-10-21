@@ -22,7 +22,7 @@ import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
 import com.povush.modusvivendi.ui.questlines.screens.QuestEditDestination
 import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
-import com.povush.modusvivendi.ui.skills.SkillsDestination
+import com.povush.modusvivendi.ui.technologies.TechnologiesDestination
 import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
 import com.povush.modusvivendi.ui.treasure.TreasureDestination
 import kotlinx.coroutines.launch
@@ -61,7 +61,7 @@ fun ModusVivendiApp(
                     { navController.navigate(ThoughtrealmDestination.route) },
 
                     MainParameterData(value = "37",iconIdRes = R.drawable.ic_innovativeness)
-                    { navController.navigate(SkillsDestination.route) }
+                    { navController.navigate(TechnologiesDestination.route) }
                 ))
             }
         }

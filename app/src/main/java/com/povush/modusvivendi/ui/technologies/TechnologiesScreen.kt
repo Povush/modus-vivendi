@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.skills
+package com.povush.modusvivendi.ui.technologies
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -15,18 +15,18 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 
-object SkillsDestination : NavigationDestination {
-    override val route = "skills"
-    override val titleRes = R.string.skills
+object TechnologiesDestination : NavigationDestination {
+    override val route = "technologies"
+    override val titleRes = R.string.technologies
 }
 
 @Composable
-fun SkillsScreen(onNavigationClick: () -> Unit) {
+fun TechnologiesScreen(onNavigationClick: () -> Unit) {
     Scaffold(
         modifier = Modifier,
         topBar = {
             ModusVivendiAppBar(
-                titleRes = SkillsDestination.titleRes,
+                titleRes = TechnologiesDestination.titleRes,
                 navigation = {
                     IconButton(onClick = { onNavigationClick() }) {
                         Icon(

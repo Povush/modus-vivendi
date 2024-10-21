@@ -113,10 +113,7 @@ fun QuestEditScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = {
-                            viewModel.saveQuestAndTasks()
-                            navigateBack()
-                        },
+                        onClick = { viewModel.saveQuestAndTasks { navigateBack() } },
                         enabled = uiState.isValid
                     ) {
                         Icon(

@@ -12,16 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import com.povush.modusvivendi.ui.aboutuniverse.AboutUniverseDestination
-import com.povush.modusvivendi.ui.aboutuniverse.AboutUniverseScreen
+import com.povush.modusvivendi.ui.about_universe.AboutUniverseDestination
+import com.povush.modusvivendi.ui.about_universe.AboutUniverseScreen
 import com.povush.modusvivendi.ui.appearance.AppearanceDestination
 import com.povush.modusvivendi.ui.appearance.AppearanceScreen
 import com.povush.modusvivendi.ui.domain.DomainDestination
 import com.povush.modusvivendi.ui.domain.DomainScreen
 import com.povush.modusvivendi.ui.ecumene.EcumeneDestination
 import com.povush.modusvivendi.ui.ecumene.EcumeneScreen
-import com.povush.modusvivendi.ui.livemodus.LiveModusDestination
-import com.povush.modusvivendi.ui.livemodus.LiveModusScreen
 import com.povush.modusvivendi.ui.map.MapDestination
 import com.povush.modusvivendi.ui.map.MapScreen
 import com.povush.modusvivendi.ui.modifiers.ModifiersDestination
@@ -30,10 +28,12 @@ import com.povush.modusvivendi.ui.questlines.screens.QuestEditDestination
 import com.povush.modusvivendi.ui.questlines.screens.QuestEditScreen
 import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
 import com.povush.modusvivendi.ui.questlines.screens.QuestlinesScreen
+import com.povush.modusvivendi.ui.routine.RoutineDestination
+import com.povush.modusvivendi.ui.routine.RoutineScreen
 import com.povush.modusvivendi.ui.settings.SettingsDestination
 import com.povush.modusvivendi.ui.settings.SettingsScreen
-import com.povush.modusvivendi.ui.skills.SkillsDestination
-import com.povush.modusvivendi.ui.skills.SkillsScreen
+import com.povush.modusvivendi.ui.technologies.TechnologiesDestination
+import com.povush.modusvivendi.ui.technologies.TechnologiesScreen
 import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
 import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmScreen
 import com.povush.modusvivendi.ui.treasure.TreasureDestination
@@ -65,12 +65,12 @@ fun ModusVivendiNavHost(
             TreasureScreen(onNavigationClick = onNavigationClick)
         }
 
-        composable(route = SkillsDestination.route) {
-            SkillsScreen(onNavigationClick = onNavigationClick)
+        composable(route = TechnologiesDestination.route) {
+            TechnologiesScreen(onNavigationClick = onNavigationClick)
         }
 
-        composable(route = LiveModusDestination.route) {
-            LiveModusScreen(onNavigationClick = onNavigationClick)
+        composable(route = RoutineDestination.route) {
+            RoutineScreen(onNavigationClick = onNavigationClick)
         }
 
         composable(route = AppearanceDestination.route) {

@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.aboutuniverse
+package com.povush.modusvivendi.ui.about_universe
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding

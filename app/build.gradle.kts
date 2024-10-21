@@ -2,12 +2,12 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     id("com.google.devtools.ksp") version "1.9.20-1.0.14"
-
+    id("com.google.gms.google-services")
 }
 
 android {
     namespace = "com.povush.modusvivendi"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         applicationId = "com.povush.modusvivendi"
@@ -57,6 +57,15 @@ android {
 }
 
 dependencies {
+    // Credential Manager
+    implementation(libs.androidx.credentials)
+
+    // Firebase
+    implementation(libs.play.services.auth)
+    implementation(libs.firebase.auth.ktx)
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.analytics)
+
     // Library for reordering items
     implementation(libs.reorderable)
 

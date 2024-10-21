@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.ui.livemodus
+package com.povush.modusvivendi.ui.routine
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.padding
@@ -15,18 +15,18 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 
-object LiveModusDestination : NavigationDestination {
-    override val route = "liveModus"
-    override val titleRes = R.string.live_modus
+object RoutineDestination : NavigationDestination {
+    override val route = "routine"
+    override val titleRes = R.string.routine
 }
 
 @Composable
-fun LiveModusScreen(onNavigationClick: () -> Unit) {
+fun RoutineScreen(onNavigationClick: () -> Unit) {
     Scaffold(
         modifier = Modifier,
         topBar = {
             ModusVivendiAppBar(
-                titleRes = LiveModusDestination.titleRes,
+                titleRes = RoutineDestination.titleRes,
                 navigation = {
                     IconButton(onClick = { onNavigationClick() }) {
                         Icon(

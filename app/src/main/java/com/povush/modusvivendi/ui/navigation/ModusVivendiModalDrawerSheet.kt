@@ -30,6 +30,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Gavel
 import androidx.compose.material.icons.filled.Groups
@@ -78,16 +79,16 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.AppViewModelProvider
-import com.povush.modusvivendi.ui.aboutuniverse.AboutUniverseDestination
+import com.povush.modusvivendi.ui.about_universe.AboutUniverseDestination
 import com.povush.modusvivendi.ui.appearance.AppearanceDestination
 import com.povush.modusvivendi.ui.domain.DomainDestination
 import com.povush.modusvivendi.ui.ecumene.EcumeneDestination
-import com.povush.modusvivendi.ui.livemodus.LiveModusDestination
 import com.povush.modusvivendi.ui.map.MapDestination
 import com.povush.modusvivendi.ui.modifiers.ModifiersDestination
 import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
+import com.povush.modusvivendi.ui.routine.RoutineDestination
 import com.povush.modusvivendi.ui.settings.SettingsDestination
-import com.povush.modusvivendi.ui.skills.SkillsDestination
+import com.povush.modusvivendi.ui.technologies.TechnologiesDestination
 import com.povush.modusvivendi.ui.theme.NationalTheme
 import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
 import com.povush.modusvivendi.ui.treasure.TreasureDestination
@@ -129,14 +130,15 @@ fun ModusVivendiModalDrawerSheet(
                     handle = uiState.handle,
                     onHandleClicked = viewModel::onHandleClicked,
                     onGodModeClicked = viewModel::switchGodMode,
-                    isGodMode = uiState.isGodMode
+                    isGodMode = uiState.isGodMode,
+                    accountsExpanded = uiState.accountsExpanded
                 )
                 GameSections(
                     navController = navController,
                     closeDrawerState = closeDrawerState,
                     accountsExpanded = uiState.accountsExpanded,
-                    coatOfArmsRes = uiState.coatOfArmsRes,
-                    handle = uiState.handle
+                    countryName = uiState.countryName,
+                    coatOfArmsRes = uiState.coatOfArmsRes
                 )
             }
         }
@@ -149,15 +151,15 @@ private fun GameSections(
     navController: NavHostController,
     closeDrawerState: () -> Unit,
     accountsExpanded: Boolean,
-    @DrawableRes coatOfArmsRes: Int,
-    handle: String
+    countryName: String,
+    @DrawableRes coatOfArmsRes: Int
 ) {
     val gameMechanicsRoutes: List<Pair<ImageVector, NavigationDestination>> = listOf(
         Icons.Default.Gavel to ThoughtrealmDestination,
         Icons.Default.Home to DomainDestination,
         Icons.Default.Money to TreasureDestination,
-        Icons.Default.Psychology to SkillsDestination,
-        Icons.Default.Workspaces to LiveModusDestination,
+        Icons.Default.Psychology to TechnologiesDestination,
+        Icons.Default.Workspaces to RoutineDestination,
         Icons.Default.AutoAwesome to AppearanceDestination,
         Icons.Default.PlaylistAddCheckCircle to QuestlinesDestination,
         Icons.Default.Map to MapDestination,
@@ -182,7 +184,7 @@ private fun GameSections(
                 .animateContentSize()
         ) {
             if (accountsExpanded) {
-                Accounts(coatOfArmsRes, handle)
+                Accounts(coatOfArmsRes, countryName)
             }
         }
 
@@ -226,22 +228,23 @@ private fun AvatarAndHandle(
     handle: String,
     onHandleClicked: () -> Unit,
     onGodModeClicked: () -> Unit,
-    isGodMode: Boolean
+    isGodMode: Boolean,
+    accountsExpanded: Boolean
 ) {
     val context = LocalContext.current
     val view = LocalView.current
 
-    var isGodModeButtonScaledUp by remember { mutableStateOf(false) }
+    var isGodModeButtonScaled by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
-        targetValue = if (isGodModeButtonScaledUp) 1.2f else 1f,
+        targetValue = if (isGodModeButtonScaled) 0.8f else 1f,
         animationSpec = tween(durationMillis = 300),
         label = "God mode animation"
     )
 
     LaunchedEffect(isGodMode) {
-        isGodModeButtonScaledUp = true
+        isGodModeButtonScaled = true
         delay(150)
-        isGodModeButtonScaledUp = false
+        isGodModeButtonScaled = false
     }
 
     Column(modifier = Modifier
@@ -338,7 +341,9 @@ private fun AvatarAndHandle(
             }
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                imageVector = Icons.Default.ExpandMore,
+                imageVector =
+                    if (!accountsExpanded) Icons.Default.ExpandMore
+                    else Icons.Default.ExpandLess,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier.padding(8.dp)
@@ -349,7 +354,7 @@ private fun AvatarAndHandle(
 }
 
 @Composable
-private fun Accounts(coatOfArmsRes: Int, handle: String) {
+private fun Accounts(coatOfArmsRes: Int, countryName: String) {
     Column(
         modifier = Modifier
             .background(color = Color.White)
@@ -396,7 +401,7 @@ private fun Accounts(coatOfArmsRes: Int, handle: String) {
                 }
             }
             Text(
-                text = handle,
+                text = countryName,
                 color = lerp(Color.Black, Color.White, 0.3f),
                 style = MaterialTheme.typography.titleSmall
                     .copy(fontSize = 16.sp, shadow = null, fontWeight = FontWeight.Bold)

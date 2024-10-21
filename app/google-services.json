@@ -1,26 +1,44 @@
 {
   "project_info": {
-    "project_number": "604397535081",
-    "project_id": "modus-vivendi-26f75",
-    "storage_bucket": "modus-vivendi-26f75.appspot.com"
+    "project_number": "452259750685",
+    "project_id": "modus-vivendi-7bb27",
+    "storage_bucket": "modus-vivendi-7bb27.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:604397535081:android:d61d890398ac8d884c47f8",
+        "mobilesdk_app_id": "1:452259750685:android:0a5704d1b61227e592f7f4",
         "android_client_info": {
           "package_name": "com.povush.modusvivendi"
         }
       },
-      "oauth_client": [],
+      "oauth_client": [
+        {
+          "client_id": "452259750685-r4rhnj0vf7i33e7p1grvjjkblqcasirk.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.povush.modusvivendi",
+            "certificate_hash": "3a6bf78135d231942f6d0f011a847384922ddb84"
+          }
+        },
+        {
+          "client_id": "452259750685-26gibi0f8indfj9jflu3la2rifsvc6qp.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
       "api_key": [
         {
-          "current_key": "AIzaSyC9MJycEsjYYCZ4noj8ezF0njYDfypJ7kE"
+          "current_key": "AIzaSyB7WRQtFQOkPKG1XxDdDj8sVUqvaZAWYr8"
         }
       ],
       "services": {
         "appinvite_service": {
-          "other_platform_oauth_client": []
+          "other_platform_oauth_client": [
+            {
+              "client_id": "452259750685-26gibi0f8indfj9jflu3la2rifsvc6qp.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
         }
       }
     }
