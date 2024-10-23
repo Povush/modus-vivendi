@@ -4,47 +4,60 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import com.povush.modusvivendi.data.repository.QuestSortingMethod
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+
+//data class QuestUiState(
+//    val questWithTasks: QuestWithTasks,
+//    val expanded: Boolean = false
+//)
 
 data class QuestlinesUiState(
     val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
     val selectedQuestSection: QuestType = QuestType.MAIN,
+    /*TODO: Remember sortingMethod in repository*/
     val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN,
     val collapseEnabled: Boolean = false,
     val expandAll: Boolean? = null
 )
 
-class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository) : ViewModel() {
-    /*TODO: Remember sortingMethod in repository*/
+@HiltViewModel
+class QuestlinesViewModel @Inject constructor(
+    private val questsRepository: OfflineQuestsRepository
+) : ViewModel() {
+
     private val _uiState = MutableStateFlow(QuestlinesUiState())
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
 
-    private val _expandedQuests = MutableStateFlow<Set<Long>>(emptySet())
-    val expandedQuests: StateFlow<Set<Long>> = _expandedQuests.asStateFlow()
 
     init {
-        loadQuests()
+//        loadQuests()
     }
 
     @OptIn(ExperimentalCoroutinesApi::class)
     private fun loadQuests() {
-        viewModelScope.launch {
-            uiState.flatMapLatest { uiState ->
-                questsRepository.getAllQuestsStream(uiState.sortingMethod)
-            }.collect { quests ->
-                val groupedQuests = quests.groupBy { it.type }
-                _uiState.update { it.copy(allQuestsByType = groupedQuests) }
-            }
-        }
+//        viewModelScope.launch {
+//            uiState.flatMapLatest { uiState ->
+//                questsRepository.getAllQuestsStream(uiState.sortingMethod)
+//            }.collect { quests ->
+//                val groupedQuests = quests
+//                    .map { QuestUiState(it) }
+//                    .groupBy { it.questWithTasks.quest.type }
+//                _uiState.update { it.copy(allQuestsByType = groupedQuests) }
+//            }
+//        }
     }
 
     fun collapseAll() {
@@ -63,12 +76,12 @@ class QuestlinesViewModel(private val questsRepository: OfflineQuestsRepository)
         }
     }
 
-    fun onExpandToggle(questId: Long, isExpanded: Boolean) {
-        _expandedQuests.update { expandedQuests ->
-            if (isExpanded) expandedQuests + questId
-            else expandedQuests - questId
-        }
-    }
+//    fun onExpandToggle(questId: Long, isExpanded: Boolean) {
+//        _expandedQuests.update { expandedQuests ->
+//            if (isExpanded) expandedQuests + questId
+//            else expandedQuests - questId
+//        }
+//    }
 
     fun changeCollapseEnabled(isEnabled: Boolean) {
         _uiState.update { it.copy(collapseEnabled = isEnabled) }

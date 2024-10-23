@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.data.db
+package com.povush.modusvivendi.data.db.dao
 
 import androidx.room.Dao
 import androidx.room.Delete

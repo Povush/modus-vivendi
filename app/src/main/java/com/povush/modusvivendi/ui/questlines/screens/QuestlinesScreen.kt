@@ -6,7 +6,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -53,11 +52,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
-import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.QuestCard
@@ -69,15 +67,13 @@ object QuestlinesDestination : NavigationDestination {
     override val titleRes = R.string.questlines
 }
 
-@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuestlinesScreen(
     onNavigationClick: () -> Unit,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
-    viewModel: QuestlinesViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: QuestlinesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
-    val expandedQuests by viewModel.expandedQuests.collectAsState()
     val pagerState = rememberPagerState(
         initialPage = uiState.selectedQuestSection.ordinal,
         pageCount = { QuestType.entries.size }
@@ -89,14 +85,6 @@ fun QuestlinesScreen(
     LaunchedEffect(pagerState.currentPage) {
         if (uiState.selectedQuestSection.ordinal != pagerState.currentPage) {
             viewModel.switchQuestSection(pagerState.currentPage)
-        }
-    }
-
-    LaunchedEffect(expandedQuests) {
-        if (expandedQuests.isNotEmpty()) {
-            viewModel.changeCollapseEnabled(true)
-        } else {
-            viewModel.changeCollapseEnabled(false)
         }
     }
 
@@ -180,16 +168,14 @@ fun QuestlinesScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-//            beyondBoundsPageCount = 3,
+            beyondViewportPageCount = 3,
         ) { page ->
             val currentPageQuests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList()
 
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(
                     quests = currentPageQuests,
-                    navigateToQuestEdit = navigateToQuestEdit,
-                    onExpandToggle = { questId, isExpanded -> viewModel.onExpandToggle(questId, isExpanded) },
-                    expandAll = uiState.expandAll
+                    navigateToQuestEdit = navigateToQuestEdit
                 )
             } else {
                 EmptyQuestSection()
@@ -202,8 +188,6 @@ fun QuestlinesScreen(
 fun QuestSection(
     quests: List<Quest>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
-    onExpandToggle: (Long, Boolean) -> Unit,
-    expandAll: Boolean?,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -214,18 +198,14 @@ fun QuestSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
-
-        items(quests) { quest ->
-            key(quest.id) {
-                QuestCard(
-                    quest = quest,
-                    navigateToQuestEdit = navigateToQuestEdit,
-                    onExpandToggle = onExpandToggle,
-                    expandAll = expandAll
-                )
-            }
+        items(quests) { questUiState ->
+//            key(questUiState.questWithTasks.quest.id) {
+//                QuestCard(
+//                    questUiState = questUiState,
+//                    navigateToQuestEdit = navigateToQuestEdit,
+//                )
+//            }
         }
-
         item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
     }
 }

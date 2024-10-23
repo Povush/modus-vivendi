@@ -58,15 +58,14 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
-import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
-import com.povush.modusvivendi.ui.createQuestEditViewModelExtras
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.TaskEdit
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestEditViewModel
@@ -81,12 +80,9 @@ object QuestEditDestination : NavigationDestination {
 @Composable
 fun QuestEditScreen(
     navigateBack: () -> Boolean,
-    questId: Long? = null,
-    currentQuestSectionNumber: Int? = null,
-    viewModel: QuestEditViewModel = viewModel(
-        factory = AppViewModelProvider.Factory,
-        extras = createQuestEditViewModelExtras(questId, currentQuestSectionNumber, LocalContext.current.applicationContext)
-    )
+//    questId: Long? = null,
+//    currentQuestSectionNumber: Int? = null,
+    viewModel: QuestEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -101,7 +97,8 @@ fun QuestEditScreen(
     Scaffold(
         topBar = {
             ModusVivendiAppBar(
-                titleRes = if (questId != null) QuestEditDestination.titleRes else R.string.create_quest,
+                titleRes = QuestEditDestination.titleRes,
+//                titleRes = if (questId != null) QuestEditDestination.titleRes else R.string.create_quest,
                 navigation = {
                     IconButton(onClick = { navigateBack() }) {
                         Icon(

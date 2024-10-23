@@ -11,8 +11,10 @@ import androidx.compose.material.icons.filled.FolderSpecial
 import androidx.compose.material.icons.filled.Task
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.room.Embedded
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import androidx.room.Relation
 import com.povush.modusvivendi.R
 import java.util.Date
 
@@ -28,6 +30,15 @@ data class Quest(
     val dateOfCompletion: Date? = null,
     val pinned: Boolean = false
 )
+
+//data class QuestWithTasks(
+//    @Embedded val quest: Quest,
+//    @Relation(
+//        parentColumn = "id",
+//        entityColumn = "questId"
+//    )
+//    val tasks: List<TaskWithSubtasks>
+//)
 
 enum class QuestType(val textResId: Int, val iconImageVector: ImageVector) {
     MAIN(R.string.main_quest_section, Icons.Default.FolderSpecial),

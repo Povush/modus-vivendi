@@ -32,47 +32,37 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
-import com.povush.modusvivendi.ui.createQuestViewModelExtras
-import com.povush.modusvivendi.ui.questlines.viewmodel.QuestViewModel
-
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuestCard(
     quest: Quest,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
-    onExpandToggle: (Long, Boolean) -> Unit,
-    expandAll: Boolean?,
-    modifier: Modifier = Modifier,
-    viewModel: QuestViewModel = viewModel(
-        factory = AppViewModelProvider.Factory,
-        key = "questViewModel_${quest.id}",
-        extras = createQuestViewModelExtras(quest, LocalContext.current.applicationContext)
-    )
+    modifier: Modifier = Modifier
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+//    val quest = questUiState.questWithTasks.quest
+//    val tasks = questUiState.questWithTasks.tasks
+//    val expanded = questUiState.expanded
+
     val view = LocalView.current
 
     var menuExpanded by remember { mutableStateOf(false) }
 
-    LaunchedEffect(uiState.isExpanded) {
-        onExpandToggle(quest.id, uiState.isExpanded)
-    }
+//    LaunchedEffect(uiState.isExpanded) {
+//        onExpandToggle(quest.id, uiState.isExpanded)
+//    }
 
-    LaunchedEffect(expandAll) {
-        if (expandAll == true && !uiState.isExpanded) viewModel.changeQuestExpandStatus()
-        else if (expandAll == false && uiState.isExpanded) viewModel.changeQuestExpandStatus()
-    }
+//    LaunchedEffect(expandAll) {
+//        if (expandAll == true && !uiState.isExpanded) viewModel.changeQuestExpandStatus()
+//        else if (expandAll == false && uiState.isExpanded) viewModel.changeQuestExpandStatus()
+//    }
 
     Column(
         modifier = modifier
@@ -96,7 +86,7 @@ fun QuestCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .combinedClickable(
-                        onClick = { viewModel.changeQuestExpandStatus() },
+                        onClick = {  },
                         onLongClick = {
                             view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                             menuExpanded = true
@@ -155,23 +145,23 @@ fun QuestCard(
                         }
                         ModusVivendiDropdownMenuItem(R.string.delete) {
                             menuExpanded = false
-                            viewModel.deleteQuest()
+//                            viewModel.deleteQuest()
                         }
                     }
                 }
             }
         }
-        if (uiState.isExpanded) {
-            Text(
-                text = quest.description,
-                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-                style = MaterialTheme.typography.bodyMedium
-            )
-            uiState.tasks.sortedBy { it.task.orderIndex }.forEach { taskWithSubtasks ->
-                TaskDisplay(taskWithSubtasks)
-                { task, isCompleted -> viewModel.updateTaskStatus(task, isCompleted) }
-            }
-            Spacer(modifier = Modifier.size(4.dp))
-        }
+//        if (expanded) {
+//            Text(
+//                text = quest.description,
+//                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+//                style = MaterialTheme.typography.bodyMedium
+//            )
+//            tasks.sortedBy { it.task.orderIndex }.forEach { taskWithSubtasks ->
+//                TaskDisplay(taskWithSubtasks)
+//                { task, isCompleted -> true /*TODO*/ }
+//            }
+//            Spacer(modifier = Modifier.size(4.dp))
+//        }
     }
 }

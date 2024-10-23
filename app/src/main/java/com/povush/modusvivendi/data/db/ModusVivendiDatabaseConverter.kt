@@ -2,6 +2,7 @@ package com.povush.modusvivendi.data.db
 
 import androidx.room.TypeConverter
 import com.povush.modusvivendi.data.model.Difficulty
+import com.povush.modusvivendi.data.model.QuestType
 import java.util.Date
 
 class ModusVivendiDatabaseConverter {
@@ -36,5 +37,15 @@ class ModusVivendiDatabaseConverter {
     @TypeConverter
     fun toDifficulty(ordinal: Int): Difficulty {
         return Difficulty.entries[ordinal]
+    }
+
+    @TypeConverter
+    fun fromQuestType(questType: QuestType): Int {
+        return questType.ordinal
+    }
+
+    @TypeConverter
+    fun toQuestType(ordinal: Int): QuestType {
+        return QuestType.entries[ordinal]
     }
 }

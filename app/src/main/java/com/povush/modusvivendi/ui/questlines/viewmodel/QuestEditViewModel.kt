@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.ui.questlines.viewmodel
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.data.model.Difficulty
@@ -8,12 +9,14 @@ import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class QuestEditUiState(
     // Get from quest data if questId received
@@ -28,11 +31,13 @@ data class QuestEditUiState(
     val typeExpanded: Boolean = false
 )
 
-class QuestEditViewModel(
+@HiltViewModel
+class QuestEditViewModel @Inject constructor(
     private val questsRepository: OfflineQuestsRepository,
-    private val questId: Long?,
-    private val currentQuestSectionNumber: Int?
+    savedStateHandle: SavedStateHandle
 ) : ViewModel() {
+    val questId: Long = savedStateHandle["questId"] ?: -1L
+    private val currentQuestSectionNumber: Int = savedStateHandle["currentQuestSectionNumber"] ?: 0
 
     private val _uiState = MutableStateFlow(QuestEditUiState())
     val uiState: StateFlow<QuestEditUiState> = _uiState.asStateFlow()
@@ -44,7 +49,7 @@ class QuestEditViewModel(
     }
 
     private fun loadData() {
-        if (questId != null) {
+        if (questId != -1L) {
             viewModelScope.launch(Dispatchers.IO) {
                 questsRepository.getQuestById(questId).also { quest ->
                     _uiState.update { it.copy(
@@ -62,14 +67,14 @@ class QuestEditViewModel(
                     _uiState.update { it.copy(tasks = sortedTasks) }
                 }
             }
-        } else if (currentQuestSectionNumber != null) {
+        } else {
             _uiState.update { it.copy(type = QuestType.entries[currentQuestSectionNumber]) }
         }
     }
 
     fun saveQuestAndTasks(navigateBack: () -> Boolean) {
         viewModelScope.launch(Dispatchers.IO) {
-            if (questId != null) { questsRepository.deleteQuestById(questId) }
+            if (questId != -1L) { questsRepository.deleteQuestById(questId) }
 
             val questId = questsRepository.insertQuest(Quest(
                 name = uiState.value.name,

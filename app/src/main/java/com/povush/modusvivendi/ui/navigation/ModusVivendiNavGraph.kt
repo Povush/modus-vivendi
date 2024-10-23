@@ -101,9 +101,7 @@ fun ModusVivendiNavHost(
             }
         ) {
             QuestEditScreen(
-                navigateBack = { navController.popBackStack() },
-                questId = navController.previousBackStackEntry?.savedStateHandle?.get("questId"),
-                currentQuestSectionNumber = navController.previousBackStackEntry?.savedStateHandle?.get("currentQuestSectionNumber"),
+                navigateBack = { navController.popBackStack() }
             )
         }
 

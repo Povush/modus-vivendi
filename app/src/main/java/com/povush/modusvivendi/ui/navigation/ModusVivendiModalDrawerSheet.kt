@@ -73,11 +73,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.ui.AppViewModelProvider
 import com.povush.modusvivendi.ui.about_universe.AboutUniverseDestination
 import com.povush.modusvivendi.ui.appearance.AppearanceDestination
 import com.povush.modusvivendi.ui.domain.DomainDestination
@@ -97,7 +97,7 @@ import kotlinx.coroutines.delay
 fun ModusVivendiModalDrawerSheet(
     navController: NavHostController,
     closeDrawerState: () -> Unit,
-    viewModel: ModalNavigationViewModel = viewModel(factory = AppViewModelProvider.Factory)
+    viewModel: ModalNavigationViewModel = hiltViewModel()
 ) {
     ModalDrawerSheet(
         modifier = Modifier
