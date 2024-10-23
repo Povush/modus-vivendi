@@ -31,14 +31,15 @@ data class Quest(
     val pinned: Boolean = false
 )
 
-//data class QuestWithTasks(
-//    @Embedded val quest: Quest,
-//    @Relation(
-//        parentColumn = "id",
-//        entityColumn = "questId"
-//    )
-//    val tasks: List<TaskWithSubtasks>
-//)
+data class QuestWithTasks(
+    @Embedded val quest: Quest,
+    @Relation(
+        entity = Task::class,
+        parentColumn = "id",
+        entityColumn = "questId"
+    )
+    val tasks: List<TaskWithSubtasks>
+)
 
 enum class QuestType(val textResId: Int, val iconImageVector: ImageVector) {
     MAIN(R.string.main_quest_section, Icons.Default.FolderSpecial),

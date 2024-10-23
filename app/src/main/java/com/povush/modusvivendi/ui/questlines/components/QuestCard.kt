@@ -39,30 +39,27 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.data.model.QuestWithTasks
+import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuestCard(
-    quest: Quest,
+    questWithTasks: QuestWithTasks,
+    isExpanded: Boolean,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
+    changeQuestExpandStatus: (Quest) -> Unit,
+    deleteQuest: (Quest) -> Unit,
+    updateTaskStatus: (Task, Boolean) -> Boolean,
     modifier: Modifier = Modifier
 ) {
-//    val quest = questUiState.questWithTasks.quest
-//    val tasks = questUiState.questWithTasks.tasks
-//    val expanded = questUiState.expanded
+    val quest = questWithTasks.quest
+    val tasks = questWithTasks.tasks
 
     val view = LocalView.current
 
     var menuExpanded by remember { mutableStateOf(false) }
-
-//    LaunchedEffect(uiState.isExpanded) {
-//        onExpandToggle(quest.id, uiState.isExpanded)
-//    }
-
-//    LaunchedEffect(expandAll) {
-//        if (expandAll == true && !uiState.isExpanded) viewModel.changeQuestExpandStatus()
-//        else if (expandAll == false && uiState.isExpanded) viewModel.changeQuestExpandStatus()
-//    }
 
     Column(
         modifier = modifier
@@ -86,7 +83,7 @@ fun QuestCard(
                 modifier = Modifier
                     .fillMaxWidth()
                     .combinedClickable(
-                        onClick = {  },
+                        onClick = { changeQuestExpandStatus(quest) },
                         onLongClick = {
                             view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                             menuExpanded = true
@@ -145,23 +142,23 @@ fun QuestCard(
                         }
                         ModusVivendiDropdownMenuItem(R.string.delete) {
                             menuExpanded = false
-//                            viewModel.deleteQuest()
+                            deleteQuest(quest)
                         }
                     }
                 }
             }
         }
-//        if (expanded) {
-//            Text(
-//                text = quest.description,
-//                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
-//                style = MaterialTheme.typography.bodyMedium
-//            )
-//            tasks.sortedBy { it.task.orderIndex }.forEach { taskWithSubtasks ->
-//                TaskDisplay(taskWithSubtasks)
-//                { task, isCompleted -> true /*TODO*/ }
-//            }
-//            Spacer(modifier = Modifier.size(4.dp))
-//        }
+        if (isExpanded) {
+            Text(
+                text = quest.description,
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                style = MaterialTheme.typography.bodyMedium
+            )
+            tasks.sortedBy { it.task.orderIndex }.forEach { taskWithSubtasks ->
+                TaskDisplay(taskWithSubtasks)
+                { task, isCompleted -> updateTaskStatus(task, isCompleted) }
+            }
+            Spacer(modifier = Modifier.size(4.dp))
+        }
     }
 }

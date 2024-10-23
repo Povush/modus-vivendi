@@ -4,6 +4,7 @@ import com.povush.modusvivendi.data.db.dao.QuestDao
 import com.povush.modusvivendi.data.db.dao.TaskDao
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.model.QuestWithTasks
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import kotlinx.coroutines.flow.Flow
@@ -16,7 +17,7 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
     suspend fun insertTask(task: Task): Long = taskDao.insertTask(task)
     suspend fun updateTask(task: Task) = taskDao.updateTask(task)
 
-    fun getAllQuestsStream(sortingMethod: QuestSortingMethod): Flow<List<Quest>> = when(sortingMethod) {
+    fun getAllQuestsStream(sortingMethod: QuestSortingMethod): Flow<List<QuestWithTasks>> = when(sortingMethod) {
         QuestSortingMethod.BY_NAME_UP -> questDao.getAllQuestsByNameUp()
         QuestSortingMethod.BY_NAME_DOWN -> questDao.getAllQuestsByNameDown()
         QuestSortingMethod.BY_DIFFICULTY_UP -> questDao.getAllQuestsByDifficultyUp()
@@ -30,8 +31,8 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
         taskDao.getAllTasksWithSubtasksByQuestId(questId)
     fun getQuestById(questId: Long): Quest = questDao.getQuestById(questId)
 
-//    fun getAllQuestsWithTasksAndSubTasks(): List<QuestWithTasks> =
-//        questDao.getAllQuestsWithTasks()
+    fun getAllQuestsWithTasks(): Flow<List<QuestWithTasks>> =
+        questDao.getAllQuestsWithTasks()
 }
 
 enum class QuestSortingMethod {

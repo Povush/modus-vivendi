@@ -8,7 +8,7 @@ import androidx.room.Query
 import androidx.room.Transaction
 import androidx.room.Update
 import com.povush.modusvivendi.data.model.Quest
-import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.model.QuestWithTasks
 import kotlinx.coroutines.flow.Flow
 
 @Dao
@@ -27,19 +27,19 @@ interface QuestDao {
 
     @Transaction
     @Query("SELECT * FROM quests ORDER BY name ASC")
-    fun getAllQuestsByNameUp(): Flow<List<Quest>>
+    fun getAllQuestsByNameUp(): Flow<List<QuestWithTasks>>
 
     @Transaction
     @Query("SELECT * FROM quests ORDER BY name DESC")
-    fun getAllQuestsByNameDown(): Flow<List<Quest>>
+    fun getAllQuestsByNameDown(): Flow<List<QuestWithTasks>>
 
     @Transaction
     @Query("SELECT * FROM quests ORDER BY difficulty ASC")
-    fun getAllQuestsByDifficultyUp(): Flow<List<Quest>>
+    fun getAllQuestsByDifficultyUp(): Flow<List<QuestWithTasks>>
 
     @Transaction
     @Query("SELECT * FROM quests ORDER BY difficulty DESC")
-    fun getAllQuestsByDifficultyDown(): Flow<List<Quest>>
+    fun getAllQuestsByDifficultyDown(): Flow<List<QuestWithTasks>>
 
     @Query("SELECT * FROM quests WHERE id = :questId")
     fun getQuestStreamById(questId: Long): Flow<Quest>
@@ -47,7 +47,7 @@ interface QuestDao {
     @Query("SELECT * FROM quests WHERE id = :questId")
     fun getQuestById(questId: Long): Quest
 
-//    @Transaction
-//    @Query("SELECT * FROM quests")
-//    fun getAllQuestsWithTasks(): List<QuestWithTasks>
+    @Transaction
+    @Query("SELECT * FROM quests")
+    fun getAllQuestsWithTasks(): Flow<List<QuestWithTasks>>
 }

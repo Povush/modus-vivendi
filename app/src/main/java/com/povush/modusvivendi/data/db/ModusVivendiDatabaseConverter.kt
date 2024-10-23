@@ -39,13 +39,13 @@ class ModusVivendiDatabaseConverter {
         return Difficulty.entries[ordinal]
     }
 
-    @TypeConverter
-    fun fromQuestType(questType: QuestType): Int {
-        return questType.ordinal
-    }
-
-    @TypeConverter
-    fun toQuestType(ordinal: Int): QuestType {
-        return QuestType.entries[ordinal]
-    }
+//    @TypeConverter
+//    fun fromQuestType(questType: QuestType): Int {
+//        return questType.ordinal
+//    }
+//
+//    @TypeConverter
+//    fun toQuestType(ordinal: Int): QuestType {
+//        return QuestType.entries[ordinal]
+//    }
 }

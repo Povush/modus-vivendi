@@ -56,6 +56,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
+import com.povush.modusvivendi.data.model.QuestWithTasks
+import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.QuestCard
@@ -175,7 +177,11 @@ fun QuestlinesScreen(
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(
                     quests = currentPageQuests,
-                    navigateToQuestEdit = navigateToQuestEdit
+                    expandedStates = uiState.expandedStates,
+                    navigateToQuestEdit = navigateToQuestEdit,
+                    changeQuestExpandStatus = viewModel::changeQuestExpandStatus,
+                    deleteQuest = viewModel::deleteQuest,
+                    updateTaskStatus = viewModel::updateTaskStatus
                 )
             } else {
                 EmptyQuestSection()
@@ -186,8 +192,12 @@ fun QuestlinesScreen(
 
 @Composable
 fun QuestSection(
-    quests: List<Quest>,
+    quests: List<QuestWithTasks>,
+    expandedStates: Map<Long, Boolean>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
+    changeQuestExpandStatus: (Quest) -> Unit,
+    deleteQuest: (Quest) -> Unit,
+    updateTaskStatus: (Task, Boolean) -> Boolean,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -198,13 +208,17 @@ fun QuestSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
-        items(quests) { questUiState ->
-//            key(questUiState.questWithTasks.quest.id) {
-//                QuestCard(
-//                    questUiState = questUiState,
-//                    navigateToQuestEdit = navigateToQuestEdit,
-//                )
-//            }
+        items(quests) { questWithTasks ->
+            key(questWithTasks.quest.id) {
+                QuestCard(
+                    questWithTasks = questWithTasks,
+                    isExpanded = expandedStates[questWithTasks.quest.id] ?: false,
+                    navigateToQuestEdit = navigateToQuestEdit,
+                    changeQuestExpandStatus = changeQuestExpandStatus,
+                    deleteQuest = deleteQuest,
+                    updateTaskStatus = updateTaskStatus
+                )
+            }
         }
         item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
     }
