@@ -1,7 +1,8 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
-    id("com.google.devtools.ksp") version "1.9.20-1.0.14"
+    alias(libs.plugins.compose.compiler)
+    id("com.google.devtools.ksp") version "2.0.10-1.0.24"
     id("com.google.gms.google-services")
 }
 
@@ -57,6 +58,8 @@ android {
 }
 
 dependencies {
+    // Dagger Hilt
+
     // Credential Manager
     implementation(libs.androidx.credentials)
 

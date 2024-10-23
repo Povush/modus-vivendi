@@ -180,7 +180,7 @@ fun QuestlinesScreen(
             modifier = Modifier
                 .padding(innerPadding)
                 .fillMaxSize(),
-            beyondBoundsPageCount = 3,
+//            beyondBoundsPageCount = 3,
         ) { page ->
             val currentPageQuests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList()
 
