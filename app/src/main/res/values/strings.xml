@@ -41,4 +41,5 @@
     <string name="has_active_subtasks">Mandatory subtasks are active!</string>
     <string name="god_mode_is_on">God mode is ON!</string>
     <string name="god_mode_is_off">God mode is OFF!</string>
+    <string name="complete_quest">Complete quest</string>
 </resources>

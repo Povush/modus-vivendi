@@ -13,6 +13,8 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.DropdownMenu
@@ -38,7 +40,9 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
+import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.Quest
+import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.QuestWithTasks
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
@@ -52,14 +56,19 @@ fun QuestCard(
     changeQuestExpandStatus: (Quest) -> Unit,
     deleteQuest: (Quest) -> Unit,
     updateTaskStatus: (Task, Boolean) -> Boolean,
+    completeQuest: (Quest) -> Unit,
+    checkCompletionStatus: (QuestWithTasks) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val quest = questWithTasks.quest
     val tasks = questWithTasks.tasks
-
     val view = LocalView.current
 
     var menuExpanded by remember { mutableStateOf(false) }
+
+    LaunchedEffect(tasks) {
+        checkCompletionStatus(questWithTasks)
+    }
 
     Column(
         modifier = modifier
@@ -138,7 +147,7 @@ fun QuestCard(
                     ) {
                         ModusVivendiDropdownMenuItem(R.string.edit) {
                             menuExpanded = false
-                            navigateToQuestEdit(quest.id, null)
+                            navigateToQuestEdit(quest.id, -1)
                         }
                         ModusVivendiDropdownMenuItem(R.string.delete) {
                             menuExpanded = false
@@ -155,8 +164,30 @@ fun QuestCard(
                 style = MaterialTheme.typography.bodyMedium
             )
             tasks.sortedBy { it.task.orderIndex }.forEach { taskWithSubtasks ->
-                TaskDisplay(taskWithSubtasks)
-                { task, isCompleted -> updateTaskStatus(task, isCompleted) }
+                TaskDisplay(
+                    taskWithSubtasks = taskWithSubtasks,
+                    onCheckedChange = { task, isCompleted -> updateTaskStatus(task, isCompleted) },
+                    isEnabled = quest.type != QuestType.FAILED && quest.type != QuestType.COMPLETED
+                )
+            }
+            if (quest.isCompleted && quest.type != QuestType.COMPLETED && quest.type != QuestType.FAILED) {
+                Spacer(modifier = Modifier.size(4.dp))
+                Button(
+                    onClick = { completeQuest(quest) },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(horizontal = 8.dp),
+                    colors = ButtonColors(
+                        containerColor = Difficulty.LOW.color,
+                        contentColor = Color.White,
+                        disabledContainerColor = Difficulty.LOW.color,
+                        disabledContentColor = Color.White
+                    ),
+                    shape = RoundedCornerShape(4.dp)
+                ) {
+                    Text(text = stringResource(R.string.complete_quest), style = MaterialTheme.typography.bodyLarge)
+                }
             }
             Spacer(modifier = Modifier.size(4.dp))
         }

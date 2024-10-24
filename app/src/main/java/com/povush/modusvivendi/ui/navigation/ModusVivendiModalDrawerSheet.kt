@@ -141,7 +141,6 @@ fun ModusVivendiModalDrawerSheet(
                 )
             }
         }
-
     }
 }
 
@@ -272,9 +271,11 @@ private fun AvatarAndHandle(
             }
             Spacer(modifier = Modifier.weight(1f))
             Icon(
-                painter = painterResource(R.drawable.ic_unicorn),
+                painter = painterResource(R.drawable.ic_spirograph_3),
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
+                tint =
+                    if (isGodMode) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
                 modifier = Modifier
                     .clip(CircleShape)
                     .size(36.dp)

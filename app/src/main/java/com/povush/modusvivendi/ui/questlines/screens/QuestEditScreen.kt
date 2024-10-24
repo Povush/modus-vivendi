@@ -80,8 +80,6 @@ object QuestEditDestination : NavigationDestination {
 @Composable
 fun QuestEditScreen(
     navigateBack: () -> Boolean,
-//    questId: Long? = null,
-//    currentQuestSectionNumber: Int? = null,
     viewModel: QuestEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -97,8 +95,7 @@ fun QuestEditScreen(
     Scaffold(
         topBar = {
             ModusVivendiAppBar(
-                titleRes = QuestEditDestination.titleRes,
-//                titleRes = if (questId != null) QuestEditDestination.titleRes else R.string.create_quest,
+                titleRes = if (viewModel.questId == -1L) R.string.create_quest else QuestEditDestination.titleRes,
                 navigation = {
                     IconButton(onClick = { navigateBack() }) {
                         Icon(

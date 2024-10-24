@@ -37,7 +37,7 @@ class QuestEditViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val questId: Long = savedStateHandle["questId"] ?: -1L
-    private val currentQuestSectionNumber: Int = savedStateHandle["currentQuestSectionNumber"] ?: 0
+    private val currentQuestSectionNumber: Int = savedStateHandle["currentQuestSectionNumber"] ?: -1
 
     private val _uiState = MutableStateFlow(QuestEditUiState())
     val uiState: StateFlow<QuestEditUiState> = _uiState.asStateFlow()

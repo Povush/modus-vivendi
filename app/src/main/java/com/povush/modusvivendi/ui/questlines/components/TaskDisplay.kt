@@ -38,20 +38,21 @@ import kotlinx.coroutines.delay
 @Composable
 fun TaskDisplay(
     taskWithSubtasks: TaskWithSubtasks,
-    onCheckedChange: (Task, Boolean) -> Boolean
+    onCheckedChange: (Task, Boolean) -> Boolean,
+    isEnabled: Boolean
 ) {
     key(taskWithSubtasks.task.id) {
-        TaskDisplayItem(taskWithSubtasks.task, onCheckedChange)
+        TaskDisplayItem(taskWithSubtasks.task, onCheckedChange, isEnabled)
         taskWithSubtasks.subtasks.sortedBy { it.orderIndex }.forEach { subtask ->
             key(subtask.id) {
-                TaskDisplayItem(subtask, onCheckedChange)
+                TaskDisplayItem(subtask, onCheckedChange, isEnabled)
             }
         }
     }
 }
 
 @Composable
-private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Boolean) {
+private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Boolean, isEnabled: Boolean) {
     val isSubtask = task.parentTaskId != null
     val context = LocalContext.current
     val view = LocalView.current
@@ -110,6 +111,7 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
                 modifier = Modifier
                     .size(28.dp)
                     .scale(scale),
+                enabled = isEnabled
             )
             Box(modifier = Modifier.padding(top = 5.dp)) {
                 Text(

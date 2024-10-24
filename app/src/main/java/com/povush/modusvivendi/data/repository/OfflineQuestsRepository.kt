@@ -11,6 +11,7 @@ import kotlinx.coroutines.flow.Flow
 
 class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDao: TaskDao) {
     suspend fun insertQuest(quest: Quest): Long = questDao.insertQuest(quest)
+    suspend fun updateQuest(quest: Quest) = questDao.updateQuest(quest)
     suspend fun deleteQuest(quest: Quest) = questDao.deleteQuest(quest)
     suspend fun deleteQuestById(questId: Long) = questDao.deleteQuestById(questId)
 

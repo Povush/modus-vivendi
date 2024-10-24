@@ -152,7 +152,7 @@ fun QuestlinesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToQuestEdit(null, uiState.selectedQuestSection.ordinal) },
+                onClick = { navigateToQuestEdit(-1L, uiState.selectedQuestSection.ordinal) },
                 modifier = Modifier.padding(8.dp),
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -181,7 +181,9 @@ fun QuestlinesScreen(
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = viewModel::changeQuestExpandStatus,
                     deleteQuest = viewModel::deleteQuest,
-                    updateTaskStatus = viewModel::updateTaskStatus
+                    updateTaskStatus = viewModel::updateTaskStatus,
+                    completeQuest = viewModel::completeQuest,
+                    checkCompletionStatus = viewModel::checkCompletionStatus
                 )
             } else {
                 EmptyQuestSection()
@@ -198,6 +200,8 @@ fun QuestSection(
     changeQuestExpandStatus: (Quest) -> Unit,
     deleteQuest: (Quest) -> Unit,
     updateTaskStatus: (Task, Boolean) -> Boolean,
+    completeQuest: (Quest) -> Unit,
+    checkCompletionStatus: (QuestWithTasks) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -216,7 +220,9 @@ fun QuestSection(
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = changeQuestExpandStatus,
                     deleteQuest = deleteQuest,
-                    updateTaskStatus = updateTaskStatus
+                    updateTaskStatus = updateTaskStatus,
+                    completeQuest = completeQuest,
+                    checkCompletionStatus = checkCompletionStatus
                 )
             }
         }

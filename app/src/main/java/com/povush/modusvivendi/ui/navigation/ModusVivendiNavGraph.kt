@@ -10,8 +10,10 @@ import androidx.compose.animation.fadeOut
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.povush.modusvivendi.ui.about_universe.AboutUniverseDestination
 import com.povush.modusvivendi.ui.about_universe.AboutUniverseScreen
 import com.povush.modusvivendi.ui.appearance.AppearanceDestination
@@ -81,14 +83,18 @@ fun ModusVivendiNavHost(
             QuestlinesScreen(
                 onNavigationClick = onNavigationClick,
                 navigateToQuestEdit = { questId, currentQuestSectionNumber ->
-                    navController.currentBackStackEntry?.savedStateHandle?.set("questId", questId)
-                    navController.currentBackStackEntry?.savedStateHandle?.set("currentQuestSectionNumber", currentQuestSectionNumber)
-                    navController.navigate(QuestEditDestination.route)
+//                    navController.currentBackStackEntry?.savedStateHandle?.set("questId", questId)
+//                    navController.currentBackStackEntry?.savedStateHandle?.set("currentQuestSectionNumber", currentQuestSectionNumber)
+                    navController.navigate("edit_quest?questId=$questId&currentQuestSectionNumber=$currentQuestSectionNumber")
                 }
             )
         }
         composable(
-            route = QuestEditDestination.route,
+            route = "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}",
+            arguments = listOf(
+                navArgument("questId") { type = NavType.LongType },
+                navArgument("currentQuestSectionNumber") { type = NavType.IntType }
+            ),
             exitTransition = {
                 fadeOut(
                     animationSpec = tween(

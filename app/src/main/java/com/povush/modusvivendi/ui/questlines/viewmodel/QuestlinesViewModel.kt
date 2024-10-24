@@ -10,6 +10,7 @@ import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import com.povush.modusvivendi.data.repository.QuestSortingMethod
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -48,50 +49,66 @@ class QuestlinesViewModel @Inject constructor(
         viewModelScope.launch {
             questsRepository.getAllQuestsWithTasks().collect { quests ->
                 val groupedQuests = quests.groupBy { it.quest.type }
-                val expandedStates = quests.associate { it.quest.id to false }
-
                 _uiState.update {
                     it.copy(
-                        allQuestsByType = groupedQuests,
-                        expandedStates = expandedStates
+                        allQuestsByType = groupedQuests
+                    )
+                }
+
+                val currentExpandedStates = uiState.value.expandedStates
+                val newExpandedStates = groupedQuests.values.flatten().associate { questWithTasks ->
+                    questWithTasks.quest.id to (currentExpandedStates[questWithTasks.quest.id] ?: false)
+                }
+                _uiState.update {
+                    it.copy(
+                        expandedStates = newExpandedStates
                     )
                 }
             }
         }
     }
 
+    fun checkCompletionStatus(questWithTasks: QuestWithTasks) {
+        val quest = questWithTasks.quest
+        val tasks = questWithTasks.tasks
+        val isCompleted = tasks.map { it.task }.all { it.isCompleted }
+
+        if (isCompleted && !quest.isCompleted) {
+            viewModelScope.launch(Dispatchers.IO) {
+                questsRepository.updateQuest(quest.copy(isCompleted = true))
+            }
+        } else if (!isCompleted && quest.isCompleted) {
+            viewModelScope.launch(Dispatchers.IO) {
+                questsRepository.updateQuest(quest.copy(isCompleted = false))
+            }
+        }
+    }
+
+    fun completeQuest(quest: Quest) {
+        viewModelScope.launch(Dispatchers.IO) {
+            questsRepository.updateQuest(quest.copy(type = QuestType.COMPLETED))
+        }
+    }
+
     fun updateTaskStatus(task: Task, isCompleted: Boolean): Boolean {
+        val taskScope = uiState.value.allQuestsByType[uiState.value.selectedQuestSection]
+            ?.find { it.quest.id == task.questId }?.tasks
+            ?.find { it.task.id == task.id || task.id in it.subtasks.map { subtask -> subtask.id } }
 
-//        uiState.value.allQuestsByType.mapValues { (questType, quests) ->
-//            if (task.id in quests.map { it.tasks })
-//        }
-//
-//
-//        if (isCompleted && task.parentTaskId == null) {                                             // For task with uncompleted non-additional subtasks
-//            uiState.value.tasks.find { it.task.id == task.id }.also {
-//                val canBeCompleted = it?.subtasks
-//                    ?.none { subtask -> !subtask.isCompleted && !subtask.isAdditional } ?: true
-//                if (!canBeCompleted) return false
-//            }
-//        } else if (!isCompleted && task.parentTaskId != null && !task.isAdditional) {               // For non-additional subtask with completed parent task
-//            uiState.value.tasks
-//                .find { taskWithSubtasks -> task.id in taskWithSubtasks.subtasks.map { it.id } }
-//                .also { val parentTask = it?.task
-//                    val parentTaskCompleted = parentTask?.isCompleted ?: false
-//                    if (parentTaskCompleted) {
-//                        viewModelScope.launch {
-//                            if (parentTask != null) {
-//                                questsRepository.updateTask(parentTask.copy(isCompleted = false))
-//                            }
-//                        }
-//                    }
-//                }
-//        }
-//        viewModelScope.launch {
-//            questsRepository.updateTask(task.copy(isCompleted = isCompleted))
-//        }
-//        return true
+        if (taskScope == null) return true
+        if (task.parentTaskId == null &&                                                                        // Task with uncompleted non-additional subtasks
+            taskScope.subtasks.any { subtask -> !subtask.isCompleted && !subtask.isAdditional }) {
+            return false
+        }
+        if (task.parentTaskId != null && !task.isAdditional && taskScope.task.isCompleted && !isCompleted) {    // Non-additional subtask with completed parent task
+            viewModelScope.launch(Dispatchers.IO) {
+                questsRepository.updateTask(taskScope.task.copy(isCompleted = false))
+            }
+        }
 
+        viewModelScope.launch(Dispatchers.IO) {
+            questsRepository.updateTask(task.copy(isCompleted = isCompleted))
+        }
         return true
     }
 
