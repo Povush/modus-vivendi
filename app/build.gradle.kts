@@ -71,6 +71,7 @@ dependencies {
     implementation(libs.androidx.credentials)
 
     // Firebase
+    implementation(libs.firebase.auth)
     implementation(libs.play.services.auth)
     implementation(libs.firebase.auth.ktx)
     implementation(platform(libs.firebase.bom))

@@ -171,7 +171,7 @@ fun QuestCard(
                 )
             }
             if (quest.isCompleted && quest.type != QuestType.COMPLETED && quest.type != QuestType.FAILED) {
-                Spacer(modifier = Modifier.size(4.dp))
+                Spacer(modifier = Modifier.size(8.dp))
                 Button(
                     onClick = { completeQuest(quest) },
                     modifier = Modifier

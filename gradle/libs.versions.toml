@@ -33,6 +33,7 @@ roomKtx = "2.6.1"
 reorderable = "2.3.3"
 playServicesAuthVersion = "21.2.0"
 firebaseAuthKtxVersion = "23.1.0"
+firebaseAuthVersion = "23.1.0"
 
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
@@ -81,6 +82,7 @@ ui-tooling-preview = { module = "androidx.compose.ui:ui-tooling-preview" }
 reorderable = { module = "sh.calvin.reorderable:reorderable", version.ref = "reorderable" }
 play-services-auth = { group = "com.google.android.gms", name = "play-services-auth", version.ref = "playServicesAuthVersion" }
 firebase-auth-ktx = { group = "com.google.firebase", name = "firebase-auth-ktx", version.ref = "firebaseAuthKtxVersion" }
+firebase-auth = { group = "com.google.firebase", name = "firebase-auth", version.ref = "firebaseAuthVersion" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

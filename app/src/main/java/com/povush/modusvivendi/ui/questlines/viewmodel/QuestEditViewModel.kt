@@ -16,6 +16,7 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class QuestEditUiState(
@@ -109,8 +110,11 @@ class QuestEditViewModel @Inject constructor(
                     ))
                 }
             }
+
+            withContext(Dispatchers.Main) {
+                navigateBack()
+            }
         }
-        navigateBack()
     }
 
     fun checkQuestCompletionStatus() {

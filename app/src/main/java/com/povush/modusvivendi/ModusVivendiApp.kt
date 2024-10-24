@@ -95,7 +95,7 @@ private fun isNavigationGesturesEnabled(navController: NavHostController): Boole
 
     val isGesturesEnabled = mapOf(
         QuestlinesDestination.route to true,
-        QuestEditDestination.route to false
+        "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}" to false
     )
 
     return isGesturesEnabled[currentDestination] ?: true

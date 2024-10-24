@@ -75,6 +75,10 @@ import sh.calvin.reorderable.ReorderableScope
 object QuestEditDestination : NavigationDestination {
     override val route = "edit_quest"
     override val titleRes = R.string.edit_quest
+
+    val routeWithArgs = { questId: Long, currentQuestSectionNumber: Int ->
+        "$route?questId=$questId&currentQuestSectionNumber=$currentQuestSectionNumber"
+    }
 }
 
 @Composable
