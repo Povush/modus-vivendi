@@ -26,6 +26,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ExitToApp
+import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
@@ -74,6 +76,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.rememberNavController
@@ -110,7 +113,7 @@ fun ModusVivendiModalDrawerSheet(
         drawerShape = RectangleShape,
         drawerContainerColor = Color.White
     ) {
-        val uiState by viewModel.uiState.collectAsState()
+        val uiState by viewModel.uiState.collectAsStateWithLifecycle()
         val scrollState = rememberScrollState()
 
         Box(modifier = Modifier
@@ -130,7 +133,8 @@ fun ModusVivendiModalDrawerSheet(
                     onHandleClicked = viewModel::onHandleClicked,
                     onGodModeClicked = viewModel::switchGodMode,
                     isGodMode = uiState.isGodMode,
-                    accountsExpanded = uiState.accountsExpanded
+                    accountsExpanded = uiState.accountsExpanded,
+                    exitGame = viewModel::exitGame
                 )
                 GameSections(
                     navController = navController,
@@ -175,16 +179,16 @@ private fun GameSections(
             .fillMaxHeight()
             .background(color = Color.White)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color.White)
-                .animateContentSize()
-        ) {
-            if (accountsExpanded) {
-                Accounts(coatOfArmsRes, countryName)
-            }
-        }
+//        Column(
+//            modifier = Modifier
+//                .fillMaxWidth()
+//                .background(color = Color.White)
+//                .animateContentSize()
+//        ) {
+//            if (accountsExpanded) {
+//                Accounts(coatOfArmsRes, countryName)
+//            }
+//        }
 
         Column(
             modifier = Modifier
@@ -227,7 +231,8 @@ private fun AvatarAndHandle(
     onHandleClicked: () -> Unit,
     onGodModeClicked: () -> Unit,
     isGodMode: Boolean,
-    accountsExpanded: Boolean
+    accountsExpanded: Boolean,
+    exitGame: () -> Unit
 ) {
     val context = LocalContext.current
     val view = LocalView.current
@@ -270,60 +275,47 @@ private fun AvatarAndHandle(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
+//            Icon(
+//                painter = painterResource(R.drawable.ic_spirograph_3),
+//                contentDescription = null,
+//                tint =
+//                    if (isGodMode) MaterialTheme.colorScheme.onPrimary
+//                    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
+//                modifier = Modifier
+//                    .clip(CircleShape)
+//                    .size(36.dp)
+//                    .scale(scale)
+//                    .padding(4.dp)
+//                    .clickable {
+//                        val message =
+//                            if (!isGodMode) R.string.god_mode_is_on
+//                            else R.string.god_mode_is_off
+//                        onGodModeClicked()
+//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+//                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+//                        }
+//                        Toast
+//                            .makeText(context, context.getString(message), Toast.LENGTH_SHORT)
+//                            .show()
+//                    }
+//            )
             Icon(
-                painter = painterResource(R.drawable.ic_spirograph_3),
+                imageVector = Icons.AutoMirrored.Default.ExitToApp,
                 contentDescription = null,
-                tint =
-                    if (isGodMode) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
+                tint = MaterialTheme.colorScheme.onPrimary,
                 modifier = Modifier
                     .clip(CircleShape)
                     .size(36.dp)
-                    .scale(scale)
                     .padding(4.dp)
-                    .clickable {
-                        val message =
-                            if (!isGodMode) R.string.god_mode_is_on
-                            else R.string.god_mode_is_off
-                        onGodModeClicked()
-                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                        }
-                        Toast
-                            .makeText(context, context.getString(message), Toast.LENGTH_SHORT)
-                            .show()
-                    }
+                    .clickable { exitGame() }
             )
-//            Switch(
-//                checked = godMode,
-//                onCheckedChange = { onGodModeClicked(it) },
-//                modifier = Modifier.padding(PaddingValues()),
-//                colors = SwitchDefaults.colors(
-//                    checkedThumbColor = MaterialTheme.colorScheme.onPrimary,
-//
-//                    checkedBorderColor = MaterialTheme.colorScheme.onPrimary,
-//                    checkedIconColor = MaterialTheme.colorScheme.onPrimary,
-//                    uncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
-//
-//                    uncheckedBorderColor = MaterialTheme.colorScheme.onPrimary,
-//                    uncheckedIconColor = MaterialTheme.colorScheme.onPrimary,
-//                    disabledCheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
-//
-//                    disabledCheckedBorderColor = MaterialTheme.colorScheme.onPrimary,
-//                    disabledCheckedIconColor = MaterialTheme.colorScheme.onPrimary,
-//                    disabledUncheckedThumbColor = MaterialTheme.colorScheme.onPrimary,
-//
-//                    disabledUncheckedBorderColor = MaterialTheme.colorScheme.onPrimary,
-//                    disabledUncheckedIconColor = MaterialTheme.colorScheme.onPrimary
-//                )
-//            )
         }
         Spacer(modifier = Modifier.size(16.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp)
-                .clickable { onHandleClicked() },
+                .padding(horizontal = 16.dp),
+//                .clickable { onHandleClicked() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
@@ -340,14 +332,14 @@ private fun AvatarAndHandle(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector =
-                    if (!accountsExpanded) Icons.Default.ExpandMore
-                    else Icons.Default.ExpandLess,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.padding(8.dp)
-            )
+//            Icon(
+//                imageVector =
+//                    if (!accountsExpanded) Icons.Default.ExpandMore
+//                    else Icons.Default.ExpandLess,
+//                contentDescription = null,
+//                tint = MaterialTheme.colorScheme.onPrimary,
+//                modifier = Modifier.padding(8.dp)
+//            )
         }
         Spacer(modifier = Modifier.size(16.dp))
     }

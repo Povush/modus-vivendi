@@ -18,10 +18,12 @@ import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.ui.common.appbar.MainParameterData
 import com.povush.modusvivendi.ui.common.appbar.MainParametersBar
 import com.povush.modusvivendi.ui.domain.DomainDestination
+import com.povush.modusvivendi.ui.login.SignInDestination
+import com.povush.modusvivendi.ui.login.SignUpDestination
 import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
 import com.povush.modusvivendi.ui.questlines.screens.QuestEditDestination
-import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
+import com.povush.modusvivendi.ui.splash.SplashDestination
 import com.povush.modusvivendi.ui.technologies.TechnologiesDestination
 import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
 import com.povush.modusvivendi.ui.treasure.TreasureDestination
@@ -39,7 +41,8 @@ fun ModusVivendiApp(
         modifier = Modifier,
         topBar = {
             if (LocalConfiguration.current.orientation == Configuration.ORIENTATION_PORTRAIT &&
-                windowSize.widthSizeClass == WindowWidthSizeClass.Compact) {
+                windowSize.widthSizeClass == WindowWidthSizeClass.Compact &&
+                isMainParametersBarDisplayed(navController)) {
                 /*TODO: Remove the screen size check and simply deactivate the switch button
                    to turn on MainParametersBar in settings*/
                 /*TODO: Ability to disable the MainParametersBar*/
@@ -73,7 +76,7 @@ fun ModusVivendiApp(
                 closeDrawerState = { coroutineScope.launch { drawerState.close() } }
             ) },
             modifier = Modifier.padding(innerPadding),
-            gesturesEnabled = isNavigationGesturesEnabled(navController)
+            gesturesEnabled = isModalNavigationGesturesEnabled(navController)
         ) {
             ModusVivendiNavHost(
                 navController = navController,
@@ -89,14 +92,30 @@ fun ModusVivendiApp(
 }
 
 @Composable
-private fun isNavigationGesturesEnabled(navController: NavHostController): Boolean {
+private fun isModalNavigationGesturesEnabled(navController: NavHostController): Boolean {
     val currentBackStackEntry = navController.currentBackStackEntryAsState().value
     val currentDestination = currentBackStackEntry?.destination?.route
 
     val isGesturesEnabled = mapOf(
-        QuestlinesDestination.route to true,
-        "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}" to false
+        QuestEditDestination.route to false,
+        SignInDestination.route to false,
+        SignUpDestination.route to false,
+        SplashDestination.route to false
     )
 
     return isGesturesEnabled[currentDestination] ?: true
+}
+
+@Composable
+private fun isMainParametersBarDisplayed(navController: NavHostController): Boolean {
+    val currentBackStackEntry = navController.currentBackStackEntryAsState().value
+    val currentDestination = currentBackStackEntry?.destination?.route
+
+    val isDisplayed = mapOf(
+        SignInDestination.route to false,
+        SignUpDestination.route to false,
+        SplashDestination.route to false
+    )
+
+    return isDisplayed[currentDestination] ?: true
 }

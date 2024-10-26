@@ -2,8 +2,9 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     alias(libs.plugins.compose.compiler)
-//    id("com.google.devtools.ksp") version "2.0.10-1.0.24"
     id("com.google.gms.google-services")
+
+    kotlin("plugin.serialization") version "1.9.0"
 
     id("kotlin-kapt")
     id("com.google.dagger.hilt.android")
@@ -61,6 +62,9 @@ android {
 }
 
 dependencies {
+    // Kotlin Serialization
+    implementation(libs.kotlinx.serialization.json)
+
     // Dagger Hilt
     implementation("com.google.dagger:hilt-android:2.51.1")
     kapt("com.google.dagger:hilt-android-compiler:2.51.1")

@@ -31,6 +31,11 @@
     <string name="domain">Domain</string>
     <string name="technologies">Technologies</string>
     <string name="routine">Routine</string>
+    <string name="sign_in">Sign in</string>
+    <string name="sign_up">Sign up</string>
+    <string name="game">Game</string>
+    <string name="login">Login</string>
+    <string name="splash">Splash</string>
     <string name="appearance">Appearance</string>
     <string name="map">Map</string>
     <string name="ecumene">Ecumene</string>

@@ -1,6 +1,7 @@
-package com.povush.modusvivendi.data.db
+package com.povush.modusvivendi.data.db.module
 
 import android.content.Context
+import com.povush.modusvivendi.data.db.ModusVivendiDatabase
 import com.povush.modusvivendi.data.db.dao.QuestDao
 import com.povush.modusvivendi.data.db.dao.TaskDao
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository

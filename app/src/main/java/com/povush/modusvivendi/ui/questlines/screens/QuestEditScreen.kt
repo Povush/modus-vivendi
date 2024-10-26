@@ -59,6 +59,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Difficulty
@@ -86,7 +87,7 @@ fun QuestEditScreen(
     navigateBack: () -> Boolean,
     viewModel: QuestEditViewModel = hiltViewModel()
 ) {
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(uiState.name, uiState.description, uiState.tasks) {
         viewModel.validate()

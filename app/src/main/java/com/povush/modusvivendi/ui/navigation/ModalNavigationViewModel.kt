@@ -2,10 +2,15 @@ package com.povush.modusvivendi.ui.navigation
 
 import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.R
+import com.povush.modusvivendi.data.firebase.AccountService
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch
+import javax.inject.Inject
 
 data class ModalNavigationUiState(
     @DrawableRes val coatOfArmsRes: Int,
@@ -15,7 +20,10 @@ data class ModalNavigationUiState(
     val accountsExpanded: Boolean = false
 )
 
-class ModalNavigationViewModel : ViewModel() {
+@HiltViewModel
+class ModalNavigationViewModel @Inject constructor(
+    private val accountService: AccountService
+) : ViewModel() {
     private val _uiState = MutableStateFlow(ModalNavigationUiState(
         R.drawable.img_imperial_direction_coat_of_arms,
         "Imperial Direction",
@@ -32,6 +40,12 @@ class ModalNavigationViewModel : ViewModel() {
     fun switchGodMode() {
         _uiState.update {
             it.copy(isGodMode = !uiState.value.isGodMode)
+        }
+    }
+
+    fun exitGame() {
+        viewModelScope.launch {
+            accountService.signOut()
         }
     }
 }
