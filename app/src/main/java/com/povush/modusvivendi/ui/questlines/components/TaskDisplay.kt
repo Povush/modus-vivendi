@@ -41,12 +41,13 @@ fun TaskDisplay(
     onCheckedChange: (Task, Boolean) -> Boolean,
     isEnabled: Boolean
 ) {
-    key(taskWithSubtasks.task.id) {
-        TaskDisplayItem(taskWithSubtasks.task, onCheckedChange, isEnabled)
-        taskWithSubtasks.subtasks.sortedBy { it.orderIndex }.forEach { subtask ->
-            key(subtask.id) {
-                TaskDisplayItem(subtask, onCheckedChange, isEnabled)
-            }
+    val task = taskWithSubtasks.task
+    val subtasks = taskWithSubtasks.subtasks.sortedBy { it.orderIndex }
+
+    TaskDisplayItem(task, onCheckedChange, isEnabled)
+    subtasks.forEach { subtask ->
+        key(subtask.id) {
+            TaskDisplayItem(subtask, onCheckedChange, isEnabled)
         }
     }
 }

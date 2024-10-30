@@ -23,7 +23,12 @@ fun NavGraphBuilder.loginGraph(navController: NavController) {
     composable(route = SignInDestination.route) {
         SignInScreen(
             navigateBack = { navController.popBackStack() },
-            navigateToSignUp = { navController.navigate(SignUpDestination.route) }
+            navigateToSignUp = { navController.navigate(SignUpDestination.route) },
+            navigateToGame = {
+                navController.navigate(GameDestination.route) {
+                    popUpTo(GameDestination.route) { inclusive = true }
+                }
+            }
         )
     }
 

@@ -20,6 +20,7 @@ import com.povush.modusvivendi.ui.common.appbar.MainParametersBar
 import com.povush.modusvivendi.ui.domain.DomainDestination
 import com.povush.modusvivendi.ui.login.SignInDestination
 import com.povush.modusvivendi.ui.login.SignUpDestination
+import com.povush.modusvivendi.ui.navigation.LoginDestination
 import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
 import com.povush.modusvivendi.ui.questlines.screens.QuestEditDestination
@@ -32,6 +33,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun ModusVivendiApp(
     windowSize: WindowSizeClass,
+    hasProfile: Boolean,
     navController: NavHostController = rememberNavController()
 ) {
     val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
@@ -73,7 +75,15 @@ fun ModusVivendiApp(
             drawerState = drawerState,
             drawerContent = { ModusVivendiModalDrawerSheet(
                 navController = navController,
-                closeDrawerState = { coroutineScope.launch { drawerState.close() } }
+                closeDrawerState = { coroutineScope.launch { drawerState.close() } },
+                navigateToLogin = {
+                    coroutineScope.launch {
+                        drawerState.close()
+                    }
+                    navController.navigate(LoginDestination.route) {
+                        popUpTo(LoginDestination.route) { inclusive = true }
+                    }
+                }
             ) },
             modifier = Modifier.padding(innerPadding),
             gesturesEnabled = isModalNavigationGesturesEnabled(navController)
@@ -85,6 +95,7 @@ fun ModusVivendiApp(
                         drawerState.apply { if (isClosed) open() else close() }
                     }
                 },
+                hasProfile = hasProfile,
                 modifier = Modifier
             )
         }
@@ -97,10 +108,9 @@ private fun isModalNavigationGesturesEnabled(navController: NavHostController): 
     val currentDestination = currentBackStackEntry?.destination?.route
 
     val isGesturesEnabled = mapOf(
-        QuestEditDestination.route to false,
+        "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}" to false,
         SignInDestination.route to false,
-        SignUpDestination.route to false,
-        SplashDestination.route to false
+        SignUpDestination.route to false
     )
 
     return isGesturesEnabled[currentDestination] ?: true
@@ -113,8 +123,7 @@ private fun isMainParametersBarDisplayed(navController: NavHostController): Bool
 
     val isDisplayed = mapOf(
         SignInDestination.route to false,
-        SignUpDestination.route to false,
-        SplashDestination.route to false
+        SignUpDestination.route to false
     )
 
     return isDisplayed[currentDestination] ?: true

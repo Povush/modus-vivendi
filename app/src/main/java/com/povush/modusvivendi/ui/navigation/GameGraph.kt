@@ -7,7 +7,9 @@ import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeOut
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
+import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.about_universe.AboutUniverseDestination
 import com.povush.modusvivendi.ui.about_universe.AboutUniverseScreen
@@ -17,10 +19,6 @@ import com.povush.modusvivendi.ui.domain.DomainDestination
 import com.povush.modusvivendi.ui.domain.DomainScreen
 import com.povush.modusvivendi.ui.ecumene.EcumeneDestination
 import com.povush.modusvivendi.ui.ecumene.EcumeneScreen
-import com.povush.modusvivendi.ui.login.SignInDestination
-import com.povush.modusvivendi.ui.login.SignInScreen
-import com.povush.modusvivendi.ui.login.SignUpDestination
-import com.povush.modusvivendi.ui.login.SignUpScreen
 import com.povush.modusvivendi.ui.map.MapDestination
 import com.povush.modusvivendi.ui.map.MapScreen
 import com.povush.modusvivendi.ui.modifiers.ModifiersDestination
@@ -74,14 +72,17 @@ fun NavGraphBuilder.gameGraph(navController: NavController, onNavigationClick: (
         QuestlinesScreen(
             onNavigationClick = onNavigationClick,
             navigateToQuestEdit = { questId, currentQuestSectionNumber ->
-                navController.currentBackStackEntry?.savedStateHandle?.set("questId", questId)
-                navController.currentBackStackEntry?.savedStateHandle?.set("currentQuestSectionNumber", currentQuestSectionNumber)
-                navController.navigate(QuestEditDestination.route)
+                navController.navigate("edit_quest?questId=$questId&currentQuestSectionNumber=$currentQuestSectionNumber")
             }
         )
     }
+
     composable(
-        route = QuestEditDestination.route,
+        route = "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}",
+        arguments = listOf(
+            navArgument("questId") { type = NavType.LongType },
+            navArgument("currentQuestSectionNumber") { type = NavType.IntType }
+        ),
         exitTransition = {
             fadeOut(
                 animationSpec = tween(

@@ -14,11 +14,16 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import androidx.core.view.WindowCompat
+import com.povush.modusvivendi.data.firebase.AccountService
 import com.povush.modusvivendi.ui.theme.NationalTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject lateinit var accountService: AccountService
+
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,7 +37,8 @@ class MainActivity : ComponentActivity() {
                         .navigationBarsPadding()
                 ) {
                     val windowSize = calculateWindowSizeClass(this)
-                    ModusVivendiApp(windowSize = windowSize)
+                    val hasAccount = accountService.hasProfile()
+                    ModusVivendiApp(windowSize, hasAccount)
                 }
             }
         }

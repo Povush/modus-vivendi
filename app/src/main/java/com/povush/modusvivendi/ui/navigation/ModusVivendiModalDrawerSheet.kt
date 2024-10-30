@@ -100,6 +100,7 @@ import kotlinx.coroutines.delay
 fun ModusVivendiModalDrawerSheet(
     navController: NavHostController,
     closeDrawerState: () -> Unit,
+    navigateToLogin: () -> Unit,
     viewModel: ModalNavigationViewModel = hiltViewModel()
 ) {
     ModalDrawerSheet(
@@ -134,7 +135,10 @@ fun ModusVivendiModalDrawerSheet(
                     onGodModeClicked = viewModel::switchGodMode,
                     isGodMode = uiState.isGodMode,
                     accountsExpanded = uiState.accountsExpanded,
-                    exitGame = viewModel::exitGame
+                    exitGame = {
+                        viewModel.exitGame()
+                        navigateToLogin()
+                    }
                 )
                 GameSections(
                     navController = navController,
@@ -469,6 +473,6 @@ fun ModusVivendiModalDrawerSheetPreview() {
     val navController = rememberNavController()
 
     NationalTheme {
-        ModusVivendiModalDrawerSheet(navController, {})
+        ModusVivendiModalDrawerSheet(navController, {}, {})
     }
 }

@@ -33,6 +33,7 @@ object SignInDestination : NavigationDestination {
 fun SignInScreen(
     navigateBack: () -> Unit,
     navigateToSignUp: () -> Unit,
+    navigateToGame: () -> Unit,
     viewModel: SignInViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
@@ -90,7 +91,10 @@ fun SignInScreen(
                 Text(text = "I don't have an account yet")
             }
             Button(
-                onClick = viewModel::enter,
+                onClick = {
+                    viewModel.enter()
+                    navigateToGame()
+                },
                 modifier = Modifier.wrapContentSize()
             ) {
                 Text(text = "[S] Enter")
