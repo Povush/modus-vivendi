@@ -11,6 +11,7 @@ import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -74,47 +75,48 @@ class QuestEditViewModel @Inject constructor(
     }
 
     fun saveQuestAndTasks(navigateBack: () -> Boolean) {
-        viewModelScope.launch(Dispatchers.IO) {
-            if (questId != -1L) { questsRepository.deleteQuestById(questId) }
-
-            val questId = questsRepository.insertQuest(Quest(
-                name = uiState.value.name,
-                type = uiState.value.type,
-                difficulty = uiState.value.difficulty,
-                description = uiState.value.description,
-                isCompleted = uiState.value.isCompleted
-            ))
-
-            uiState.value.tasks.forEach { taskWithSubtasks ->
-                val task = taskWithSubtasks.task
-                val subtasks = taskWithSubtasks.subtasks
-
-                val taskId = questsRepository.insertTask(Task(
-                    questId = questId,
-                    name = task.name,
-                    isCompleted = task.isCompleted,
-                    counter = task.counter,
-                    isAdditional = task.isAdditional,
-                    orderIndex = task.orderIndex
-                ))
-
-                subtasks.forEach { subtask ->
-                    questsRepository.insertTask(Task(
-                        questId = questId,
-                        parentTaskId = taskId,
-                        name = subtask.name,
-                        isCompleted = subtask.isCompleted,
-                        counter = subtask.counter,
-                        isAdditional = subtask.isAdditional,
-                        orderIndex = subtask.orderIndex
-                    ))
-                }
-            }
-
-            withContext(Dispatchers.Main) {
-                navigateBack()
-            }
-        }
+//        viewModelScope.launch(Dispatchers.IO) {
+//            if (questId != -1L) { questsRepository.deleteQuestById(questId) }
+//
+//            val questId = questsRepository.insertQuest(Quest(
+//                name = uiState.value.name,
+//                type = uiState.value.type,
+//                difficulty = uiState.value.difficulty,
+//                description = uiState.value.description,
+//                isCompleted = uiState.value.isCompleted
+//            ))
+//
+//            uiState.value.tasks.forEach { taskWithSubtasks ->
+//                val task = taskWithSubtasks.task
+//                val subtasks = taskWithSubtasks.subtasks
+//
+//                val taskId = questsRepository.insertTask(Task(
+//                    questId = questId,
+//                    name = task.name,
+//                    isCompleted = task.isCompleted,
+//                    counter = task.counter,
+//                    isAdditional = task.isAdditional,
+//                    orderIndex = task.orderIndex
+//                ))
+//
+//                subtasks.forEach { subtask ->
+//                    questsRepository.insertTask(Task(
+//                        questId = questId,
+//                        parentTaskId = taskId,
+//                        name = subtask.name,
+//                        isCompleted = subtask.isCompleted,
+//                        counter = subtask.counter,
+//                        isAdditional = subtask.isAdditional,
+//                        orderIndex = subtask.orderIndex
+//                    ))
+//                }
+//            }
+//
+//            withContext(Dispatchers.Main) {
+//                delay(2000L)
+//                navigateBack()
+//            }
+//        }
     }
 
     fun checkQuestCompletionStatus() {

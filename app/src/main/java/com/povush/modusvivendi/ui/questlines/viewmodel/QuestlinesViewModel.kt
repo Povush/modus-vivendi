@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class QuestlinesUiState(
@@ -79,23 +80,34 @@ class QuestlinesViewModel @Inject constructor(
     }
 
     fun checkCompletionStatus(questWithTasks: QuestWithTasks) {
-        val quest = questWithTasks.quest
-        val tasks = questWithTasks.tasks
-        val isCompleted = tasks.isNotEmpty() && tasks.map { it.task }.all { it.isCompleted }
+        viewModelScope.launch(Dispatchers.Default) {
+            val quest = questWithTasks.quest
+            val tasks = questWithTasks.tasks
+            val isCompleted = tasks.isNotEmpty() && tasks.map { it.task }.all { it.isCompleted }
 
-        if (isCompleted && !quest.isCompleted) {
-            viewModelScope.launch(Dispatchers.IO) {
-                questsRepository.updateQuest(quest.copy(isCompleted = true))
-            }
-        } else if (!isCompleted && quest.isCompleted) {
-            viewModelScope.launch(Dispatchers.IO) {
-                questsRepository.updateQuest(quest.copy(isCompleted = false))
+            if (isCompleted != quest.isCompleted) {
+                withContext(Dispatchers.IO) {
+                    questsRepository.updateQuest(quest.copy(isCompleted = isCompleted))
+                }
+
+                _uiState.update { currentState ->
+                    currentState.copy(
+                        allQuestsByType = currentState.allQuestsByType.toMutableMap().apply {
+                            val quests = this[quest.type]?.toMutableList()
+                            val questIndex = quests?.indexOfFirst { it.id == quest.id }
+                            if (questIndex != null && questIndex >= 0) {
+                                quests[questIndex] = quest.copy(isCompleted = isCompleted)
+                                this[quest.type] = quests.toList()
+                            }
+                        }
+                    )
+                }
             }
         }
     }
 
     fun completeQuest(quest: Quest) {
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             questsRepository.updateQuest(quest.copy(type = QuestType.COMPLETED))
         }
     }
@@ -110,12 +122,12 @@ class QuestlinesViewModel @Inject constructor(
             return false
         }
         if (task.parentTaskId != null && !task.isAdditional && taskScope.task.isCompleted && !isCompleted) {    // Non-additional subtask with completed parent task
-            viewModelScope.launch(Dispatchers.IO) {
+            viewModelScope.launch {
                 questsRepository.updateTask(taskScope.task.copy(isCompleted = false))
             }
         }
 
-        viewModelScope.launch(Dispatchers.IO) {
+        viewModelScope.launch {
             questsRepository.updateTask(task.copy(isCompleted = isCompleted))
         }
         return true

@@ -44,6 +44,7 @@ data class Task(
 data class TaskWithSubtasks(
     @Embedded val task: Task,
     @Relation(
+        entity = Task::class,
         parentColumn = "id",
         entityColumn = "parentTaskId"
     )

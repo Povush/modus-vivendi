@@ -113,7 +113,7 @@ fun QuestEditScreen(
                 actions = {
                     IconButton(
                         onClick = { viewModel.saveQuestAndTasks { navigateBack() } },
-                        enabled = uiState.isValid
+                        enabled = false
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Done,

@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.data.repository
 
+import androidx.room.Transaction
 import com.povush.modusvivendi.data.db.dao.QuestDao
 import com.povush.modusvivendi.data.db.dao.TaskDao
 import com.povush.modusvivendi.data.model.Quest
@@ -35,6 +36,22 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
     fun getAllQuestsWithTasks(): Flow<List<QuestWithTasks>> =
         questDao.getAllQuestsWithTasks()
     fun getAllQuests(): Flow<List<Quest>> = questDao.getAllQuests()
+
+    @Transaction
+    suspend fun saveQuestAndTasks(quest: Quest, tasks: List<TaskWithSubtasks>): Long {
+        deleteQuestById(quest.id)
+        val questId = insertQuest(quest)
+
+        tasks.forEach { taskWithSubtasks ->
+            val task = taskWithSubtasks.task.copy(questId = questId)
+            val taskId = insertTask(task)
+
+            taskWithSubtasks.subtasks.forEach { subtask ->
+                insertTask(subtask.copy(questId = questId, parentTaskId = taskId))
+            }
+        }
+        return questId
+    }
 }
 
 enum class QuestSortingMethod {
