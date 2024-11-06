@@ -59,6 +59,7 @@ import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.QuestWithTasks
 import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.QuestCard
@@ -178,6 +179,7 @@ fun QuestlinesScreen(
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(
                     quests = currentPageQuests,
+                    allTasks = uiState.allTasksByQuestId,
                     expandedStates = uiState.expandedStates,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = viewModel::changeQuestExpandStatus,
@@ -195,7 +197,8 @@ fun QuestlinesScreen(
 
 @Composable
 fun QuestSection(
-    quests: List<QuestWithTasks>,
+    quests: List<Quest>,
+    allTasks: Map<Long, List<TaskWithSubtasks>>,
     expandedStates: Map<Long, Boolean>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     changeQuestExpandStatus: (Quest) -> Unit,
@@ -213,11 +216,12 @@ fun QuestSection(
         verticalArrangement = Arrangement.spacedBy(8.dp),
     ) {
         item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
-        items(quests) { questWithTasks ->
-            key(questWithTasks.quest.id) {
+        items(quests) { quest ->
+            key(quest.id) {
                 QuestCard(
-                    questWithTasks = questWithTasks,
-                    isExpanded = expandedStates[questWithTasks.quest.id] ?: false,
+                    quest = quest,
+                    tasks = allTasks[quest.id] ?: emptyList(),
+                    isExpanded = expandedStates[quest.id] ?: false,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = changeQuestExpandStatus,
                     deleteQuest = deleteQuest,

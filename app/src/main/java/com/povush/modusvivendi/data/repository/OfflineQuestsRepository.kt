@@ -34,6 +34,7 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
 
     fun getAllQuestsWithTasks(): Flow<List<QuestWithTasks>> =
         questDao.getAllQuestsWithTasks()
+    fun getAllQuests(): Flow<List<Quest>> = questDao.getAllQuests()
 }
 
 enum class QuestSortingMethod {

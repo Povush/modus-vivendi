@@ -25,6 +25,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
@@ -45,12 +46,14 @@ import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.QuestWithTasks
 import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
 
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun QuestCard(
-    questWithTasks: QuestWithTasks,
+    quest: Quest,
+    tasks: List<TaskWithSubtasks>,
     isExpanded: Boolean,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     changeQuestExpandStatus: (Quest) -> Unit,
@@ -60,14 +63,12 @@ fun QuestCard(
     checkCompletionStatus: (QuestWithTasks) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val quest = questWithTasks.quest
-    val tasks = questWithTasks.tasks
     val view = LocalView.current
 
     var menuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(tasks) {
-        checkCompletionStatus(questWithTasks)
+        checkCompletionStatus(QuestWithTasks(quest, tasks))
     }
 
     Column(
@@ -164,11 +165,13 @@ fun QuestCard(
                 style = MaterialTheme.typography.bodyMedium
             )
             tasks.sortedBy { it.task.orderIndex }.forEach { taskWithSubtasks ->
-                TaskDisplay(
-                    taskWithSubtasks = taskWithSubtasks,
-                    onCheckedChange = { task, isCompleted -> updateTaskStatus(task, isCompleted) },
-                    isEnabled = quest.type != QuestType.FAILED && quest.type != QuestType.COMPLETED
-                )
+                key(taskWithSubtasks.task.id) {
+                    TaskDisplay(
+                        taskWithSubtasks = taskWithSubtasks,
+                        onCheckedChange = { task, isCompleted -> updateTaskStatus(task, isCompleted) },
+                        isEnabled = quest.type != QuestType.FAILED && quest.type != QuestType.COMPLETED
+                    )
+                }
             }
             if (quest.isCompleted && quest.type != QuestType.COMPLETED && quest.type != QuestType.FAILED) {
                 Spacer(modifier = Modifier.size(8.dp))

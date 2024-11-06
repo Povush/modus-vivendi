@@ -26,6 +26,10 @@ interface QuestDao {
     suspend fun deleteQuestById(questId: Long)
 
     @Transaction
+    @Query("SELECT * FROM quests")
+    fun getAllQuests(): Flow<List<Quest>>
+
+    @Transaction
     @Query("SELECT * FROM quests ORDER BY name ASC")
     fun getAllQuestsByNameUp(): Flow<List<QuestWithTasks>>
 

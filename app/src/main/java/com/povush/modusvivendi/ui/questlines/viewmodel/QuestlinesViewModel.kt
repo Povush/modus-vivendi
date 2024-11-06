@@ -23,7 +23,8 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class QuestlinesUiState(
-    val allQuestsByType: Map<QuestType, List<QuestWithTasks>> = emptyMap(),
+    val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
+    val allTasksByQuestId: Map<Long, List<TaskWithSubtasks>> = emptyMap(),
     val expandedStates: Map<Long, Boolean> = emptyMap(),
     val selectedQuestSection: QuestType = QuestType.MAIN,
     /*TODO: Remember sortingMethod in repository*/
@@ -47,22 +48,31 @@ class QuestlinesViewModel @Inject constructor(
 
     private fun loadQuests() {
         viewModelScope.launch {
-            questsRepository.getAllQuestsWithTasks().collect { quests ->
-                val groupedQuests = quests.groupBy { it.quest.type }
+            questsRepository.getAllQuests().collect { quests ->
+                val groupedQuests = quests.groupBy { it.type }
+                val currentExpandedStates = uiState.value.expandedStates
+
                 _uiState.update {
                     it.copy(
-                        allQuestsByType = groupedQuests
+                        allQuestsByType = groupedQuests,
+                        expandedStates = groupedQuests.values.flatten().associate { quest ->
+                            quest.id to (currentExpandedStates[quest.id] ?: false)
+                        }
                     )
                 }
 
-                val currentExpandedStates = uiState.value.expandedStates
-                val newExpandedStates = groupedQuests.values.flatten().associate { questWithTasks ->
-                    questWithTasks.quest.id to (currentExpandedStates[questWithTasks.quest.id] ?: false)
-                }
-                _uiState.update {
-                    it.copy(
-                        expandedStates = newExpandedStates
-                    )
+                groupedQuests.values.flatten().forEach { quest ->
+                    launch {
+                        questsRepository.getAllTasksWithSubtasksStreamByQuestId(quest.id).collect { tasks ->
+                            _uiState.update {
+                                it.copy(
+                                    allTasksByQuestId = it.allTasksByQuestId.toMutableMap().apply {
+                                        this[quest.id] = tasks
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
@@ -71,7 +81,7 @@ class QuestlinesViewModel @Inject constructor(
     fun checkCompletionStatus(questWithTasks: QuestWithTasks) {
         val quest = questWithTasks.quest
         val tasks = questWithTasks.tasks
-        val isCompleted = tasks.map { it.task }.all { it.isCompleted }
+        val isCompleted = tasks.isNotEmpty() && tasks.map { it.task }.all { it.isCompleted }
 
         if (isCompleted && !quest.isCompleted) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -91,8 +101,7 @@ class QuestlinesViewModel @Inject constructor(
     }
 
     fun updateTaskStatus(task: Task, isCompleted: Boolean): Boolean {
-        val taskScope = uiState.value.allQuestsByType[uiState.value.selectedQuestSection]
-            ?.find { it.quest.id == task.questId }?.tasks
+        val taskScope = uiState.value.allTasksByQuestId[task.questId]
             ?.find { it.task.id == task.id || task.id in it.subtasks.map { subtask -> subtask.id } }
 
         if (taskScope == null) return true
