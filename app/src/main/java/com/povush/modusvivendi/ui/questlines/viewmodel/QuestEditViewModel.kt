@@ -3,6 +3,7 @@ package com.povush.modusvivendi.ui.questlines.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
@@ -30,7 +31,8 @@ data class QuestEditUiState(
     val tasks: List<TaskWithSubtasks> = emptyList(),
     // Other state values
     val isValid: Boolean = false,
-    val typeExpanded: Boolean = false
+    val typeExpanded: Boolean = false,
+    val isSaved: Boolean = false
 )
 
 @HiltViewModel
@@ -74,49 +76,21 @@ class QuestEditViewModel @Inject constructor(
         }
     }
 
-    fun saveQuestAndTasks(navigateBack: () -> Boolean) {
-//        viewModelScope.launch(Dispatchers.IO) {
-//            if (questId != -1L) { questsRepository.deleteQuestById(questId) }
-//
-//            val questId = questsRepository.insertQuest(Quest(
-//                name = uiState.value.name,
-//                type = uiState.value.type,
-//                difficulty = uiState.value.difficulty,
-//                description = uiState.value.description,
-//                isCompleted = uiState.value.isCompleted
-//            ))
-//
-//            uiState.value.tasks.forEach { taskWithSubtasks ->
-//                val task = taskWithSubtasks.task
-//                val subtasks = taskWithSubtasks.subtasks
-//
-//                val taskId = questsRepository.insertTask(Task(
-//                    questId = questId,
-//                    name = task.name,
-//                    isCompleted = task.isCompleted,
-//                    counter = task.counter,
-//                    isAdditional = task.isAdditional,
-//                    orderIndex = task.orderIndex
-//                ))
-//
-//                subtasks.forEach { subtask ->
-//                    questsRepository.insertTask(Task(
-//                        questId = questId,
-//                        parentTaskId = taskId,
-//                        name = subtask.name,
-//                        isCompleted = subtask.isCompleted,
-//                        counter = subtask.counter,
-//                        isAdditional = subtask.isAdditional,
-//                        orderIndex = subtask.orderIndex
-//                    ))
-//                }
-//            }
-//
-//            withContext(Dispatchers.Main) {
-//                delay(2000L)
-//                navigateBack()
-//            }
-//        }
+    fun saveQuestAndTasks() {
+        val oldQuestId = questId
+        val quest = Quest(
+            name = uiState.value.name,
+            type = uiState.value.type,
+            difficulty = uiState.value.difficulty,
+            description = uiState.value.description,
+            isCompleted = uiState.value.isCompleted
+        )
+        val tasks = uiState.value.tasks
+
+        viewModelScope.launch {
+            questsRepository.insertQuestAndTasksWithSubtasks(oldQuestId, quest, tasks)
+            _uiState.update { it.copy(isSaved = true) }
+        }
     }
 
     fun checkQuestCompletionStatus() {

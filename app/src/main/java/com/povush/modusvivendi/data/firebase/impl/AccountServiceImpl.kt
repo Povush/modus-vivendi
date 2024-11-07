@@ -4,6 +4,9 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.FirebaseAuthException
+import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
+import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.auth
 import com.povush.modusvivendi.data.firebase.AccountService
 import com.povush.modusvivendi.data.model.CountryProfile
@@ -36,8 +39,19 @@ class AccountServiceImpl @Inject constructor(
         return Firebase.auth.currentUser != null
     }
 
-    override suspend fun signIn(email: String, password: String) {
-        Firebase.auth.signInWithEmailAndPassword(email, password).await()
+    override suspend fun signIn(email: String, password: String): Result<Unit> {
+        return try {
+            Firebase.auth.signInWithEmailAndPassword(email, password).await()
+            Result.success(Unit)
+        } catch (e: FirebaseAuthInvalidUserException) {
+            Result.failure(Exception("User does not exist. Please register first."))
+        } catch (e: FirebaseAuthInvalidCredentialsException) {
+            Result.failure(Exception("Invalid password. Please try again."))
+        } catch (e: FirebaseAuthException) {
+            Result.failure(Exception("Authentication error: ${e.message}"))
+        } catch (e: Exception) {
+            Result.failure(Exception("Unknown error occurred: ${e.message}"))
+        }
     }
 
 //    suspend fun signIn(): IntentSender? {

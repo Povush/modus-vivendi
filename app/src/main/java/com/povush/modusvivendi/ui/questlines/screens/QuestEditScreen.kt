@@ -76,10 +76,6 @@ import sh.calvin.reorderable.ReorderableScope
 object QuestEditDestination : NavigationDestination {
     override val route = "edit_quest"
     override val titleRes = R.string.edit_quest
-
-    val routeWithArgs = { questId: Long, currentQuestSectionNumber: Int ->
-        "$route?questId=$questId&currentQuestSectionNumber=$currentQuestSectionNumber"
-    }
 }
 
 @Composable
@@ -88,6 +84,10 @@ fun QuestEditScreen(
     viewModel: QuestEditViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(uiState.isSaved) {
+        if (uiState.isSaved) navigateBack()
+    }
 
     LaunchedEffect(uiState.name, uiState.description, uiState.tasks) {
         viewModel.validate()
@@ -112,8 +112,8 @@ fun QuestEditScreen(
                 },
                 actions = {
                     IconButton(
-                        onClick = { viewModel.saveQuestAndTasks { navigateBack() } },
-                        enabled = false
+                        onClick = { viewModel.saveQuestAndTasks() },
+                        enabled = uiState.isValid
                     ) {
                         Icon(
                             imageVector = Icons.Filled.Done,

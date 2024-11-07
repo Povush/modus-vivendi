@@ -3,7 +3,9 @@ package com.povush.modusvivendi.ui.questlines.components
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
+import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -20,6 +22,7 @@ import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -34,6 +37,7 @@ import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.theme.VerticalSubtaskLine
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun TaskDisplay(
@@ -53,26 +57,28 @@ fun TaskDisplay(
 }
 
 @Composable
-private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Boolean, isEnabled: Boolean) {
+private fun TaskDisplayItem(
+    task: Task,
+    onCheckedChange: (Task, Boolean) -> Boolean,
+    isEnabled: Boolean
+) {
     val isSubtask = task.parentTaskId != null
     val context = LocalContext.current
     val view = LocalView.current
+    val coroutineScope = rememberCoroutineScope()
 
     var isCheckboxScaled by remember { mutableStateOf(false) }
     val scale by animateFloatAsState(
         targetValue = if (isCheckboxScaled) 0.8f else 1f,
-        animationSpec = tween(durationMillis = 300),
-        label = "Task animation"
+        animationSpec = spring(
+            dampingRatio = Spring.DampingRatioMediumBouncy,
+            stiffness = Spring.StiffnessLow
+        ),
+        label = "Task checkbox animation"
     )
 
     var taskHeightPx by remember { mutableIntStateOf(0) }
     val taskHeightDp = with(LocalDensity.current) { taskHeightPx.toDp() }
-
-    LaunchedEffect(task.isCompleted) {
-        isCheckboxScaled = true
-        delay(150)
-        isCheckboxScaled = false
-    }
 
     Row(modifier = Modifier.padding(horizontal = 8.dp)) {
         if (isSubtask) {
@@ -93,6 +99,11 @@ private fun TaskDisplayItem(task: Task, onCheckedChange: (Task, Boolean) -> Bool
             Checkbox(
                 checked = task.isCompleted,
                 onCheckedChange = {
+                    coroutineScope.launch {
+                        isCheckboxScaled = true
+                        delay(150)
+                        isCheckboxScaled = false
+                    }
                     val isChecked = onCheckedChange(task,it)
                     if (!isChecked) {
                         Toast.makeText(

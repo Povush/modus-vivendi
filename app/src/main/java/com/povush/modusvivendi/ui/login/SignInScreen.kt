@@ -13,6 +13,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -38,30 +39,11 @@ fun SignInScreen(
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
 
-    Scaffold(
-        modifier = Modifier,
-//        topBar = {
-//            TopAppBar(
-//                title = {  },
-//                navigationIcon = {
-//                    IconButton(onClick = { navigateBack() }) {
-//                        Icon(
-//                            imageVector = Icons.AutoMirrored.Filled.ArrowBack,
-//                            contentDescription = null,
-//                            tint = Color.Black,
-//                        )
-//                    }
-//                },
-//                colors = TopAppBarColors(
-//                    containerColor = Color.Transparent,
-//                    scrolledContainerColor = Color.Transparent,
-//                    navigationIconContentColor = Color.Black,
-//                    titleContentColor = Color.Transparent,
-//                    actionIconContentColor = Color.Transparent
-//                )
-//            )
-//        },
-    ) { innerPadding ->
+    LaunchedEffect(uiState.enter) {
+        if (uiState.enter) navigateToGame()
+    }
+
+    Scaffold { innerPadding ->
         Column(
             modifier = Modifier
                 .padding(innerPadding)
@@ -75,14 +57,16 @@ fun SignInScreen(
                 onValueChange = viewModel::onEmailChange,
                 label = { Text(text = "Email") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.bodyMedium
+                textStyle = MaterialTheme.typography.bodyMedium,
+                isError = uiState.error != null
             )
             TextField(
                 value = uiState.password,
                 onValueChange = viewModel::onPasswordChange,
                 label = { Text(text = "Password") },
                 modifier = Modifier.fillMaxWidth(),
-                textStyle = MaterialTheme.typography.bodyMedium
+                textStyle = MaterialTheme.typography.bodyMedium,
+                isError = uiState.error != null
             )
             Button(
                 onClick = { navigateToSignUp() },
@@ -91,10 +75,7 @@ fun SignInScreen(
                 Text(text = "I don't have an account yet")
             }
             Button(
-                onClick = {
-                    viewModel.enter()
-                    navigateToGame()
-                },
+                onClick = { viewModel.enter() },
                 modifier = Modifier.wrapContentSize()
             ) {
                 Text(text = "[S] Enter")

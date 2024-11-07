@@ -12,7 +12,9 @@ import javax.inject.Inject
 
 data class SignInUiState(
     val email: String = "",
-    val password: String = ""
+    val password: String = "",
+    val enter: Boolean = false,
+    val error: String? = null
 )
 
 @HiltViewModel
@@ -33,7 +35,12 @@ class SignInViewModel @Inject constructor(
 
     fun enter() {
         viewModelScope.launch {
-            accountService.signIn(uiState.value.email, uiState.value.password)
+            val result = accountService.signIn(uiState.value.email, uiState.value.password)
+            result.onSuccess {
+                _uiState.update { it.copy(enter = true) }
+            }.onFailure {
+                _uiState.update { it.copy(error = it.error) }
+            }
         }
     }
 }

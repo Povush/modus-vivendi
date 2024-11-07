@@ -8,7 +8,9 @@ import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.QuestWithTasks
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDao: TaskDao) {
     suspend fun insertQuest(quest: Quest): Long = questDao.insertQuest(quest)
@@ -37,21 +39,15 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
         questDao.getAllQuestsWithTasks()
     fun getAllQuests(): Flow<List<Quest>> = questDao.getAllQuests()
 
-    @Transaction
-    suspend fun saveQuestAndTasks(quest: Quest, tasks: List<TaskWithSubtasks>): Long {
-        deleteQuestById(quest.id)
-        val questId = insertQuest(quest)
-
-        tasks.forEach { taskWithSubtasks ->
-            val task = taskWithSubtasks.task.copy(questId = questId)
-            val taskId = insertTask(task)
-
-            taskWithSubtasks.subtasks.forEach { subtask ->
-                insertTask(subtask.copy(questId = questId, parentTaskId = taskId))
-            }
-        }
-        return questId
+    suspend fun insertQuestAndTasksWithSubtasks(
+        oldQuestId: Long,
+        quest: Quest,
+        tasks: List<TaskWithSubtasks>
+    ) {
+        questDao.insertQuestAndTasksWithSubtasks(oldQuestId, quest, tasks, taskDao)
     }
+
+
 }
 
 enum class QuestSortingMethod {

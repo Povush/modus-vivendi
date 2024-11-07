@@ -9,7 +9,11 @@ import androidx.room.Transaction
 import androidx.room.Update
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestWithTasks
+import com.povush.modusvivendi.data.model.Task
+import com.povush.modusvivendi.data.model.TaskWithSubtasks
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.withContext
 
 @Dao
 interface QuestDao {
@@ -54,4 +58,45 @@ interface QuestDao {
     @Transaction
     @Query("SELECT * FROM quests")
     fun getAllQuestsWithTasks(): Flow<List<QuestWithTasks>>
+
+    @Transaction
+    suspend fun insertQuestAndTasksWithSubtasks(
+        oldQuestId: Long,
+        quest: Quest,
+        tasks: List<TaskWithSubtasks>,
+        taskDao: TaskDao
+    ) {
+        if (oldQuestId != -1L) deleteQuestById(oldQuestId)
+        val questId = insertQuest(Quest(
+            name = quest.name,
+            type = quest.type,
+            difficulty = quest.difficulty,
+            description = quest.description,
+            isCompleted = quest.isCompleted
+        ))
+
+        tasks.forEach { taskWithSubtasks ->
+            val task = taskWithSubtasks.task
+            val subtasks = taskWithSubtasks.subtasks
+            val parentTaskId = taskDao.insertTask(Task(
+                questId = questId,
+                name = task.name,
+                isCompleted = task.isCompleted,
+                counter = task.counter,
+                isAdditional = task.isAdditional,
+                orderIndex = task.orderIndex
+            ))
+            subtasks.forEach { subtask ->
+                taskDao.insertTask(Task(
+                    questId = questId,
+                    parentTaskId = parentTaskId,
+                    name = subtask.name,
+                    isCompleted = subtask.isCompleted,
+                    counter = subtask.counter,
+                    isAdditional = subtask.isAdditional,
+                    orderIndex = subtask.orderIndex
+                ))
+            }
+        }
+    }
 }
