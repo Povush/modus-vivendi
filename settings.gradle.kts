@@ -21,4 +21,3 @@ dependencyResolutionManagement {
 
 rootProject.name = "Modus Vivendi"
 include(":app")
- 

@@ -59,6 +59,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
@@ -119,7 +120,8 @@ fun ModusVivendiModalDrawerSheet(
 
         Box(modifier = Modifier
             .background(Color.White)
-            .fillMaxHeight()) {
+            .fillMaxHeight()
+        ) {
             Spacer(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -183,16 +185,16 @@ private fun GameSections(
             .fillMaxHeight()
             .background(color = Color.White)
     ) {
-//        Column(
-//            modifier = Modifier
-//                .fillMaxWidth()
-//                .background(color = Color.White)
-//                .animateContentSize()
-//        ) {
-//            if (accountsExpanded) {
-//                Accounts(coatOfArmsRes, countryName)
-//            }
-//        }
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(color = Color.White)
+                .animateContentSize()
+        ) {
+            if (accountsExpanded) {
+                Accounts(coatOfArmsRes, countryName)
+            }
+        }
 
         Column(
             modifier = Modifier
@@ -279,47 +281,63 @@ private fun AvatarAndHandle(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
+//            Box(
+//                contentAlignment = Alignment.Center,
+//                modifier = Modifier.wrapContentSize()
+//            ) {
+//                if (isGodMode) {
+//                    Icon(
+//                        painter = painterResource(R.drawable.ic_spirograph_3),
+//                        contentDescription = null,
+//                        tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
+//                        modifier = Modifier
+//                            .size(24.dp)
+//                            .blur(30.dp)
+//                    )
+//                }
+                Icon(
+                    painter = painterResource(R.drawable.ic_spirograph_3),
+                    contentDescription = null,
+                    tint =
+                    if (isGodMode) MaterialTheme.colorScheme.onPrimary
+                    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
+                    modifier = Modifier
+                        .clip(CircleShape)
+                        .size(36.dp)
+                        .scale(scale)
+                        .padding(4.dp)
+                        .clickable {
+                            val message =
+                                if (!isGodMode) R.string.god_mode_is_on
+                                else R.string.god_mode_is_off
+                            onGodModeClicked()
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                            }
+                            Toast
+                                .makeText(context, context.getString(message), Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                )
+//            }
+
 //            Icon(
-//                painter = painterResource(R.drawable.ic_spirograph_3),
+//                imageVector = Icons.AutoMirrored.Default.ExitToApp,
 //                contentDescription = null,
-//                tint =
-//                    if (isGodMode) MaterialTheme.colorScheme.onPrimary
-//                    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
+//                tint = MaterialTheme.colorScheme.onPrimary,
 //                modifier = Modifier
 //                    .clip(CircleShape)
 //                    .size(36.dp)
-//                    .scale(scale)
 //                    .padding(4.dp)
-//                    .clickable {
-//                        val message =
-//                            if (!isGodMode) R.string.god_mode_is_on
-//                            else R.string.god_mode_is_off
-//                        onGodModeClicked()
-//                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-//                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-//                        }
-//                        Toast
-//                            .makeText(context, context.getString(message), Toast.LENGTH_SHORT)
-//                            .show()
-//                    }
+//                    .clickable { exitGame() }
 //            )
-            Icon(
-                imageVector = Icons.AutoMirrored.Default.ExitToApp,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier
-                    .clip(CircleShape)
-                    .size(36.dp)
-                    .padding(4.dp)
-                    .clickable { exitGame() }
-            )
         }
         Spacer(modifier = Modifier.size(16.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 16.dp),
-//                .clickable { onHandleClicked() },
+                .padding(horizontal = 16.dp)
+                .clickable { onHandleClicked() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
@@ -336,14 +354,14 @@ private fun AvatarAndHandle(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-//            Icon(
-//                imageVector =
-//                    if (!accountsExpanded) Icons.Default.ExpandMore
-//                    else Icons.Default.ExpandLess,
-//                contentDescription = null,
-//                tint = MaterialTheme.colorScheme.onPrimary,
-//                modifier = Modifier.padding(8.dp)
-//            )
+            Icon(
+                imageVector =
+                    if (!accountsExpanded) Icons.Default.ExpandMore
+                    else Icons.Default.ExpandLess,
+                contentDescription = null,
+                tint = MaterialTheme.colorScheme.onPrimary,
+                modifier = Modifier.padding(8.dp)
+            )
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
@@ -440,18 +458,11 @@ private fun GameMechanicsRoute(
     title: String,
     onClicked: () -> Unit
 ) {
-    val interactionSource = remember { MutableInteractionSource() }
-//    val indication = rememberRipple(color = Color.Red)
-
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClicked() }
             .padding(vertical = 4.dp),
-//            .indication(
-//                interactionSource = interactionSource,
-//                indication = indication
-//            ),
         verticalAlignment = Alignment.CenterVertically
     ) {
         Icon(

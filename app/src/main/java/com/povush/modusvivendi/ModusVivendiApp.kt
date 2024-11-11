@@ -23,8 +23,6 @@ import com.povush.modusvivendi.ui.login.SignUpDestination
 import com.povush.modusvivendi.ui.navigation.LoginDestination
 import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
-import com.povush.modusvivendi.ui.questlines.screens.QuestEditDestination
-import com.povush.modusvivendi.ui.splash.SplashDestination
 import com.povush.modusvivendi.ui.technologies.TechnologiesDestination
 import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
 import com.povush.modusvivendi.ui.treasure.TreasureDestination

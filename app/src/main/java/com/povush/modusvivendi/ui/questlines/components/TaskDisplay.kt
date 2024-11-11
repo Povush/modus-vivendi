@@ -83,7 +83,7 @@ private fun TaskDisplayItem(
     Row(modifier = Modifier.padding(horizontal = 8.dp)) {
         if (isSubtask) {
             Box(
-                modifier = Modifier.size(17.dp,taskHeightDp),
+                modifier = Modifier.size(15.dp,taskHeightDp),
                 contentAlignment = Alignment.CenterEnd
             ) {
                 VerticalSubtaskLine()

@@ -46,8 +46,6 @@ class OfflineQuestsRepository(private val questDao: QuestDao, private val taskDa
     ) {
         questDao.insertQuestAndTasksWithSubtasks(oldQuestId, quest, tasks, taskDao)
     }
-
-
 }
 
 enum class QuestSortingMethod {
