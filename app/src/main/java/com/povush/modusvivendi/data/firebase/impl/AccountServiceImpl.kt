@@ -8,12 +8,16 @@ import com.google.firebase.auth.FirebaseAuthException
 import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.auth
+import com.google.firebase.firestore.firestore
 import com.povush.modusvivendi.data.firebase.AccountService
 import com.povush.modusvivendi.data.model.CountryProfile
+import com.povush.modusvivendi.data.model.User
 import dagger.hilt.android.qualifiers.ApplicationContext
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.tasks.await
 import javax.inject.Inject
 
@@ -21,18 +25,38 @@ class AccountServiceImpl @Inject constructor(
     @ApplicationContext private val context: Context
 ) : AccountService {
 
-//    private val activity = context as Activity
     private val credentialManager = CredentialManager.create(context)
-    private val auth = Firebase.auth
 
-    override val currentProfile: Flow<CountryProfile?>
+    override val currentUser: Flow<User?>
         get() = callbackFlow {
             val listener =
                 FirebaseAuth.AuthStateListener { auth ->
-                    this.trySend(auth.currentUser?.let { CountryProfile(it.uid) })
+                    this.trySend(auth.currentUser?.let { User(it.uid) })
                 }
             Firebase.auth.addAuthStateListener(listener)
             awaitClose { Firebase.auth.removeAuthStateListener(listener) }
+        }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
+    override val currentCountryProfile: Flow<CountryProfile?>
+        get() = currentUser.flatMapLatest { user ->
+            callbackFlow {
+                val query = Firebase.firestore
+                    .collection("profiles")
+                    .whereEqualTo("userId", user?.id)
+
+                val listener = query.addSnapshotListener { snapshot, exception ->
+                    if (exception != null) {
+                        close(exception)
+                        return@addSnapshotListener
+                    }
+
+                    val profile = snapshot?.documents?.firstOrNull()?.toObject(CountryProfile::class.java)
+                    trySend(profile)
+                }
+
+                awaitClose { listener.remove() }
+            }
         }
 
     override fun hasProfile(): Boolean {

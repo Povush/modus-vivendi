@@ -48,4 +48,5 @@
     <string name="god_mode_is_off">God mode is OFF!</string>
     <string name="complete_quest">Complete quest</string>
     <string name="default_notification_channel_id">modus_vivendi_notification_channel</string>
+    <string name="exit_game">Exit game</string>
 </resources>

@@ -31,6 +31,19 @@ class ModalNavigationViewModel @Inject constructor(
     ))
     val uiState = _uiState.asStateFlow()
 
+    init {
+        viewModelScope.launch {
+            accountService.currentCountryProfile.collect { countryProfile ->
+                countryProfile?.let { currentProfile ->
+                    _uiState.update { it.copy(
+                        countryName = currentProfile.countryName,
+                        handle = currentProfile.handle
+                    ) }
+                }
+            }
+        }
+    }
+
     fun onHandleClicked() {
         _uiState.update {
             it.copy(accountsExpanded = !uiState.value.accountsExpanded)

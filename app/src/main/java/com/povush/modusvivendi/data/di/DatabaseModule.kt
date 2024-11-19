@@ -1,10 +1,10 @@
-package com.povush.modusvivendi.data.db.module
+package com.povush.modusvivendi.data.di
 
 import android.content.Context
 import com.povush.modusvivendi.data.db.ModusVivendiDatabase
 import com.povush.modusvivendi.data.db.dao.QuestDao
 import com.povush.modusvivendi.data.db.dao.TaskDao
-import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
+import com.povush.modusvivendi.data.db.offline_repository.OfflineQuestlinesRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -34,10 +34,10 @@ object DatabaseModule {
 
     @Provides
     @Singleton
-    fun provideOfflineQuestsRepository(
+    fun provideOfflineQuestlinesRepository(
         questDao: QuestDao,
         taskDao: TaskDao
-    ): OfflineQuestsRepository {
-        return OfflineQuestsRepository(questDao, taskDao)
+    ): OfflineQuestlinesRepository {
+        return OfflineQuestlinesRepository(questDao, taskDao)
     }
 }

@@ -47,25 +47,20 @@ fun ModusVivendiApp(
                    to turn on MainParametersBar in settings*/
                 /*TODO: Ability to disable the MainParametersBar*/
                 /*TODO: Make parameters interactive*/
-                MainParametersBar(listOf(
-                    MainParameterData(value = "4820",iconIdRes = R.drawable.ic_money)
-                    { navController.navigate(TreasureDestination.route) },
-
-                    MainParameterData(value = "240",iconIdRes = R.drawable.ic_development_5)
-                    { navController.navigate(DomainDestination.route) },
-
-                    MainParameterData(value = "105",iconIdRes = R.drawable.ic_willpower)
-                    { navController.navigate(ThoughtrealmDestination.route) },
-
-                    MainParameterData(value = "+2",iconIdRes = R.drawable.ic_stability)
-                    { navController.navigate(ThoughtrealmDestination.route) },
-
-                    MainParameterData(value = "86",iconIdRes = R.drawable.ic_crown_2)
-                    { navController.navigate(ThoughtrealmDestination.route) },
-
-                    MainParameterData(value = "37",iconIdRes = R.drawable.ic_innovativeness)
-                    { navController.navigate(TechnologiesDestination.route) }
-                ))
+                MainParametersBar(
+                    mainParameters = listOf(
+                        MainParameterData(value = "4820",iconIdRes = R.drawable.ic_money),
+                        MainParameterData(value = "240",iconIdRes = R.drawable.ic_development_5),
+                        MainParameterData(value = "105",iconIdRes = R.drawable.ic_willpower),
+                        MainParameterData(value = "+2",iconIdRes = R.drawable.ic_stability),
+                        MainParameterData(value = "86",iconIdRes = R.drawable.ic_crown_2),
+                        MainParameterData(value = "37",iconIdRes = R.drawable.ic_innovativeness)
+                    ),
+                    onParameterClicked = { navigationDestination ->
+                        coroutineScope.launch { drawerState.close() }
+                        navController.navigate(navigationDestination.route)
+                    }
+                )
             }
         }
     ) { innerPadding ->
@@ -81,7 +76,8 @@ fun ModusVivendiApp(
                     navController.navigate(LoginDestination.route) {
                         popUpTo(LoginDestination.route) { inclusive = true }
                     }
-                }
+                },
+                currentDestination = navController.currentDestination?.route
             ) },
             modifier = Modifier.padding(innerPadding),
             gesturesEnabled = isModalNavigationGesturesEnabled(navController)
@@ -120,6 +116,7 @@ private fun isMainParametersBarDisplayed(navController: NavHostController): Bool
     val currentDestination = currentBackStackEntry?.destination?.route
 
     val isDisplayed = mapOf(
+        "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}" to false,
         SignInDestination.route to false,
         SignUpDestination.route to false
     )

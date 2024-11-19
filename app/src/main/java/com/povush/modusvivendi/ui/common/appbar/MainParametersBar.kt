@@ -36,15 +36,23 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import com.povush.modusvivendi.R
+import com.povush.modusvivendi.ui.domain.DomainDestination
+import com.povush.modusvivendi.ui.navigation.NavigationDestination
+import com.povush.modusvivendi.ui.technologies.TechnologiesDestination
+import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
+import com.povush.modusvivendi.ui.treasure.TreasureDestination
 
 data class MainParameterData(
     @DrawableRes val iconIdRes: Int,
-    val value: String,
-    val navigation: () -> Unit
+    val value: String
 )
 
 @Composable
-fun MainParametersBar(mainParameters: List<MainParameterData>) {
+fun MainParametersBar(
+    mainParameters: List<MainParameterData>,
+    onParameterClicked: (NavigationDestination) -> Unit
+) {
     var screenWidth by remember { mutableFloatStateOf(0f) }
     var mainParametersWidth by remember { mutableFloatStateOf(0f) }
 
@@ -73,7 +81,11 @@ fun MainParametersBar(mainParameters: List<MainParameterData>) {
             horizontalArrangement = Arrangement.spacedBy(6.dp)
         ) {
             mainParameters.forEach { mainParameter ->
-                MainParameter(mainParameter.iconIdRes, mainParameter.value, mainParameter.navigation)
+                MainParameter(
+                    iconIdRes = mainParameter.iconIdRes,
+                    value = mainParameter.value,
+                    onParameterClicked = onParameterClicked
+                )
             }
         }
     }
@@ -83,8 +95,15 @@ fun MainParametersBar(mainParameters: List<MainParameterData>) {
 fun MainParameter(
     @DrawableRes iconIdRes: Int,
     value: String,
-    navigation: () -> Unit
+    onParameterClicked: (NavigationDestination) -> Unit
 ) {
+    val navigationDestination = when(iconIdRes) {
+        R.drawable.ic_money -> TreasureDestination
+        R.drawable.ic_development_5 -> DomainDestination
+        R.drawable.ic_innovativeness -> TechnologiesDestination
+        else -> ThoughtrealmDestination
+    }
+
     /**
      * This is dotted line for MainParameter stroke.
       */
@@ -110,7 +129,7 @@ fun MainParameter(
         Row(
             modifier = Modifier
                 .padding(horizontal = 4.dp, vertical = 2.dp)
-                .clickable { navigation() },
+                .clickable { onParameterClicked(navigationDestination) },
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {

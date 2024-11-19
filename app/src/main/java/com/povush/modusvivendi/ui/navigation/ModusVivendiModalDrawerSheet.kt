@@ -1,15 +1,24 @@
 package com.povush.modusvivendi.ui.navigation
 
+import androidx.compose.foundation.OverscrollEffect
 import android.os.Build
 import android.view.HapticFeedbackConstants
 import android.widget.Toast
 import androidx.annotation.DrawableRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandVertically
+import androidx.compose.animation.shrinkVertically
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.gestures.ScrollableDefaults.overscrollEffect
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,9 +30,12 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.overscroll
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
@@ -45,17 +57,21 @@ import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.filled.Workspaces
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -74,6 +90,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -84,6 +101,7 @@ import androidx.navigation.compose.rememberNavController
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.about_universe.AboutUniverseDestination
 import com.povush.modusvivendi.ui.appearance.AppearanceDestination
+import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
 import com.povush.modusvivendi.ui.domain.DomainDestination
 import com.povush.modusvivendi.ui.ecumene.EcumeneDestination
 import com.povush.modusvivendi.ui.map.MapDestination
@@ -102,6 +120,7 @@ fun ModusVivendiModalDrawerSheet(
     navController: NavHostController,
     closeDrawerState: () -> Unit,
     navigateToLogin: () -> Unit,
+    currentDestination: String?,
     viewModel: ModalNavigationViewModel = hiltViewModel()
 ) {
     ModalDrawerSheet(
@@ -128,7 +147,10 @@ fun ModusVivendiModalDrawerSheet(
                     .height(60.dp)
                     .background(MaterialTheme.colorScheme.primary)
             )
-            Column(modifier = Modifier.verticalScroll(scrollState)) {
+            Column(
+                modifier = Modifier
+                    .verticalScroll(scrollState)
+            ) {
                 AvatarAndHandle(
                     coatOfArmsRes = uiState.coatOfArmsRes,
                     countryName = uiState.countryName,
@@ -136,18 +158,19 @@ fun ModusVivendiModalDrawerSheet(
                     onHandleClicked = viewModel::onHandleClicked,
                     onGodModeClicked = viewModel::switchGodMode,
                     isGodMode = uiState.isGodMode,
-                    accountsExpanded = uiState.accountsExpanded,
-                    exitGame = {
-                        viewModel.exitGame()
-                        navigateToLogin()
-                    }
+                    accountsExpanded = uiState.accountsExpanded
                 )
                 GameSections(
                     navController = navController,
                     closeDrawerState = closeDrawerState,
                     accountsExpanded = uiState.accountsExpanded,
                     countryName = uiState.countryName,
-                    coatOfArmsRes = uiState.coatOfArmsRes
+                    coatOfArmsRes = uiState.coatOfArmsRes,
+                    exitGame = {
+                        viewModel.exitGame()
+                        navigateToLogin()
+                    },
+                    currentDestination = currentDestination
                 )
             }
         }
@@ -160,7 +183,9 @@ private fun GameSections(
     closeDrawerState: () -> Unit,
     accountsExpanded: Boolean,
     countryName: String,
-    @DrawableRes coatOfArmsRes: Int
+    @DrawableRes coatOfArmsRes: Int,
+    exitGame: () -> Unit,
+    currentDestination: String?
 ) {
     val gameMechanicsRoutes: List<Pair<ImageVector, NavigationDestination>> = listOf(
         Icons.Default.Gavel to ThoughtrealmDestination,
@@ -184,32 +209,31 @@ private fun GameSections(
         modifier = Modifier
             .fillMaxHeight()
             .background(color = Color.White)
+            .animateContentSize()
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(color = Color.White)
-                .animateContentSize()
+        AnimatedVisibility(
+            visible = accountsExpanded,
+            enter = expandVertically(), // Появление сверху
+            exit = shrinkVertically() // Исчезновение вверх
         ) {
-            if (accountsExpanded) {
-                Accounts(coatOfArmsRes, countryName)
-            }
+            Accounts(coatOfArmsRes, countryName, exitGame)
         }
-
-        Column(
-            modifier = Modifier
-                .padding(vertical = 8.dp)
-        ) {
+        Column(modifier = Modifier.padding(vertical = 8.dp)) {
             gameMechanicsRoutes.forEach { pair ->
                 val icon = pair.first
                 val destination = pair.second
 
-                GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
-                    if (navController.currentDestination?.route != destination.route) {
-                        navController.navigate(destination.route)
-                    }
-                    closeDrawerState()
-                }
+                GameMechanicsRoute(
+                    iconImageVector = icon,
+                    title = stringResource(destination.titleRes),
+                    onClicked = {
+                        if (navController.currentDestination?.route != destination.route) {
+                            navController.navigate(destination.route)
+                        }
+                        closeDrawerState()
+                    },
+                    isChosen = currentDestination == destination.route
+                )
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 8.dp))
@@ -218,12 +242,17 @@ private fun GameSections(
                 val icon = pair.first
                 val destination = pair.second
 
-                GameMechanicsRoute(icon, stringResource(destination.titleRes)) {
-                    if (navController.currentDestination?.route != destination.route) {
-                        navController.navigate(destination.route)
-                    }
-                    closeDrawerState()
-                }
+                GameMechanicsRoute(
+                    iconImageVector = icon,
+                    title = stringResource(destination.titleRes),
+                    onClicked = {
+                        if (navController.currentDestination?.route != destination.route) {
+                            navController.navigate(destination.route)
+                        }
+                        closeDrawerState()
+                    },
+                    isChosen = currentDestination == destination.route
+                )
             }
         }
     }
@@ -238,7 +267,6 @@ private fun AvatarAndHandle(
     onGodModeClicked: () -> Unit,
     isGodMode: Boolean,
     accountsExpanded: Boolean,
-    exitGame: () -> Unit
 ) {
     val context = LocalContext.current
     val view = LocalView.current
@@ -281,63 +309,43 @@ private fun AvatarAndHandle(
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-//            Box(
-//                contentAlignment = Alignment.Center,
-//                modifier = Modifier.wrapContentSize()
-//            ) {
-//                if (isGodMode) {
-//                    Icon(
-//                        painter = painterResource(R.drawable.ic_spirograph_3),
-//                        contentDescription = null,
-//                        tint = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.2f),
-//                        modifier = Modifier
-//                            .size(24.dp)
-//                            .blur(30.dp)
-//                    )
-//                }
-                Icon(
-                    painter = painterResource(R.drawable.ic_spirograph_3),
-                    contentDescription = null,
-                    tint =
-                    if (isGodMode) MaterialTheme.colorScheme.onPrimary
-                    else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
-                    modifier = Modifier
-                        .clip(CircleShape)
-                        .size(36.dp)
-                        .scale(scale)
-                        .padding(4.dp)
-                        .clickable {
-                            val message =
-                                if (!isGodMode) R.string.god_mode_is_on
-                                else R.string.god_mode_is_off
-                            onGodModeClicked()
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
-                                view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
-                            }
-                            Toast
-                                .makeText(context, context.getString(message), Toast.LENGTH_SHORT)
-                                .show()
+            Icon(
+                painter = painterResource(R.drawable.ic_spirograph_3),
+                contentDescription = null,
+                tint =
+                if (isGodMode) MaterialTheme.colorScheme.onPrimary
+                else MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.75f),
+                modifier = Modifier
+                    .clip(CircleShape)
+                    .size(36.dp)
+                    .scale(scale)
+                    .padding(4.dp)
+                    .clickable(
+                        indication = null,
+                        interactionSource = remember { MutableInteractionSource() }
+                    ) {
+                        val message =
+                            if (!isGodMode) R.string.god_mode_is_on
+                            else R.string.god_mode_is_off
+                        onGodModeClicked()
+                        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.UPSIDE_DOWN_CAKE) {
+                            view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
                         }
-                )
-//            }
-
-//            Icon(
-//                imageVector = Icons.AutoMirrored.Default.ExitToApp,
-//                contentDescription = null,
-//                tint = MaterialTheme.colorScheme.onPrimary,
-//                modifier = Modifier
-//                    .clip(CircleShape)
-//                    .size(36.dp)
-//                    .padding(4.dp)
-//                    .clickable { exitGame() }
-//            )
+                        Toast
+                            .makeText(context, context.getString(message), Toast.LENGTH_SHORT)
+                            .show()
+                    }
+            )
         }
         Spacer(modifier = Modifier.size(16.dp))
         Row(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 16.dp)
-                .clickable { onHandleClicked() },
+                .clickable(
+                    indication = null,
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { onHandleClicked() },
             verticalAlignment = Alignment.CenterVertically
         ) {
             Column {
@@ -368,7 +376,15 @@ private fun AvatarAndHandle(
 }
 
 @Composable
-private fun Accounts(coatOfArmsRes: Int, countryName: String) {
+private fun Accounts(
+    coatOfArmsRes: Int,
+    countryName: String,
+    exitGame: () -> Unit
+) {
+    val view = LocalView.current
+
+    var menuExpanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier
             .background(color = Color.White)
@@ -383,9 +399,31 @@ private fun Accounts(coatOfArmsRes: Int, countryName: String) {
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .fillMaxWidth()
-                .clickable { }
+                .combinedClickable(
+                    onClick = { /*TODO*/ },
+                    onLongClick = {
+                        view.performHapticFeedback(HapticFeedbackConstants.LONG_PRESS)
+                        menuExpanded = true
+                    }
+                )
                 .padding(vertical = 2.dp)
         ) {
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+                modifier = Modifier
+                    .background(Color.White)
+                    .wrapContentHeight(),
+                shape = RoundedCornerShape(8.dp),
+                shadowElevation = 8.dp,
+                offset = DpOffset(x = 8.dp, y = 4.dp)
+            ) {
+                ModusVivendiDropdownMenuItem(R.string.exit_game) {
+                    menuExpanded = false
+                    exitGame()
+                }
+            }
+
             Box(
                 contentAlignment = Alignment.BottomEnd,
                 modifier = Modifier
@@ -426,7 +464,7 @@ private fun Accounts(coatOfArmsRes: Int, countryName: String) {
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = 2.dp)
-                .clickable { }
+                .clickable { /*TODO*/ }
         ) {
             Icon(
                 imageVector = Icons.Default.Add,
@@ -456,12 +494,14 @@ private fun Accounts(coatOfArmsRes: Int, countryName: String) {
 private fun GameMechanicsRoute(
     iconImageVector: ImageVector,
     title: String,
-    onClicked: () -> Unit
+    onClicked: () -> Unit,
+    isChosen: Boolean
 ) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
             .clickable { onClicked() }
+            .background(color = if (isChosen) lerp(Color.White, Color.Black, 0.1f) else Color.White)
             .padding(vertical = 4.dp),
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -484,6 +524,6 @@ fun ModusVivendiModalDrawerSheetPreview() {
     val navController = rememberNavController()
 
     NationalTheme {
-        ModusVivendiModalDrawerSheet(navController, {}, {})
+        ModusVivendiModalDrawerSheet(navController, {}, {}, null)
     }
 }

@@ -3,9 +3,6 @@ package com.povush.modusvivendi
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
-import android.view.ViewGroup
-import android.view.WindowManager
-import android.widget.Button
 import android.Manifest
 import android.content.ContentValues.TAG
 import android.util.Log
@@ -14,7 +11,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.Surface
@@ -22,7 +18,6 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
 import androidx.core.content.ContextCompat
-import androidx.core.view.WindowCompat
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.povush.modusvivendi.data.firebase.AccountService

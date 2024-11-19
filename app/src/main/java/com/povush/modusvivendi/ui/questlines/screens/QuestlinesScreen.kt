@@ -92,6 +92,10 @@ fun QuestlinesScreen(
         }
     }
 
+    LaunchedEffect(uiState.expandedStates) {
+        viewModel.updateCollapseButton()
+    }
+
     Scaffold(
         modifier = Modifier,
         topBar = {
@@ -118,10 +122,7 @@ fun QuestlinesScreen(
                         )
                     }
                     IconButton(
-                        onClick = {
-                            if (uiState.collapseEnabled) viewModel.collapseAll()
-                            else viewModel.expandAll()
-                        }
+                        onClick = viewModel::toggleExpandButton
                     ) {
                         Icon(
                             painter = if (uiState.collapseEnabled) {

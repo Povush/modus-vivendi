@@ -3,22 +3,20 @@ package com.povush.modusvivendi.ui.questlines.viewmodel
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
-import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
+import com.povush.modusvivendi.data.db.offline_repository.OfflineQuestlinesRepository
+import com.povush.modusvivendi.domain.QuestlinesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class QuestEditUiState(
@@ -37,7 +35,7 @@ data class QuestEditUiState(
 
 @HiltViewModel
 class QuestEditViewModel @Inject constructor(
-    private val questsRepository: OfflineQuestsRepository,
+    private val questlinesRepository: QuestlinesRepository,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
     val questId: Long = savedStateHandle["questId"] ?: -1L
@@ -55,7 +53,7 @@ class QuestEditViewModel @Inject constructor(
     private fun loadData() {
         if (questId != -1L) {
             viewModelScope.launch(Dispatchers.IO) {
-                questsRepository.getQuestById(questId).also { quest ->
+                questlinesRepository.getQuestById(questId).also { quest ->
                     _uiState.update { it.copy(
                         name = quest.name,
                         type = quest.type,
@@ -64,7 +62,7 @@ class QuestEditViewModel @Inject constructor(
                         isCompleted = quest.isCompleted
                         ) }
                 }
-                questsRepository.getAllTasksWithSubtasksByQuestId(questId).also { tasks ->
+                questlinesRepository.getAllTasksWithSubtasksByQuestId(questId).also { tasks ->
                     val sortedTasks = tasks.map {
                         it.copy(subtasks = it.subtasks.sortedBy { subtask -> subtask.orderIndex })
                     }
@@ -88,7 +86,7 @@ class QuestEditViewModel @Inject constructor(
         val tasks = uiState.value.tasks
 
         viewModelScope.launch {
-            questsRepository.insertQuestAndTasksWithSubtasks(oldQuestId, quest, tasks)
+            questlinesRepository.insertQuestAndTasksWithSubtasks(oldQuestId, quest, tasks)
             _uiState.update { it.copy(isSaved = true) }
         }
     }

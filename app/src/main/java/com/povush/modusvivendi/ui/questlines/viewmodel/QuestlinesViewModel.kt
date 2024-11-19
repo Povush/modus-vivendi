@@ -7,20 +7,16 @@ import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.QuestWithTasks
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
-import com.povush.modusvivendi.data.repository.OfflineQuestsRepository
-import com.povush.modusvivendi.data.repository.QuestSortingMethod
+import com.povush.modusvivendi.data.db.offline_repository.QuestSortingMethod
+import com.povush.modusvivendi.domain.QuestlinesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.delay
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
 data class QuestlinesUiState(
@@ -36,12 +32,11 @@ data class QuestlinesUiState(
 
 @HiltViewModel
 class QuestlinesViewModel @Inject constructor(
-    private val questsRepository: OfflineQuestsRepository
+    private val questlinesRepository: QuestlinesRepository
 ) : ViewModel() {
 
     private val _uiState = MutableStateFlow(QuestlinesUiState())
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
-
 
     init {
         loadQuests()
@@ -49,7 +44,7 @@ class QuestlinesViewModel @Inject constructor(
 
     private fun loadQuests() {
         viewModelScope.launch {
-            questsRepository.getAllQuests().collect { quests ->
+            questlinesRepository.getAllQuests().collect { quests ->
                 val groupedQuests = quests.groupBy { it.type }
                 val currentExpandedStates = uiState.value.expandedStates
 
@@ -64,7 +59,7 @@ class QuestlinesViewModel @Inject constructor(
 
                 groupedQuests.values.flatten().forEach { quest ->
                     launch {
-                        questsRepository.getAllTasksWithSubtasksStreamByQuestId(quest.id).collect { tasks ->
+                        questlinesRepository.getAllTasksWithSubtasksStreamByQuestId(quest.id).collect { tasks ->
                             _uiState.update {
                                 it.copy(
                                     allTasksByQuestId = it.allTasksByQuestId.toMutableMap().apply {
@@ -79,6 +74,27 @@ class QuestlinesViewModel @Inject constructor(
         }
     }
 
+    fun updateCollapseButton() {
+        if (uiState.value.expandedStates.any { it.value }) {
+            _uiState.update {
+                it.copy(collapseEnabled = true)
+            }
+        } else {
+            _uiState.update {
+                it.copy(collapseEnabled = false)
+            }
+        }
+    }
+
+    fun toggleExpandButton() {
+        val updatedExpandedStates = uiState.value.expandedStates
+            .mapValues { !uiState.value.collapseEnabled }
+
+        _uiState.update {
+            it.copy(expandedStates = updatedExpandedStates)
+        }
+    }
+
     fun checkCompletionStatus(questWithTasks: QuestWithTasks) {
         val quest = questWithTasks.quest
         val tasks = questWithTasks.tasks
@@ -86,7 +102,7 @@ class QuestlinesViewModel @Inject constructor(
 
         if (isCompleted != quest.isCompleted) {
             viewModelScope.launch(Dispatchers.IO) {
-                questsRepository.updateQuest(quest.copy(isCompleted = isCompleted))
+                questlinesRepository.updateQuest(quest.copy(isCompleted = isCompleted))
             }
 
             _uiState.update { currentState ->
@@ -106,7 +122,7 @@ class QuestlinesViewModel @Inject constructor(
 
     fun completeQuest(quest: Quest) {
         viewModelScope.launch {
-            questsRepository.updateQuest(quest.copy(type = QuestType.COMPLETED))
+            questlinesRepository.updateQuest(quest.copy(type = QuestType.COMPLETED))
         }
     }
 
@@ -115,15 +131,15 @@ class QuestlinesViewModel @Inject constructor(
             ?.find { it.task.id == task.id || task.id in it.subtasks.map { subtask -> subtask.id } }
 
         if (taskScope == null) return true
-        if (task.parentTaskId == null &&                                                                        // Task with uncompleted non-additional subtasks
+        if (task.parentTaskId == null &&                                                            // Task with uncompleted non-additional subtasks
             taskScope.subtasks.any { subtask -> !subtask.isCompleted && !subtask.isAdditional }) {
             return false
         }
 
         viewModelScope.launch(Dispatchers.IO) {
-            questsRepository.updateTask(task.copy(isCompleted = isCompleted))
+            questlinesRepository.updateTask(task.copy(isCompleted = isCompleted))
             if (task.parentTaskId != null && !task.isAdditional && taskScope.task.isCompleted && !isCompleted) {
-                questsRepository.updateTask(taskScope.task.copy(isCompleted = false))
+                questlinesRepository.updateTask(taskScope.task.copy(isCompleted = false))
             }
         }
         return true
@@ -131,7 +147,7 @@ class QuestlinesViewModel @Inject constructor(
 
     fun deleteQuest(quest: Quest) {
         viewModelScope.launch {
-            questsRepository.deleteQuest(quest)
+            questlinesRepository.deleteQuest(quest)
         }
     }
 
@@ -147,33 +163,6 @@ class QuestlinesViewModel @Inject constructor(
                 }
             )
         }
-    }
-
-    fun collapseAll() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(expandAll = false) }
-            delay(1000)
-            _uiState.update { it.copy(expandAll = null) }
-        }
-    }
-
-    fun expandAll() {
-        viewModelScope.launch {
-            _uiState.update { it.copy(expandAll = true) }
-            delay(1000)
-            _uiState.update { it.copy(expandAll = null) }
-        }
-    }
-
-//    fun onExpandToggle(questId: Long, isExpanded: Boolean) {
-//        _expandedQuests.update { expandedQuests ->
-//            if (isExpanded) expandedQuests + questId
-//            else expandedQuests - questId
-//        }
-//    }
-
-    fun changeCollapseEnabled(isEnabled: Boolean) {
-        _uiState.update { it.copy(collapseEnabled = isEnabled) }
     }
 
     fun switchQuestSection(index: Int) {
