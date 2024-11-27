@@ -79,12 +79,13 @@ fun QuestCard(
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     changeQuestExpandStatus: (Quest) -> Unit,
     deleteQuest: (Quest) -> Unit,
-    updateTaskStatus: (Task, Boolean) -> Boolean,
+    updateTaskStatus: (Task, Boolean, List<Task>?) -> Boolean,
     completeQuest: (Quest) -> Unit,
     checkCompletionStatus: (QuestWithTasks) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val view = LocalView.current
+    val canBeCompleted = quest.isCompleted && quest.type != QuestType.COMPLETED && quest.type != QuestType.FAILED
 
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -191,12 +192,12 @@ fun QuestCard(
                 key(taskWithSubtasks.task.id) {
                     TaskDisplay(
                         taskWithSubtasks = taskWithSubtasks,
-                        onCheckedChange = { task, isCompleted -> updateTaskStatus(task, isCompleted) },
+                        onCheckedChange = { task, isCompleted, subtasks -> updateTaskStatus(task, isCompleted, subtasks) },
                         isEnabled = quest.type != QuestType.FAILED && quest.type != QuestType.COMPLETED
                     )
                 }
             }
-            if (quest.isCompleted && quest.type != QuestType.COMPLETED && quest.type != QuestType.FAILED) {
+            if (canBeCompleted) {
                 Spacer(modifier = Modifier.size(8.dp))
                 Button(
                     onClick = { completeQuest(quest) },

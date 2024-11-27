@@ -25,6 +25,12 @@ interface TaskDao {
     @Query("DELETE FROM tasks WHERE questId = :questId")
     suspend fun deleteTasksByQuestId(questId: Long)
 
+    @Query("SELECT * FROM tasks WHERE id = :taskId")
+    suspend fun getTaskById(taskId: Long): Task?
+
+    @Query("SELECT * FROM tasks WHERE parentTaskId = :parentTaskId")
+    suspend fun getSubtasksByParentId(parentTaskId: Long): List<Task>
+
     @Query("SELECT * FROM tasks WHERE questId = :questId ORDER BY orderIndex")
     fun getAllTasksByQuestId(questId: Long): Flow<List<Task>>
 

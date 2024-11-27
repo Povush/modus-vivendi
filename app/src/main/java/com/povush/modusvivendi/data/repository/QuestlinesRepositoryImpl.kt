@@ -33,6 +33,10 @@ class QuestlinesRepositoryImpl @Inject constructor(
         offlineQuestlinesRepository.insertQuestAndTasksWithSubtasks(oldQuestId, quest, tasks)
     }
 
+    override suspend fun getTaskScope(task: Task): TaskWithSubtasks? {
+        return offlineQuestlinesRepository.getTaskScope(task)
+    }
+
     override fun getAllTasksWithSubtasksStreamByQuestId(questId: Long): Flow<List<TaskWithSubtasks>> {
         return offlineQuestlinesRepository.getAllTasksWithSubtasksStreamByQuestId(questId)
     }

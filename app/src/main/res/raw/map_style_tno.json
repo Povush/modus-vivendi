@@ -1,0 +1,104 @@
+[
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["land"]
+    },
+    "stylers": {
+      "color": "#2b2b2b",
+      "lightness": -0.6
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["water"]
+    },
+    "stylers": {
+      "color": "#000000",
+      "opacity": 0.9
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["urban_area"]
+    },
+    "stylers": {
+      "color": "#3b3b3b",
+      "lightness": -0.5
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["park"]
+    },
+    "stylers": {
+      "color": "#1e1e1e",
+      "opacity": 0.7
+    }
+  },
+  {
+    "types": "polyline",
+    "tags": {
+      "all": ["road"]
+    },
+    "stylers": {
+      "color": "#4d4d4d",
+      "lightness": -0.4
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["building"]
+    },
+    "stylers": {
+      "color": "#5e5e5e",
+      "lightness": -0.3
+    }
+  },
+  {
+    "types": "polyline",
+    "tags": {
+      "all": ["border"]
+    },
+    "stylers": {
+      "color": "#ffffff",
+      "opacity": 1.0,
+      "scale": 1.5
+    }
+  },
+  {
+    "types": "point",
+    "tags": {
+      "all": ["poi"]
+    },
+    "stylers": {
+      "color": "#6c6c6c",
+      "opacity": 0.9,
+      "scale": 1.0
+    }
+  },
+  {
+    "types": "polyline",
+    "tags": {
+      "all": ["transit_line"]
+    },
+    "stylers": {
+      "color": "#3e3e3e",
+      "opacity": 0.6
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["urban_area"]
+    },
+    "stylers": {
+      "color": "#333333",
+      "lightness": -0.4
+    }
+  }
+]

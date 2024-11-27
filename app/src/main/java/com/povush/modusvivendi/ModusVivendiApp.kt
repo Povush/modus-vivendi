@@ -20,6 +20,7 @@ import com.povush.modusvivendi.ui.common.appbar.MainParametersBar
 import com.povush.modusvivendi.ui.domain.DomainDestination
 import com.povush.modusvivendi.ui.login.SignInDestination
 import com.povush.modusvivendi.ui.login.SignUpDestination
+import com.povush.modusvivendi.ui.map.MapDestination
 import com.povush.modusvivendi.ui.navigation.LoginDestination
 import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
@@ -80,7 +81,7 @@ fun ModusVivendiApp(
                 currentDestination = navController.currentDestination?.route
             ) },
             modifier = Modifier.padding(innerPadding),
-            gesturesEnabled = isModalNavigationGesturesEnabled(navController)
+            gesturesEnabled = isModalNavigationGesturesEnabled(navController) || drawerState.isOpen
         ) {
             ModusVivendiNavHost(
                 navController = navController,
@@ -104,7 +105,8 @@ private fun isModalNavigationGesturesEnabled(navController: NavHostController): 
     val isGesturesEnabled = mapOf(
         "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}" to false,
         SignInDestination.route to false,
-        SignUpDestination.route to false
+        SignUpDestination.route to false,
+        MapDestination.route to false
     )
 
     return isGesturesEnabled[currentDestination] ?: true

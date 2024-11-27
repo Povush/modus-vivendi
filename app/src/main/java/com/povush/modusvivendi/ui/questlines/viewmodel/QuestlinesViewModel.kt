@@ -12,6 +12,7 @@ import com.povush.modusvivendi.domain.QuestlinesRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -21,7 +22,7 @@ import javax.inject.Inject
 
 data class QuestlinesUiState(
     val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
-    val allTasksByQuestId: Map<Long, List<TaskWithSubtasks>> = emptyMap(),
+    val allTasksByQuestId: Map<Long, Flow<List<TaskWithSubtasks>>> = emptyMap(),
     val expandedStates: Map<Long, Boolean> = emptyMap(),
     val selectedQuestSection: QuestType = QuestType.MAIN,
     /*TODO: Remember sortingMethod in repository*/
@@ -42,6 +43,10 @@ class QuestlinesViewModel @Inject constructor(
         loadQuests()
     }
 
+    fun provideTasksByQuestId(questId: Long): Flow<List<TaskWithSubtasks>> {
+        return questlinesRepository.getAllTasksWithSubtasksStreamByQuestId(questId)
+    }
+
     private fun loadQuests() {
         viewModelScope.launch {
             questlinesRepository.getAllQuests().collect { quests ->
@@ -59,14 +64,12 @@ class QuestlinesViewModel @Inject constructor(
 
                 groupedQuests.values.flatten().forEach { quest ->
                     launch {
-                        questlinesRepository.getAllTasksWithSubtasksStreamByQuestId(quest.id).collect { tasks ->
-                            _uiState.update {
-                                it.copy(
-                                    allTasksByQuestId = it.allTasksByQuestId.toMutableMap().apply {
-                                        this[quest.id] = tasks
-                                    }
-                                )
-                            }
+                        _uiState.update {
+                            it.copy(
+                                allTasksByQuestId = it.allTasksByQuestId.toMutableMap().apply {
+                                    this[quest.id] = provideTasksByQuestId(quest.id)
+                                }
+                            )
                         }
                     }
                 }
@@ -126,21 +129,24 @@ class QuestlinesViewModel @Inject constructor(
         }
     }
 
-    fun updateTaskStatus(task: Task, isCompleted: Boolean): Boolean {
-        val taskScope = uiState.value.allTasksByQuestId[task.questId]
-            ?.find { it.task.id == task.id || task.id in it.subtasks.map { subtask -> subtask.id } }
-
-        if (taskScope == null) return true
-        if (task.parentTaskId == null &&                                                            // Task with uncompleted non-additional subtasks
-            taskScope.subtasks.any { subtask -> !subtask.isCompleted && !subtask.isAdditional }) {
-            return false
+    fun updateTaskStatus(task: Task, isCompleted: Boolean, subtasks: List<Task>? = null): Boolean {
+        subtasks?.let {
+            if (subtasks.any { subtask -> !subtask.isCompleted && !subtask.isAdditional }) {
+                return false
+            }
         }
 
         viewModelScope.launch(Dispatchers.IO) {
+            val taskScope = questlinesRepository.getTaskScope(task)
+
             questlinesRepository.updateTask(task.copy(isCompleted = isCompleted))
-            if (task.parentTaskId != null && !task.isAdditional && taskScope.task.isCompleted && !isCompleted) {
-                questlinesRepository.updateTask(taskScope.task.copy(isCompleted = false))
+
+            taskScope?.let {
+                if (task.parentTaskId != null && !task.isAdditional && taskScope.task.isCompleted && !isCompleted) {
+                    questlinesRepository.updateTask(taskScope.task.copy(isCompleted = false))
+                }
             }
+
         }
         return true
     }

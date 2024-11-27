@@ -64,6 +64,8 @@ import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.QuestCard
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 object QuestlinesDestination : NavigationDestination {
@@ -180,14 +182,15 @@ fun QuestlinesScreen(
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(
                     quests = currentPageQuests,
-                    allTasks = uiState.allTasksByQuestId,
+                    taskFlow = uiState.allTasksByQuestId,
                     expandedStates = uiState.expandedStates,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = viewModel::changeQuestExpandStatus,
                     deleteQuest = viewModel::deleteQuest,
                     updateTaskStatus = viewModel::updateTaskStatus,
                     completeQuest = viewModel::completeQuest,
-                    checkCompletionStatus = viewModel::checkCompletionStatus
+                    checkCompletionStatus = viewModel::checkCompletionStatus,
+                    provideTasksByQuestId = viewModel::provideTasksByQuestId
                 )
             } else {
                 EmptyQuestSection()
@@ -199,14 +202,15 @@ fun QuestlinesScreen(
 @Composable
 fun QuestSection(
     quests: List<Quest>,
-    allTasks: Map<Long, List<TaskWithSubtasks>>,
+    taskFlow: Map<Long, Flow<List<TaskWithSubtasks>>>,
     expandedStates: Map<Long, Boolean>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     changeQuestExpandStatus: (Quest) -> Unit,
     deleteQuest: (Quest) -> Unit,
-    updateTaskStatus: (Task, Boolean) -> Boolean,
+    updateTaskStatus: (Task, Boolean, List<Task>?) -> Boolean,
     completeQuest: (Quest) -> Unit,
     checkCompletionStatus: (QuestWithTasks) -> Unit,
+    provideTasksByQuestId: (Long) -> Flow<List<TaskWithSubtasks>>,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -219,9 +223,14 @@ fun QuestSection(
         item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
         items(quests) { quest ->
             key(quest.id) {
+                val tasks by provideTasksByQuestId(quest.id).collectAsState(
+                    initial = emptyList(),
+                    context = Dispatchers.IO
+                )
+
                 QuestCard(
                     quest = quest,
-                    tasks = allTasks[quest.id] ?: emptyList(),
+                    tasks = tasks,
                     isExpanded = expandedStates[quest.id] ?: false,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = changeQuestExpandStatus,

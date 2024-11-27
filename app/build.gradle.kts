@@ -17,7 +17,7 @@ android {
 
     defaultConfig {
         applicationId = "com.povush.modusvivendi"
-        minSdk = 24
+        minSdk = 26
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -26,6 +26,8 @@ android {
         vectorDrawables {
             useSupportLibrary = true
         }
+
+        buildConfigField("String", "MAPKIT_API_KEY", "\"${rootProject.extra["mapkitApiKey"]}\"")
     }
 
     buildTypes {
@@ -52,6 +54,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.1"
@@ -64,6 +67,13 @@ android {
 }
 
 dependencies {
+    // Yandex Maps
+    implementation(libs.maps.mobile)
+
+    // Retrofit
+    implementation(libs.retrofit2.kotlinx.serialization.converter)
+    implementation(libs.retrofit)
+
     // Kotlin Serialization
     implementation(libs.kotlinx.serialization.json)
 
@@ -89,6 +99,7 @@ dependencies {
     // Library for reordering items
     implementation(libs.reorderable)
 
+    // UI
     implementation(libs.androidx.material.icons.extended)
     implementation("androidx.compose.material3:material3-window-size-class")
     implementation(libs.androidx.material3)
@@ -105,7 +116,7 @@ dependencies {
     implementation(libs.androidx.foundation)
     implementation(libs.ui.graphics)
 
-    // Import the Compose BOM
+    // Compose BOM
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.material3)
     implementation(libs.ui)
@@ -126,7 +137,6 @@ dependencies {
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)
     testImplementation(libs.junit)
-
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
 }

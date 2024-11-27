@@ -1,0 +1,105 @@
+[
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["land"]
+    },
+    "stylers": {
+      "color": "#1f4037",
+      "lightness": -0.5
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["water"]
+    },
+    "stylers": {
+      "color": "#1a2980",
+      "opacity": 0.8
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["park"]
+    },
+    "stylers": {
+      "color": "#76b852",
+      "opacity": 0.7,
+      "lightness": -0.4
+    }
+  },
+  {
+    "types": "polyline",
+    "tags": {
+      "all": ["road"]
+    },
+    "stylers": {
+      "color": "#ffd700",
+      "lightness": 0.3,
+      "saturation": 0.5
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["building"]
+    },
+    "stylers": {
+      "color": "#ffcc99",
+      "lightness": 0.2
+    }
+  },
+  {
+    "types": "point",
+    "tags": {
+      "all": ["poi"]
+    },
+    "stylers": {
+      "color": "#ff69b4",
+      "opacity": 0.9,
+      "scale": 1.5
+    }
+  },
+  {
+    "types": "polyline",
+    "tags": {
+      "all": ["transit_line"]
+    },
+    "stylers": {
+      "color": "#8a2be2",
+      "opacity": 0.6
+    }
+  },
+  {
+    "types": "point",
+    "tags": {
+      "all": ["transit_stop"]
+    },
+    "stylers": {
+      "color": "#ff6347",
+      "scale": 1.2
+    }
+  },
+  {
+    "types": "polygon",
+    "tags": {
+      "all": ["urban_area"]
+    },
+    "stylers": {
+      "color": "#e0c3fc",
+      "opacity": 0.5
+    }
+  },
+  {
+    "types": "polyline",
+    "tags": {
+      "all": ["fence"]
+    },
+    "stylers": {
+      "color": "#00fa9a",
+      "opacity": 0.4
+    }
+  }
+]

@@ -22,6 +22,8 @@ import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
 import com.povush.modusvivendi.data.firebase.AccountService
 import com.povush.modusvivendi.ui.theme.NationalTheme
+import com.yandex.mapkit.MapKitFactory
+import com.yandex.mapkit.mapview.MapView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -63,6 +65,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+        MapKitFactory.initialize(this)
         setContent {
             NationalTheme {
                 Surface(
@@ -86,5 +89,15 @@ class MainActivity : ComponentActivity() {
                     Log.e(TAG, "Failed to subscribe to topic 'all'", task.exception)
                 }
             }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        MapKitFactory.getInstance().onStart()
+    }
+
+    override fun onStop() {
+        MapKitFactory.getInstance().onStop()
+        super.onStop()
     }
 }

@@ -42,13 +42,13 @@ import kotlinx.coroutines.launch
 @Composable
 fun TaskDisplay(
     taskWithSubtasks: TaskWithSubtasks,
-    onCheckedChange: (Task, Boolean) -> Boolean,
+    onCheckedChange: (Task, Boolean, List<Task>?) -> Boolean,
     isEnabled: Boolean
 ) {
     val task = taskWithSubtasks.task
     val subtasks = taskWithSubtasks.subtasks.sortedBy { it.orderIndex }
 
-    TaskDisplayItem(task, onCheckedChange, isEnabled)
+    TaskDisplayItem(task, onCheckedChange, isEnabled, subtasks)
     subtasks.forEach { subtask ->
         key(subtask.id) {
             TaskDisplayItem(subtask, onCheckedChange, isEnabled)
@@ -59,8 +59,9 @@ fun TaskDisplay(
 @Composable
 private fun TaskDisplayItem(
     task: Task,
-    onCheckedChange: (Task, Boolean) -> Boolean,
-    isEnabled: Boolean
+    onCheckedChange: (Task, Boolean, List<Task>?) -> Boolean,
+    isEnabled: Boolean,
+    subtasks: List<Task>? = null
 ) {
     val isSubtask = task.parentTaskId != null
     val context = LocalContext.current
@@ -104,7 +105,7 @@ private fun TaskDisplayItem(
                         delay(150)
                         isCheckboxScaled = false
                     }
-                    val isChecked = onCheckedChange(task,it)
+                    val isChecked = onCheckedChange(task, it, subtasks)
                     if (!isChecked) {
                         Toast.makeText(
                             context,

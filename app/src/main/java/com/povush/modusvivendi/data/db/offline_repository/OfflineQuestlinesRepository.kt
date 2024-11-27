@@ -20,6 +20,26 @@ class OfflineQuestlinesRepository(private val questDao: QuestDao, private val ta
         questDao.insertQuestAndTasksWithSubtasks(oldQuestId, quest, tasks, taskDao)
     }
 
+    suspend fun getTaskScope(task: Task): TaskWithSubtasks? {
+        return if (task.parentTaskId != null) {
+            val parentTask = taskDao.getTaskById(task.parentTaskId)
+            val siblings = taskDao.getSubtasksByParentId(task.parentTaskId)
+
+            parentTask?.let {
+                TaskWithSubtasks(
+                    task = it,
+                    subtasks = siblings
+                )
+            }
+        } else {
+            val subtasks = taskDao.getSubtasksByParentId(task.id)
+            TaskWithSubtasks(
+                task = task,
+                subtasks = subtasks
+            )
+        }
+    }
+
     fun getAllTasksWithSubtasksStreamByQuestId(questId: Long): Flow<List<TaskWithSubtasks>> =
         taskDao.getAllTasksWithSubtasksStreamByQuestId(questId)
 

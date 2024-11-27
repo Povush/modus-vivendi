@@ -213,8 +213,8 @@ private fun GameSections(
     ) {
         AnimatedVisibility(
             visible = accountsExpanded,
-            enter = expandVertically(), // Появление сверху
-            exit = shrinkVertically() // Исчезновение вверх
+            enter = expandVertically(),
+            exit = shrinkVertically()
         ) {
             Accounts(coatOfArmsRes, countryName, exitGame)
         }
