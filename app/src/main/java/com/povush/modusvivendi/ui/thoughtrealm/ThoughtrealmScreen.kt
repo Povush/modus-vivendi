@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
+import com.povush.modusvivendi.ui.splash.SplashScreen
 
 object ThoughtrealmDestination : NavigationDestination {
     override val route = "thoughtrealm"
@@ -50,6 +51,8 @@ fun ThoughtrealmScreen(onNavigationClick: () -> Unit) {
             )
         },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {  }
+        Column(modifier = Modifier.padding(innerPadding)) {
+            SplashScreen()
+        }
     }
 }
