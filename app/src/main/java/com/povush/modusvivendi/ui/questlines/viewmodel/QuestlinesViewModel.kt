@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.ui.questlines.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.data.model.Quest
@@ -20,24 +21,29 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-data class QuestlinesUiState(
-    val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
-    val allTasksByQuestId: Map<Long, Flow<List<TaskWithSubtasks>>> = emptyMap(),
-    val expandedStates: Map<Long, Boolean> = emptyMap(),
-    val selectedQuestSection: QuestType = QuestType.MAIN,
-    /*TODO: Remember sortingMethod in repository*/
-    val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN,
-    val collapseEnabled: Boolean = false,
-    val expandAll: Boolean? = null
-)
+sealed interface QuestlinesUiState {
+    data class Success(
+        val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
+        val allTasksByQuestId: Map<Long, Flow<List<TaskWithSubtasks>>> = emptyMap(),
+        val expandedStates: Map<Long, Boolean> = emptyMap(),
+        /*TODO: Remember sortingMethod in repository*/
+        val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN,
+        val collapseEnabled: Boolean = false,
+        val expandAll: Boolean? = null
+    ) : QuestlinesUiState
+    data object Loading : QuestlinesUiState
+}
 
 @HiltViewModel
 class QuestlinesViewModel @Inject constructor(
     private val questlinesRepository: QuestlinesRepository
 ) : ViewModel() {
 
-    private val _uiState = MutableStateFlow(QuestlinesUiState())
+    private val _uiState = MutableStateFlow<QuestlinesUiState>(QuestlinesUiState.Loading)
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
+
+    var selectedQuestSection = MutableStateFlow(QuestType.MAIN)
+        private set
 
     init {
         loadQuests()
@@ -49,59 +55,69 @@ class QuestlinesViewModel @Inject constructor(
 
     private fun loadQuests() {
         viewModelScope.launch {
+            delay(750)
             questlinesRepository.getAllQuests().collect { quests ->
                 val groupedQuests = quests.groupBy { it.type }
-                val currentExpandedStates = uiState.value.expandedStates
+                val currentExpandedStates = (uiState.value as? QuestlinesUiState.Success)?.expandedStates ?: emptyMap()
+                val newExpandedStates = groupedQuests.values.flatten().associate { quest ->
+                    quest.id to (currentExpandedStates[quest.id] ?: false)
+                }
 
                 _uiState.update {
-                    it.copy(
+                    QuestlinesUiState.Success(
                         allQuestsByType = groupedQuests,
-                        expandedStates = groupedQuests.values.flatten().associate { quest ->
-                            quest.id to (currentExpandedStates[quest.id] ?: false)
-                        }
+                        expandedStates = newExpandedStates,
+                        allTasksByQuestId = (uiState.value as? QuestlinesUiState.Success)?.allTasksByQuestId
+                            ?: emptyMap()
                     )
                 }
 
                 groupedQuests.values.flatten().forEach { quest ->
-                    launch {
-                        _uiState.update {
-                            it.copy(
-                                allTasksByQuestId = it.allTasksByQuestId.toMutableMap().apply {
-                                    this[quest.id] = provideTasksByQuestId(quest.id)
-                                }
-                            )
-                        }
-                    }
+                    loadTasksForQuest(quest.id)
                 }
+            }
+        }
+    }
+
+    private fun loadTasksForQuest(questId: Long) {
+        viewModelScope.launch {
+            val tasksFlow = provideTasksByQuestId(questId)
+            _uiState.update { currentState ->
+                if (currentState is QuestlinesUiState.Success) {
+                    currentState.copy(
+                        allTasksByQuestId = currentState.allTasksByQuestId.toMutableMap().apply {
+                            this[questId] = tasksFlow
+                        }
+                    )
+                } else currentState
             }
         }
     }
 
     fun updateCollapseButton() {
-        if (uiState.value.expandedStates.any { it.value }) {
-            _uiState.update {
-                it.copy(collapseEnabled = true)
-            }
-        } else {
-            _uiState.update {
-                it.copy(collapseEnabled = false)
-            }
+        _uiState.update { currentState ->
+            if (currentState is QuestlinesUiState.Success) {
+                val collapseEnabled = currentState.expandedStates.any { it.value }
+                currentState.copy(collapseEnabled = collapseEnabled)
+            } else currentState
         }
     }
 
     fun toggleExpandButton() {
-        val updatedExpandedStates = uiState.value.expandedStates
-            .mapValues { !uiState.value.collapseEnabled }
-
-        _uiState.update {
-            it.copy(expandedStates = updatedExpandedStates)
+        _uiState.update { currentState ->
+            if (currentState is QuestlinesUiState.Success) {
+                val updatedExpandedStates = currentState.expandedStates.mapValues {
+                    !currentState.collapseEnabled
+                }
+                currentState.copy(expandedStates = updatedExpandedStates)
+            } else currentState
         }
     }
 
     fun checkCompletionStatus(questWithTasks: QuestWithTasks) {
         val quest = questWithTasks.quest
         val tasks = questWithTasks.tasks
-        val isCompleted = tasks.isNotEmpty() && tasks.map { it.task }.all { it.isCompleted }
+        val isCompleted = tasks.isNotEmpty() && tasks.all { it.task.isCompleted }
 
         if (isCompleted != quest.isCompleted) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -109,19 +125,30 @@ class QuestlinesViewModel @Inject constructor(
             }
 
             _uiState.update { currentState ->
-                currentState.copy(
-                    allQuestsByType = currentState.allQuestsByType.toMutableMap().apply {
-                        val quests = this[quest.type]?.toMutableList()
-                        val questIndex = quests?.indexOfFirst { it.id == quest.id }
-                        if (questIndex != null && questIndex >= 0) {
-                            quests[questIndex] = quest.copy(isCompleted = isCompleted)
-                            this[quest.type] = quests.toList()
-                        }
-                    }
-                )
+                if (currentState is QuestlinesUiState.Success) {
+                    currentState.copy(
+                        allQuestsByType = updateQuestCompletionStatus(
+                            currentState.allQuestsByType, quest, isCompleted
+                        )
+                    )
+                } else currentState
             }
         }
     }
+
+    private fun updateQuestCompletionStatus(
+        questsByType: Map<QuestType, List<Quest>>,
+        quest: Quest,
+        isCompleted: Boolean
+    ): Map<QuestType, List<Quest>> {
+        return questsByType.toMutableMap().apply {
+            val updatedQuests = this[quest.type]?.map {
+                if (it.id == quest.id) it.copy(isCompleted = isCompleted) else it
+            } ?: emptyList()
+            this[quest.type] = updatedQuests
+        }
+    }
+
 
     fun completeQuest(quest: Quest) {
         viewModelScope.launch {
@@ -159,28 +186,33 @@ class QuestlinesViewModel @Inject constructor(
 
     fun changeQuestExpandStatus(quest: Quest) {
         _uiState.update { currentState ->
-            currentState.copy(
-                expandedStates = currentState.expandedStates.mapValues { (id, isExpanded) ->
-                    if (id == quest.id) {
-                        !isExpanded
-                    } else {
-                        isExpanded
-                    }
+            if (currentState is QuestlinesUiState.Success) {
+                val updatedExpandedStates = currentState.expandedStates.toMutableMap().apply {
+                    this[quest.id] = !(this[quest.id] ?: false)
                 }
-            )
+                currentState.copy(expandedStates = updatedExpandedStates)
+            } else currentState
         }
     }
 
     fun switchQuestSection(index: Int) {
-        _uiState.update { it.copy(selectedQuestSection = QuestType.entries[index]) }
+        if (index in QuestType.entries.indices) {
+            selectedQuestSection.value = QuestType.entries[index]
+        }
     }
 
     fun sectionCounter(index: Int): Int {
-        val numberOfQuests = uiState.value.allQuestsByType[QuestType.entries[index]]?.size
-        return numberOfQuests ?: 0
+        val currentState = uiState.value
+        return if (currentState is QuestlinesUiState.Success) {
+            currentState.allQuestsByType[QuestType.entries.getOrNull(index)]?.size ?: 0
+        } else 0
     }
 
     fun changeSortingMethod(sortingMethod: QuestSortingMethod) {
-        _uiState.update { it.copy(sortingMethod = sortingMethod) }
+        _uiState.update { currentState ->
+            if (currentState is QuestlinesUiState.Success) {
+                currentState.copy(sortingMethod = sortingMethod)
+            } else currentState
+        }
     }
 }

@@ -73,12 +73,6 @@ fun SplashScreen(
             modifier = Modifier.size(250.dp)
         )
         Spacer(modifier = Modifier.size(16.dp))
-//        Text(
-//            text = "Loading...",
-//            modifier = Modifier.fillMaxWidth(),
-//            textAlign = TextAlign.Center,
-//            style = MaterialTheme.typography.headlineSmall.copy(fontSize = 28.sp)
-//        )
         RainbowText("Loading...")
     }
 }
@@ -86,21 +80,18 @@ fun SplashScreen(
 @Composable
 fun RainbowText(
     text: String,
-    fontSize: TextUnit = 28.sp,
     modifier: Modifier = Modifier
 ) {
-    // Создаем анимацию
-    val infiniteTransition = rememberInfiniteTransition()
+    val infiniteTransition = rememberInfiniteTransition(label = "")
     val animatedOffset = infiniteTransition.animateFloat(
         initialValue = 0f,
         targetValue = 1000f,
         animationSpec = infiniteRepeatable(
             animation = tween(durationMillis = 2000, easing = LinearEasing),
             repeatMode = RepeatMode.Restart
-        )
+        ), label = ""
     )
 
-    // Определяем цвета радуги
     val colors = listOf(
         Color.Red,
         Color.Magenta,
@@ -108,17 +99,15 @@ fun RainbowText(
         Color.Cyan,
         Color.Green,
         Color.Yellow,
-        Color.Red // повторяем, чтобы замкнуть радугу
+        Color.Red
     )
 
-    // Создаем градиент с анимацией
     val brush = Brush.linearGradient(
         colors = colors,
         start = Offset(x = animatedOffset.value, y = 0f),
         end = Offset(x = animatedOffset.value + 500f, y = 0f)
     )
 
-    // Рисуем текст с градиентом
     BasicText(
         text = text,
         modifier = modifier.fillMaxWidth(),
@@ -127,6 +116,5 @@ fun RainbowText(
             fontSize = 28.sp,
             textAlign = TextAlign.Center
         )
-
     )
 }

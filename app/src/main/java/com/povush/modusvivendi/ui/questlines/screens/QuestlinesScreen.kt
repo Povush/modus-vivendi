@@ -55,6 +55,7 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.povush.modusvivendi.R
+import com.povush.modusvivendi.data.db.dao.TaskDao
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.QuestWithTasks
@@ -63,7 +64,9 @@ import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.QuestCard
+import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesUiState
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
+import com.povush.modusvivendi.ui.splash.SplashScreen
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
@@ -80,8 +83,96 @@ fun QuestlinesScreen(
     viewModel: QuestlinesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val selectedQuestSection by viewModel.selectedQuestSection.collectAsStateWithLifecycle()
+
+    when (uiState) {
+        is QuestlinesUiState.Loading -> QuestlinesDefaultScreen(
+            onNavigationClick = onNavigationClick,
+            selectedQuestSection = selectedQuestSection,
+            viewModel = viewModel
+        )
+        is QuestlinesUiState.Success -> QuestlinesSuccessScreen(
+            uiState = uiState as QuestlinesUiState.Success,
+            onNavigationClick = onNavigationClick,
+            navigateToQuestEdit = navigateToQuestEdit,
+            selectedQuestSection = selectedQuestSection,
+            viewModel = viewModel
+        )
+    }
+}
+
+@Composable
+fun QuestlinesDefaultScreen(
+    onNavigationClick: () -> Unit,
+    selectedQuestSection: QuestType,
+    viewModel: QuestlinesViewModel
+) {
+    var menuExpanded by remember { mutableStateOf(false) }
+
+    Scaffold(
+        modifier = Modifier,
+        topBar = {
+            ModusVivendiAppBar(
+                titleRes = QuestlinesDestination.titleRes,
+                sections = QuestType.entries.map { it.textResId },
+                navigation = {
+                    IconButton(onClick = { onNavigationClick() }) {
+                        Icon(
+                            imageVector = Icons.Filled.Menu,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary,
+                        )
+                    }
+                },
+                actions = {
+                    IconButton(
+                        onClick = { /*TODO: Search functionality*/ }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.Search,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    IconButton(
+                        onClick = viewModel::toggleExpandButton
+                    ) {
+                        Icon(
+                            painter = painterResource(R.drawable.ic_expand_all),
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                    IconButton(
+                        onClick = { menuExpanded = true }
+                    ) {
+                        Icon(
+                            imageVector = Icons.Filled.MoreVert,
+                            contentDescription = null,
+                            tint = MaterialTheme.colorScheme.onPrimary
+                        )
+                    }
+                },
+                selectedSection = selectedQuestSection.ordinal,
+                onTabClicked = { _ -> },
+                tabCounter = viewModel::sectionCounter
+            )
+        }
+    ) { innerPadding ->
+        SplashScreen(modifier = Modifier.padding(innerPadding))
+    }
+}
+
+@Composable
+fun QuestlinesSuccessScreen(
+    uiState: QuestlinesUiState.Success,
+    onNavigationClick: () -> Unit,
+    navigateToQuestEdit: (Long?, Int?) -> Unit,
+    selectedQuestSection: QuestType,
+    viewModel: QuestlinesViewModel
+) {
     val pagerState = rememberPagerState(
-        initialPage = uiState.selectedQuestSection.ordinal,
+        initialPage = selectedQuestSection.ordinal,
         pageCount = { QuestType.entries.size }
     )
     val coroutineScope = rememberCoroutineScope()
@@ -89,7 +180,7 @@ fun QuestlinesScreen(
     var menuExpanded by remember { mutableStateOf(false) }
 
     LaunchedEffect(pagerState.currentPage) {
-        if (uiState.selectedQuestSection.ordinal != pagerState.currentPage) {
+        if (selectedQuestSection.ordinal != pagerState.currentPage) {
             viewModel.switchQuestSection(pagerState.currentPage)
         }
     }
@@ -146,7 +237,7 @@ fun QuestlinesScreen(
                         )
                     }
                 },
-                selectedSection = uiState.selectedQuestSection.ordinal,
+                selectedSection = selectedQuestSection.ordinal,
                 onTabClicked = { index: Int ->
                     coroutineScope.launch {
                         pagerState.animateScrollToPage(index)
@@ -157,7 +248,7 @@ fun QuestlinesScreen(
         },
         floatingActionButton = {
             FloatingActionButton(
-                onClick = { navigateToQuestEdit(-1L, uiState.selectedQuestSection.ordinal) },
+                onClick = { navigateToQuestEdit(-1L, selectedQuestSection.ordinal) },
                 modifier = Modifier.padding(8.dp),
                 shape = CircleShape,
                 containerColor = MaterialTheme.colorScheme.primary,
@@ -177,7 +268,7 @@ fun QuestlinesScreen(
                 .fillMaxSize(),
             beyondViewportPageCount = 3,
         ) { page ->
-            val currentPageQuests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList()
+            val currentPageQuests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList<Quest>()
 
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(

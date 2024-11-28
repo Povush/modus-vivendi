@@ -4,6 +4,7 @@ accompanistPager = "0.31.1-alpha"
 activityComposeVersion = "1.9.3"
 agp = "8.7.1"
 androidxJunit = "1.2.1"
+animationVersion = "1.7.5"
 coilComposeVersion = "3.0.4"
 composeBomVersion = "2024.10.00"
 coreKtxVersion = "1.13.1"
@@ -46,6 +47,7 @@ firebaseFirestoreKtxVersion = "25.1.1"
 [libraries]
 accompanist-pager = { module = "com.google.accompanist:accompanist-pager", version.ref = "accompanistPager" }
 androidx-activity-compose-v181 = { module = "androidx.activity:activity-compose", version.ref = "activityComposeVersion" }
+androidx-animation = { module = "androidx.compose.animation:animation", version.ref = "animationVersion" }
 androidx-compose-bom-v20231001 = { module = "androidx.compose:compose-bom", version.ref = "composeBomVersion" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
 androidx-core-ktx-v1120 = { module = "androidx.core:core-ktx", version.ref = "coreKtxVersion" }
