@@ -135,7 +135,7 @@ fun QuestlinesDefaultScreen(
                         )
                     }
                     IconButton(
-                        onClick = { viewModel.toggleExpandButton(selectedQuestSection) }
+                        onClick = viewModel::toggleExpandButton
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_expand_all),
@@ -186,7 +186,7 @@ fun QuestlinesSuccessScreen(
     }
 
     LaunchedEffect(uiState.expandedStates) {
-        viewModel.updateCollapseButton(pagerState.currentPage)
+        viewModel.updateCollapseButton()
     }
 
     Scaffold(
@@ -215,10 +215,10 @@ fun QuestlinesSuccessScreen(
                         )
                     }
                     IconButton(
-                        onClick = { viewModel.toggleExpandButton(selectedQuestSection) }
+                        onClick = viewModel::toggleExpandButton
                     ) {
                         Icon(
-                            painter = if (uiState.collapseEnabled[selectedQuestSection] == true) {
+                            painter = if (uiState.collapseEnabled) {
                                 painterResource(R.drawable.ic_collapse_all)
                             } else {
                                 painterResource(R.drawable.ic_expand_all)
@@ -292,7 +292,7 @@ fun QuestlinesSuccessScreen(
 @Composable
 fun QuestSection(
     quests: List<Quest>,
-    expandedStates: Map<Quest, Boolean>,
+    expandedStates: Map<Long, Boolean>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     changeQuestExpandStatus: (Quest) -> Unit,
     deleteQuest: (Quest) -> Unit,
@@ -320,7 +320,7 @@ fun QuestSection(
                 QuestCard(
                     quest = quest,
                     tasks = tasks,
-                    isExpanded = expandedStates[quest] ?: false,
+                    isExpanded = expandedStates[quest.id] ?: false,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = changeQuestExpandStatus,
                     deleteQuest = deleteQuest,

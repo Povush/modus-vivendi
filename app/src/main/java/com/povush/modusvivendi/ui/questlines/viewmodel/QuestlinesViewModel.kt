@@ -24,10 +24,10 @@ sealed interface QuestlinesUiState {
     data class Success(
         val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
         val allTasksByQuestId: Map<Long, Flow<List<TaskWithSubtasks>>> = emptyMap(),
-        val expandedStates: Map<Quest, Boolean> = emptyMap(),
+        val expandedStates: Map<Long, Boolean> = emptyMap(),
         /*TODO: Remember sortingMethod in repository*/
         val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN,
-        val collapseEnabled: Map<QuestType, Boolean> = QuestType.entries.associateWith { false },
+        val collapseEnabled: Boolean = false,
         val expandAll: Boolean? = null
     ) : QuestlinesUiState
     data object Loading : QuestlinesUiState
@@ -58,8 +58,9 @@ class QuestlinesViewModel @Inject constructor(
             questlinesRepository.getAllQuests().collect { quests ->
                 val groupedQuests = quests.groupBy { it.type }
                 val currentExpandedStates = (uiState.value as? QuestlinesUiState.Success)?.expandedStates ?: emptyMap()
-                val newExpandedStates = groupedQuests.values.flatten()
-                    .associateWith { quest -> (currentExpandedStates[quest] ?: false) }
+                val newExpandedStates = groupedQuests.values.flatten().associate { quest ->
+                    quest.id to (currentExpandedStates[quest.id] ?: false)
+                }
 
                 _uiState.update {
                     QuestlinesUiState.Success(
@@ -92,32 +93,22 @@ class QuestlinesViewModel @Inject constructor(
         }
     }
 
-    fun updateCollapseButton(currentSection: Int) {
+    fun updateCollapseButton() {
         _uiState.update { currentState ->
             if (currentState is QuestlinesUiState.Success) {
                 val collapseEnabled = currentState.expandedStates.any { it.value }
-                currentState.copy(collapseEnabled = currentState.collapseEnabled.toMutableMap().apply {
-                    this[QuestType.entries[currentSection]] = collapseEnabled
-                })
+                currentState.copy(collapseEnabled = collapseEnabled)
             } else currentState
         }
     }
 
-    fun toggleExpandButton(currentSection: QuestType) {
+    fun toggleExpandButton() {
         _uiState.update { currentState ->
             if (currentState is QuestlinesUiState.Success) {
-                val updatedCollapseState = !currentState.collapseEnabled[currentSection]!!
                 val updatedExpandedStates = currentState.expandedStates.mapValues {
-                    if (it.key.type == currentSection) updatedCollapseState
-                    else it.value
+                    !currentState.collapseEnabled
                 }
-                currentState.copy(
-                    expandedStates = updatedExpandedStates,
-                    collapseEnabled = currentState.collapseEnabled.mapValues {
-                        if (it.key == currentSection) updatedCollapseState
-                        else it.value
-                    }
-                )
+                currentState.copy(expandedStates = updatedExpandedStates)
             } else currentState
         }
     }
@@ -125,7 +116,9 @@ class QuestlinesViewModel @Inject constructor(
     fun checkCompletionStatus(questWithTasks: QuestWithTasks) {
         val quest = questWithTasks.quest
         val tasks = questWithTasks.tasks
-        val isCompleted = tasks.isNotEmpty() && tasks.all { it.task.isCompleted }
+        val isCompleted = tasks.isNotEmpty() && tasks.all {
+            (!it.task.isAdditional && it.task.isCompleted) || it.task.isAdditional
+        }
 
         if (isCompleted != quest.isCompleted) {
             viewModelScope.launch(Dispatchers.IO) {
@@ -196,7 +189,7 @@ class QuestlinesViewModel @Inject constructor(
         _uiState.update { currentState ->
             if (currentState is QuestlinesUiState.Success) {
                 val updatedExpandedStates = currentState.expandedStates.toMutableMap().apply {
-                    this[quest] = !(this[quest] ?: false)
+                    this[quest.id] = !(this[quest.id] ?: false)
                 }
                 currentState.copy(expandedStates = updatedExpandedStates)
             } else currentState
