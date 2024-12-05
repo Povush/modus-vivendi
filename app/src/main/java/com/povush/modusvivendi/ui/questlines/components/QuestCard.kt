@@ -152,12 +152,12 @@ fun QuestCard(
                         modifier = Modifier,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
-                        style = MaterialTheme.typography.headlineSmall
-//                            .copy(
-//                                fontFamily = FontFamily(
-//                                    Font(R.font.sour_gummy)
-//                                )
-//                            )
+                        style = MaterialTheme.typography.headlineSmall.copy(
+//                            fontFamily = FontFamily(
+//                                Font(R.font.freeride)
+//                            ),
+//                            fontWeight = FontWeight.Bold
+                        )
                     )
                     Text(
                         text = stringResource(

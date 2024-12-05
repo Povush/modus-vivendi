@@ -42,6 +42,7 @@ import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.Logout
 import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBackIosNew
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
 import androidx.compose.material.icons.filled.ExitToApp
@@ -81,8 +82,11 @@ import androidx.compose.ui.draw.blur
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
+import androidx.compose.ui.graphics.Shadow
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
@@ -361,22 +365,44 @@ private fun AvatarAndHandle(
                 Text(
                     text = handle,
                     color = MaterialTheme.colorScheme.onPrimary,
-                    style = MaterialTheme.typography.titleSmall
-                        .copy(fontSize = 14.sp, shadow = null)
+                    style = MaterialTheme.typography.titleSmall.copy(
+                        fontSize = 14.sp,
+                        shadow = Shadow(
+                            color = Color.Black,
+                            offset = Offset(0.75f, 0.75f),
+                            blurRadius = 2f
+                        ),
+                        fontFamily = FontFamily(
+                            Font(R.font.freeride)
+                        ),
+                        fontWeight = FontWeight.Bold
+                    )
                 )
             }
             Spacer(modifier = Modifier.weight(1f))
-            Icon(
-                imageVector =
-                    if (!accountsExpanded) Icons.Default.ExpandMore
-                    else Icons.Default.ExpandLess,
-                contentDescription = null,
-                tint = MaterialTheme.colorScheme.onPrimary,
-                modifier = Modifier.padding(8.dp)
-            )
+            ExpandAccountsIcon(accountsExpanded)
         }
         Spacer(modifier = Modifier.size(16.dp))
     }
+}
+
+@Composable
+private fun ExpandAccountsIcon(accountsExpanded: Boolean) {
+    val rotation by animateFloatAsState(
+        targetValue = if (accountsExpanded) 180f else 0f,
+        animationSpec = tween(durationMillis = 300), label = ""
+    )
+
+    Icon(
+        imageVector = Icons.Default.ExpandMore,
+        contentDescription = null,
+        tint = MaterialTheme.colorScheme.onPrimary,
+        modifier = Modifier
+            .padding(8.dp)
+            .graphicsLayer {
+                rotationZ = rotation
+            }
+    )
 }
 
 @Composable

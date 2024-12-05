@@ -26,8 +26,8 @@ class ModalNavigationViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ModalNavigationUiState(
         R.drawable.img_imperial_direction_coat_of_arms,
-        "Imperial Direction",
-        "@cosmologicalRenaissance"
+        "No country",
+        "No handle"
     ))
     val uiState = _uiState.asStateFlow()
 
@@ -37,7 +37,7 @@ class ModalNavigationViewModel @Inject constructor(
                 countryProfile?.let { currentProfile ->
                     _uiState.update { it.copy(
                         countryName = currentProfile.countryName,
-                        handle = currentProfile.handle
+                        handle = currentProfile.getFormattedHandle()
                     ) }
                 }
             }
