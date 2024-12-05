@@ -40,9 +40,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.automirrored.outlined.ExitToApp
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.CheckCircle
+import androidx.compose.material.icons.filled.ExitToApp
 import androidx.compose.material.icons.filled.ExpandLess
 import androidx.compose.material.icons.filled.ExpandMore
 import androidx.compose.material.icons.filled.Gavel
@@ -88,6 +90,8 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.DpOffset
@@ -418,12 +422,15 @@ private fun Accounts(
                 shadowElevation = 8.dp,
                 offset = DpOffset(x = 8.dp, y = 4.dp)
             ) {
-                ModusVivendiDropdownMenuItem(R.string.exit_game) {
-                    menuExpanded = false
-                    exitGame()
-                }
+                ModusVivendiDropdownMenuItem(
+                    textRes = R.string.exit_game,
+                    onClick = {
+                        menuExpanded = false
+                        exitGame()
+                    },
+                    leadingIcon = Icons.AutoMirrored.Outlined.ExitToApp
+                )
             }
-
             Box(
                 contentAlignment = Alignment.BottomEnd,
                 modifier = Modifier

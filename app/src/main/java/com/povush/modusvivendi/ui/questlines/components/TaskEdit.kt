@@ -17,6 +17,10 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.outlined.AccountTree
+import androidx.compose.material.icons.outlined.Add
+import androidx.compose.material.icons.outlined.Create
+import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
@@ -34,7 +38,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Task
@@ -47,7 +54,8 @@ fun TaskEdit(
     onCheckedChange: (Task, Boolean) -> Unit,
     onTaskTextChange: (Task, String) -> Unit,
     onCreateSubtask: (Task) -> Unit,
-    onTaskDelete: (Task) -> Unit
+    onTaskDelete: (Task) -> Unit,
+    onTaskMandatoryStatusChange: (Task, Boolean) -> Unit
 ) {
     var menuExpanded by remember { mutableStateOf(false) }
     val isSubtask = task.parentTaskId != null
@@ -86,6 +94,7 @@ fun TaskEdit(
                 )
                 DynamicPaddingBasicTextField(
                     value = task.name,
+                    isAdditional = task.isAdditional,
                     onValueChange = { input -> onTaskTextChange(task, input) },
                     modifier = Modifier.weight(1f)
                 )
@@ -97,23 +106,42 @@ fun TaskEdit(
                         expanded = menuExpanded,
                         onDismissRequest = { menuExpanded = false },
                         modifier = Modifier
-                            .background(MaterialTheme.colorScheme.primaryContainer)
-                            .wrapContentHeight()
-                            .padding(4.dp)
+                            .background(Color.White)
+                            .wrapContentHeight(),
+                        shape = RoundedCornerShape(8.dp),
+                        shadowElevation = 8.dp
                     ) {
                         if (task.parentTaskId == null) {
-                            ModusVivendiDropdownMenuItem(R.string.create_subtask) {
-                                menuExpanded = false
-                                onCreateSubtask(task)
-                            }
+                            ModusVivendiDropdownMenuItem(
+                                textRes = R.string.create_subtask,
+                                onClick = {
+                                    menuExpanded = false
+                                    onCreateSubtask(task)
+                                },
+                                leadingIcon = Icons.Outlined.Add
+                            )
                         }
                         ModusVivendiDropdownMenuItem(
+                            textRes =
+                                if (task.isAdditional) R.string.make_primary
+                                else R.string.make_additional,
+                            onClick = {
+                                menuExpanded = false
+                                onTaskMandatoryStatusChange(task, !task.isAdditional)
+                            },
+                            leadingIcon = Icons.Outlined.AccountTree
+                        )
+                        ModusVivendiDropdownMenuItem(
+                            textRes =
                             if (task.parentTaskId == null) R.string.delete_task
-                            else R.string.delete_subtask
-                        ) {
-                            menuExpanded = false
-                            onTaskDelete(task)
-                        }
+                            else R.string.delete_subtask,
+                            onClick = {
+                                menuExpanded = false
+                                onTaskDelete(task)
+                            },
+                            leadingIcon = Icons.Outlined.DeleteOutline,
+                            isDangerous = true
+                        )
                     }
                 }
                 TaskEditButton(
@@ -155,6 +183,7 @@ private fun TaskEditButton(
 @Composable
 fun DynamicPaddingBasicTextField(
     value: String,
+    isAdditional: Boolean,
     onValueChange: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -176,12 +205,18 @@ fun DynamicPaddingBasicTextField(
             onTextLayout = { textLayoutResult: TextLayoutResult ->
                 lineCount = textLayoutResult.lineCount
             },
-            textStyle = MaterialTheme.typography.bodyLarge
+            textStyle = MaterialTheme.typography.bodyLarge.copy(
+                color =
+                    if (isAdditional) Color.Black.copy(alpha = 0.6f)
+                    else Color.Black
+            )
         )
         if (value.isEmpty()) {
             Text(
                 text = stringResource(R.string.new_task),
-                style = MaterialTheme.typography.bodyLarge.copy(color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f))
+                style = MaterialTheme.typography.bodyLarge.copy(
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                )
             )
         }
     }

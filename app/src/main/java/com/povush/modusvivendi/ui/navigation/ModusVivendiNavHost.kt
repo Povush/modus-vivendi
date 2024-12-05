@@ -52,7 +52,7 @@ fun ModusVivendiNavHost(
 
         navigation(
             route = GameDestination.route,
-            startDestination = QuestlinesDestination.route
+            startDestination = QuestlinesGraphDestination.route
         ) {
             gameGraph(navController, onNavigationClick)
         }

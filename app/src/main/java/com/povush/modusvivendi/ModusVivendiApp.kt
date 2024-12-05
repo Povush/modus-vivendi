@@ -109,7 +109,6 @@ fun ModusVivendiApp(
                     modifier = Modifier
                 )
             }
-
         }
     }
 }

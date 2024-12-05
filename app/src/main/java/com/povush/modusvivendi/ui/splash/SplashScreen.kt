@@ -64,16 +64,16 @@ fun SplashScreen(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-//        CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
-        AsyncImage(
-            model = ImageRequest.Builder(LocalContext.current)
-                .data(R.raw.mv_splash)
-                .build(),
-            contentDescription = "Local GIF Example",
-            modifier = Modifier.size(250.dp)
-        )
-        Spacer(modifier = Modifier.size(16.dp))
-        RainbowText("Loading...")
+        CircularProgressIndicator(color = MaterialTheme.colorScheme.onBackground)
+//        AsyncImage(
+//            model = ImageRequest.Builder(LocalContext.current)
+//                .data(R.raw.mv_spirograph_splash)
+//                .build(),
+//            contentDescription = null,
+//            modifier = Modifier.size(250.dp)
+//        )
+//        Spacer(modifier = Modifier.size(16.dp))
+//        RainbowText("Loading...")
     }
 }
 

@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -35,6 +36,7 @@ import androidx.compose.material3.ExposedDropdownMenuDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.MenuAnchorType
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
@@ -51,6 +53,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.onFocusChanged
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
@@ -67,6 +70,7 @@ import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.TaskEdit
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestEditViewModel
@@ -162,7 +166,8 @@ fun QuestEditScreen(
                     onTaskDelete = { task -> viewModel.deleteTask(task) },
                     onReorderingTasks = { fromIndex, toIndex -> viewModel.onReorderingTasks(fromIndex, toIndex) },
                     onReorderingSubtasks = { parentTaskId, fromIndex, toIndex -> viewModel.onReorderingSubtasks(parentTaskId, fromIndex, toIndex) },
-                    onCreateNewTaskButtonClicked = { viewModel.createNewTask() }
+                    onCreateNewTaskButtonClicked = { viewModel.createNewTask() },
+                    onTaskMandatoryStatusChange = viewModel::changeTaskMandatoryStatus
                 )
             }
         }
@@ -220,18 +225,14 @@ fun QuestType(
             onValueChange = { },
             modifier = Modifier
                 .fillMaxWidth()
-                .menuAnchor(),
+                .menuAnchor(MenuAnchorType.PrimaryEditable, true),
             readOnly = true,
             label = { Text(text = stringResource(R.string.quest_type)) },
-            leadingIcon = {
-                Icon(
-                    imageVector = questType.iconImageVector,
-                    contentDescription = null,
-                    modifier = Modifier
-                )
-            },
             trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
-            colors = ExposedDropdownMenuDefaults.textFieldColors(),
+            colors = ExposedDropdownMenuDefaults.textFieldColors().copy(
+                focusedContainerColor = Color.White,
+                unfocusedContainerColor = Color.White
+            ),
             textStyle = MaterialTheme.typography.headlineSmall
                 .copy(fontSize = 16.sp, lineHeight = 18.sp)
         )
@@ -239,41 +240,25 @@ fun QuestType(
             expanded = expanded,
             onDismissRequest = { onExpandedChange(false) },
             modifier = Modifier
-                .background(MaterialTheme.colorScheme.primaryContainer)
-                .exposedDropdownSize()
+                .background(Color.White)
+                .exposedDropdownSize(),
+            shape = RoundedCornerShape(
+                topStart = 0.dp,
+                topEnd = 0.dp,
+                bottomStart = 8.dp,
+                bottomEnd = 8.dp
+            ),
+            shadowElevation = 8.dp,
         ) {
             QuestType.entries.forEach { currentQuestType ->
-                DropdownMenuItem(
-                    text = {
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(
-                                imageVector = currentQuestType.iconImageVector,
-                                contentDescription = null,
-                                modifier = Modifier
-                            )
-                            Spacer(modifier = Modifier.size(16.dp))
-                            Text(
-                                text = stringResource(currentQuestType.textResId),
-                                style = MaterialTheme.typography.headlineSmall
-                                    .copy(fontSize = 16.sp, lineHeight = 18.sp)
-                            )
-                        }
-
-                    },
+                ModusVivendiDropdownMenuItem(
+                    textRes = currentQuestType.textResId,
                     onClick = {
                         onQuestTypeChange(currentQuestType)
                         onExpandedChange(false)
                     },
-                    modifier = Modifier.height(40.dp),
-                    trailingIcon = {
-                        if (currentQuestType == questType) {
-                            Icon(
-                                imageVector = Icons.Default.Check,
-                                contentDescription = null,
-                                modifier = Modifier
-                            )
-                        }
-                    }
+                    textStyle = MaterialTheme.typography.headlineSmall
+                        .copy(fontSize = 16.sp, lineHeight = 18.sp)
                 )
             }
         }
@@ -370,7 +355,8 @@ fun QuestTasks(
     onTaskDelete: (Task) -> Unit,
     onReorderingTasks: (Int, Int) -> Unit,
     onReorderingSubtasks: (Long, Int, Int) -> Unit,
-    onCreateNewTaskButtonClicked: () -> Unit
+    onCreateNewTaskButtonClicked: () -> Unit,
+    onTaskMandatoryStatusChange: (Task, Boolean) -> Unit,
 ) {
     val numberOfTasks: Int = tasks.size
     val numberOfCompletedTasks: Int = tasks.map { it.task }.filter { it.isCompleted }.size
@@ -412,6 +398,7 @@ fun QuestTasks(
                                 onTaskTextChange = onTaskTextChange,
                                 onCreateSubtask = onCreateSubtask,
                                 onTaskDelete = onTaskDelete,
+                                onTaskMandatoryStatusChange = onTaskMandatoryStatusChange,
                                 scope = scope,
                                 view = view
                             )
@@ -440,6 +427,7 @@ fun QuestTasks(
                                                 onTaskTextChange = onTaskTextChange,
                                                 onCreateSubtask = onCreateSubtask,
                                                 onTaskDelete = onTaskDelete,
+                                                onTaskMandatoryStatusChange = onTaskMandatoryStatusChange,
                                                 scope = this,
                                                 view = view
                                             )
@@ -470,6 +458,7 @@ fun QuestTask(
     onTaskTextChange: (Task, String) -> Unit,
     onCreateSubtask: (Task) -> Unit,
     onTaskDelete: (Task) -> Unit,
+    onTaskMandatoryStatusChange: (Task, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     scope: ReorderableScope? = null,
     view: View? = null
@@ -506,7 +495,8 @@ fun QuestTask(
             onCheckedChange = onCheckedChange,
             onTaskTextChange = onTaskTextChange,
             onCreateSubtask = onCreateSubtask,
-            onTaskDelete = onTaskDelete
+            onTaskDelete = onTaskDelete,
+            onTaskMandatoryStatusChange = onTaskMandatoryStatusChange
         )
     }
 }

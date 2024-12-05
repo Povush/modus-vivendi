@@ -135,7 +135,7 @@ fun QuestlinesDefaultScreen(
                         )
                     }
                     IconButton(
-                        onClick = viewModel::toggleExpandButton
+                        onClick = { viewModel.toggleExpandButton(selectedQuestSection) }
                     ) {
                         Icon(
                             painter = painterResource(R.drawable.ic_expand_all),
@@ -186,7 +186,7 @@ fun QuestlinesSuccessScreen(
     }
 
     LaunchedEffect(uiState.expandedStates) {
-        viewModel.updateCollapseButton()
+        viewModel.updateCollapseButton(pagerState.currentPage)
     }
 
     Scaffold(
@@ -215,10 +215,10 @@ fun QuestlinesSuccessScreen(
                         )
                     }
                     IconButton(
-                        onClick = viewModel::toggleExpandButton
+                        onClick = { viewModel.toggleExpandButton(selectedQuestSection) }
                     ) {
                         Icon(
-                            painter = if (uiState.collapseEnabled) {
+                            painter = if (uiState.collapseEnabled[selectedQuestSection] == true) {
                                 painterResource(R.drawable.ic_collapse_all)
                             } else {
                                 painterResource(R.drawable.ic_expand_all)
@@ -268,12 +268,11 @@ fun QuestlinesSuccessScreen(
                 .fillMaxSize(),
             beyondViewportPageCount = 3,
         ) { page ->
-            val currentPageQuests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList<Quest>()
+            val currentPageQuests = uiState.allQuestsByType[QuestType.entries[page]] ?: emptyList()
 
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(
                     quests = currentPageQuests,
-                    taskFlow = uiState.allTasksByQuestId,
                     expandedStates = uiState.expandedStates,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = viewModel::changeQuestExpandStatus,
@@ -293,8 +292,7 @@ fun QuestlinesSuccessScreen(
 @Composable
 fun QuestSection(
     quests: List<Quest>,
-    taskFlow: Map<Long, Flow<List<TaskWithSubtasks>>>,
-    expandedStates: Map<Long, Boolean>,
+    expandedStates: Map<Quest, Boolean>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     changeQuestExpandStatus: (Quest) -> Unit,
     deleteQuest: (Quest) -> Unit,
@@ -322,7 +320,7 @@ fun QuestSection(
                 QuestCard(
                     quest = quest,
                     tasks = tasks,
-                    isExpanded = expandedStates[quest.id] ?: false,
+                    isExpanded = expandedStates[quest] ?: false,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = changeQuestExpandStatus,
                     deleteQuest = deleteQuest,

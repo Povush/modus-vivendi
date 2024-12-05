@@ -19,6 +19,7 @@ private val lightScheme = lightColorScheme(
     secondary = secondaryLight,
     onSecondary = onSecondaryLight,
     secondaryContainer = secondaryContainerLight,
+    error = errorLight,
     background = backgroundLight,
     onBackground = onBackgroundLight,
     surface = surfaceLight,

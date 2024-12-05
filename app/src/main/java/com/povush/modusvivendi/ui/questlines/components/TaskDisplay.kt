@@ -27,10 +27,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Task
@@ -128,8 +135,26 @@ private fun TaskDisplayItem(
             )
             Box(modifier = Modifier.padding(top = 5.dp)) {
                 Text(
-                    text = task.name,
-                    style = MaterialTheme.typography.bodyLarge
+                    text = buildAnnotatedString {
+                        append(task.name)
+                        if (task.isAdditional) {
+//                            withStyle(style = SpanStyle(color = Color.Black)) {
+//                                append(" (")
+//                            }
+                            append(" ")
+                            withStyle(style = SpanStyle(color = Color(0xFF806000))) {
+                                append(stringResource(R.string.add_l))
+                            }
+//                            withStyle(style = SpanStyle(color = Color.Black)) {
+//                                append(")")
+//                            }
+                        }
+                    },
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        color =
+                            if (task.isAdditional) Color.Black.copy(alpha = 1f)
+                            else Color.Black
+                    )
                 )
             }
         }

@@ -1,6 +1,8 @@
 package com.povush.modusvivendi.ui.navigation
 
 import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.EnterTransition
+import androidx.compose.animation.ExitTransition
 import androidx.compose.animation.core.EaseOut
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.tween
@@ -9,6 +11,7 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.navigation
 import androidx.navigation.navArgument
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.about_universe.AboutUniverseDestination
@@ -68,35 +71,11 @@ fun NavGraphBuilder.gameGraph(navController: NavController, onNavigationClick: (
         AppearanceScreen(onNavigationClick = onNavigationClick)
     }
 
-    composable(route = QuestlinesDestination.route) {
-        QuestlinesScreen(
-            onNavigationClick = onNavigationClick,
-            navigateToQuestEdit = { questId, currentQuestSectionNumber ->
-                navController.navigate("edit_quest?questId=$questId&currentQuestSectionNumber=$currentQuestSectionNumber")
-            }
-        )
-    }
-
-    composable(
-        route = "edit_quest?questId={questId}&currentQuestSectionNumber={currentQuestSectionNumber}",
-        arguments = listOf(
-            navArgument("questId") { type = NavType.LongType },
-            navArgument("currentQuestSectionNumber") { type = NavType.IntType }
-        ),
-        exitTransition = {
-            fadeOut(
-                animationSpec = tween(
-                    300, easing = LinearEasing
-                )
-            ) + slideOutOfContainer(
-                animationSpec = tween(300, easing = EaseOut),
-                towards = AnimatedContentTransitionScope.SlideDirection.End
-            )
-        }
+    navigation(
+        route = QuestlinesGraphDestination.route,
+        startDestination = QuestlinesDestination.route
     ) {
-        QuestEditScreen(
-            navigateBack = { navController.popBackStack() }
-        )
+        questlinesGraph(navController, onNavigationClick)
     }
 
     composable(route = MapDestination.route) {

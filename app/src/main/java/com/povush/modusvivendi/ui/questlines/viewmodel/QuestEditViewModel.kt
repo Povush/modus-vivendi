@@ -129,6 +129,21 @@ class QuestEditViewModel @Inject constructor(
         _uiState.update { it.copy(description = input) }
     }
 
+    fun changeTaskMandatoryStatus(task: Task, isAdditional: Boolean) {
+        val updatedTasks = uiState.value.tasks.map { taskWithSubtasks ->
+            if (task.id == taskWithSubtasks.task.id) {
+                taskWithSubtasks.copy(task = taskWithSubtasks.task.copy(isAdditional = isAdditional))
+            } else if (task.id in taskWithSubtasks.subtasks.map { it.id }) {
+                taskWithSubtasks.copy(subtasks = taskWithSubtasks.subtasks.map {
+                    if (task.id == it.id) it.copy(isAdditional = isAdditional)
+                    else it
+                })
+            } else taskWithSubtasks
+        }
+
+        _uiState.update { it.copy(tasks = updatedTasks) }
+    }
+
     fun onCheckedTaskChange(task: Task, isCompleted: Boolean) {
         val updatedTasks = uiState.value.tasks.map { taskWithSubtasks ->
             if (task.id == taskWithSubtasks.task.id) {

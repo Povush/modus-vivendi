@@ -34,6 +34,7 @@
     <string name="sign_in">Sign in</string>
     <string name="sign_up">Sign up</string>
     <string name="game">Game</string>
+    <string name="questlines_graph">Questlines Graph</string>
     <string name="login">Login</string>
     <string name="splash">Splash</string>
     <string name="appearance">Appearance</string>
@@ -49,4 +50,7 @@
     <string name="complete_quest">Complete quest</string>
     <string name="default_notification_channel_id">modus_vivendi_notification_channel</string>
     <string name="exit_game">Exit game</string>
+    <string name="make_primary">Make primary</string>
+    <string name="make_additional">Make additional</string>
+    <string name="add_l">(add\'l)</string>
 </resources>

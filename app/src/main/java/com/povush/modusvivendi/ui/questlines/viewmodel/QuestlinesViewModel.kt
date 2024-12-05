@@ -1,6 +1,5 @@
 package com.povush.modusvivendi.ui.questlines.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.data.model.Quest
@@ -25,10 +24,10 @@ sealed interface QuestlinesUiState {
     data class Success(
         val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
         val allTasksByQuestId: Map<Long, Flow<List<TaskWithSubtasks>>> = emptyMap(),
-        val expandedStates: Map<Long, Boolean> = emptyMap(),
+        val expandedStates: Map<Quest, Boolean> = emptyMap(),
         /*TODO: Remember sortingMethod in repository*/
         val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN,
-        val collapseEnabled: Boolean = false,
+        val collapseEnabled: Map<QuestType, Boolean> = QuestType.entries.associateWith { false },
         val expandAll: Boolean? = null
     ) : QuestlinesUiState
     data object Loading : QuestlinesUiState
@@ -59,9 +58,8 @@ class QuestlinesViewModel @Inject constructor(
             questlinesRepository.getAllQuests().collect { quests ->
                 val groupedQuests = quests.groupBy { it.type }
                 val currentExpandedStates = (uiState.value as? QuestlinesUiState.Success)?.expandedStates ?: emptyMap()
-                val newExpandedStates = groupedQuests.values.flatten().associate { quest ->
-                    quest.id to (currentExpandedStates[quest.id] ?: false)
-                }
+                val newExpandedStates = groupedQuests.values.flatten()
+                    .associateWith { quest -> (currentExpandedStates[quest] ?: false) }
 
                 _uiState.update {
                     QuestlinesUiState.Success(
@@ -94,22 +92,32 @@ class QuestlinesViewModel @Inject constructor(
         }
     }
 
-    fun updateCollapseButton() {
+    fun updateCollapseButton(currentSection: Int) {
         _uiState.update { currentState ->
             if (currentState is QuestlinesUiState.Success) {
                 val collapseEnabled = currentState.expandedStates.any { it.value }
-                currentState.copy(collapseEnabled = collapseEnabled)
+                currentState.copy(collapseEnabled = currentState.collapseEnabled.toMutableMap().apply {
+                    this[QuestType.entries[currentSection]] = collapseEnabled
+                })
             } else currentState
         }
     }
 
-    fun toggleExpandButton() {
+    fun toggleExpandButton(currentSection: QuestType) {
         _uiState.update { currentState ->
             if (currentState is QuestlinesUiState.Success) {
+                val updatedCollapseState = !currentState.collapseEnabled[currentSection]!!
                 val updatedExpandedStates = currentState.expandedStates.mapValues {
-                    !currentState.collapseEnabled
+                    if (it.key.type == currentSection) updatedCollapseState
+                    else it.value
                 }
-                currentState.copy(expandedStates = updatedExpandedStates)
+                currentState.copy(
+                    expandedStates = updatedExpandedStates,
+                    collapseEnabled = currentState.collapseEnabled.mapValues {
+                        if (it.key == currentSection) updatedCollapseState
+                        else it.value
+                    }
+                )
             } else currentState
         }
     }
@@ -188,7 +196,7 @@ class QuestlinesViewModel @Inject constructor(
         _uiState.update { currentState ->
             if (currentState is QuestlinesUiState.Success) {
                 val updatedExpandedStates = currentState.expandedStates.toMutableMap().apply {
-                    this[quest.id] = !(this[quest.id] ?: false)
+                    this[quest] = !(this[quest] ?: false)
                 }
                 currentState.copy(expandedStates = updatedExpandedStates)
             } else currentState
