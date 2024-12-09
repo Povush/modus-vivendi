@@ -9,8 +9,12 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
@@ -21,7 +25,12 @@ object DomainDestination : NavigationDestination {
 }
 
 @Composable
-fun DomainScreen(onNavigationClick: () -> Unit) {
+fun DomainScreen(
+    onNavigationClick: () -> Unit,
+    viewModel: DomainViewModel = hiltViewModel()
+) {
+    val weatherResponse by viewModel.weatherResponse.collectAsStateWithLifecycle()
+
     Scaffold(
         modifier = Modifier,
         topBar = {
@@ -50,6 +59,8 @@ fun DomainScreen(onNavigationClick: () -> Unit) {
             )
         },
     ) { innerPadding ->
-        Column(modifier = Modifier.padding(innerPadding)) {  }
+        Column(modifier = Modifier.padding(innerPadding)) {
+            Text(text = weatherResponse.main.temp.toString())
+        }
     }
 }

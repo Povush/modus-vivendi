@@ -28,6 +28,7 @@ android {
         }
 
         buildConfigField("String", "MAPKIT_API_KEY", "\"${rootProject.extra["mapkitApiKey"]}\"")
+        buildConfigField("String", "OPENWEATHER_API_KEY", "\"${rootProject.extra["openWeatherApiKey"]}\"")
     }
 
     buildTypes {
@@ -67,6 +68,9 @@ android {
 }
 
 dependencies {
+    // Gson
+    implementation(libs.gson)
+
     // Yandex Maps
     implementation(libs.maps.mobile)
 
@@ -83,10 +87,11 @@ dependencies {
     implementation(libs.kotlinx.serialization.json)
 
     // Dagger Hilt
-    implementation("com.google.dagger:hilt-android:2.51.1")
-    kapt("com.google.dagger:hilt-android-compiler:2.51.1")
-    kapt("androidx.hilt:hilt-compiler:1.2.0")
-    implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.hilt.android)
+    kapt(libs.hilt.android.compiler)
+    kapt(libs.androidx.hilt.compiler)
+    implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.androidx.hilt.work)
 
     // Credential Manager
     implementation(libs.androidx.credentials)

@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.data.firebase
+package com.povush.modusvivendi.data.network.firebase
 
 import com.povush.modusvivendi.data.model.CountryProfile
 import com.povush.modusvivendi.data.model.User

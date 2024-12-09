@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.ui.questlines.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.data.model.Quest
@@ -14,8 +15,12 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -23,7 +28,6 @@ import javax.inject.Inject
 sealed interface QuestlinesUiState {
     data class Success(
         val allQuestsByType: Map<QuestType, List<Quest>> = emptyMap(),
-        val allTasksByQuestId: Map<Long, Flow<List<TaskWithSubtasks>>> = emptyMap(),
         val expandedStates: Map<Long, Boolean> = emptyMap(),
         /*TODO: Remember sortingMethod in repository*/
         val sortingMethod: QuestSortingMethod = QuestSortingMethod.BY_DIFFICULTY_DOWN,
@@ -41,15 +45,20 @@ class QuestlinesViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<QuestlinesUiState>(QuestlinesUiState.Loading)
     val uiState: StateFlow<QuestlinesUiState> = _uiState.asStateFlow()
 
+    private val _tasks = MutableStateFlow<List<TaskWithSubtasks>>(emptyList())
+    val tasks: StateFlow<List<TaskWithSubtasks>> = _tasks
+        .onStart { loadTasks() }
+        .stateIn(
+            viewModelScope,
+            SharingStarted.WhileSubscribed(5000),
+            emptyList()
+        )
+
     var selectedQuestSection = MutableStateFlow(QuestType.MAIN)
         private set
 
     init {
         loadQuests()
-    }
-
-    fun provideTasksByQuestId(questId: Long): Flow<List<TaskWithSubtasks>> {
-        return questlinesRepository.getAllTasksWithSubtasksStreamByQuestId(questId)
     }
 
     private fun loadQuests() {
@@ -61,35 +70,27 @@ class QuestlinesViewModel @Inject constructor(
                 val newExpandedStates = groupedQuests.values.flatten().associate { quest ->
                     quest.id to (currentExpandedStates[quest.id] ?: false)
                 }
-
                 _uiState.update {
                     QuestlinesUiState.Success(
                         allQuestsByType = groupedQuests,
-                        expandedStates = newExpandedStates,
-                        allTasksByQuestId = (uiState.value as? QuestlinesUiState.Success)?.allTasksByQuestId
-                            ?: emptyMap()
+                        expandedStates = newExpandedStates
                     )
-                }
-
-                groupedQuests.values.flatten().forEach { quest ->
-                    loadTasksForQuest(quest.id)
                 }
             }
         }
     }
 
-    private fun loadTasksForQuest(questId: Long) {
+    private fun loadTasks() {
         viewModelScope.launch {
-            val tasksFlow = provideTasksByQuestId(questId)
-            _uiState.update { currentState ->
-                if (currentState is QuestlinesUiState.Success) {
-                    currentState.copy(
-                        allTasksByQuestId = currentState.allTasksByQuestId.toMutableMap().apply {
-                            this[questId] = tasksFlow
-                        }
-                    )
-                } else currentState
+            questlinesRepository.getAllTasksWithSubtasks().collect { tasksWithSubtasks ->
+                _tasks.value = tasksWithSubtasks
             }
+        }
+    }
+
+    fun recreateQuestAndTasks(quest: Quest, tasks: List<TaskWithSubtasks>) {
+        viewModelScope.launch {
+            questlinesRepository.insertQuestAndTasksWithSubtasks(-1, quest, tasks)
         }
     }
 

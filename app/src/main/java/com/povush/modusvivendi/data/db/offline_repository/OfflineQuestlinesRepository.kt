@@ -46,6 +46,9 @@ class OfflineQuestlinesRepository(private val questDao: QuestDao, private val ta
     fun getAllTasksWithSubtasksByQuestId(questId: Long): List<TaskWithSubtasks> =
         taskDao.getAllTasksWithSubtasksByQuestId(questId)
 
+    fun getAllTasksWithSubtasks(): Flow<List<TaskWithSubtasks>> =
+        taskDao.getAllTasksWithSubtasks()
+
     fun getQuestById(questId: Long): Quest = questDao.getQuestById(questId)
     fun getAllQuests(): Flow<List<Quest>> = questDao.getAllQuests()
 }

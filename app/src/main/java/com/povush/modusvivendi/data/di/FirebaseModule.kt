@@ -1,9 +1,9 @@
 package com.povush.modusvivendi.data.di
 
-import com.povush.modusvivendi.data.firebase.AccountService
-import com.povush.modusvivendi.data.firebase.StorageService
-import com.povush.modusvivendi.data.firebase.impl.AccountServiceImpl
-import com.povush.modusvivendi.data.firebase.impl.StorageServiceImpl
+import com.povush.modusvivendi.data.network.firebase.AccountService
+import com.povush.modusvivendi.data.network.firebase.StorageService
+import com.povush.modusvivendi.data.network.firebase.impl.AccountServiceImpl
+import com.povush.modusvivendi.data.network.firebase.impl.StorageServiceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn

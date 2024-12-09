@@ -1,12 +1,14 @@
 package com.povush.modusvivendi.data.repository
 
+import android.util.Log
 import com.povush.modusvivendi.data.db.offline_repository.OfflineQuestlinesRepository
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.domain.QuestlinesRepository
-import com.povush.modusvivendi.data.firebase.StorageService
+import com.povush.modusvivendi.data.network.firebase.StorageService
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class QuestlinesRepositoryImpl @Inject constructor(
@@ -43,6 +45,10 @@ class QuestlinesRepositoryImpl @Inject constructor(
 
     override fun getAllTasksWithSubtasksByQuestId(questId: Long): List<TaskWithSubtasks> {
         return offlineQuestlinesRepository.getAllTasksWithSubtasksByQuestId(questId)
+    }
+
+    override fun getAllTasksWithSubtasks(): Flow<List<TaskWithSubtasks>> {
+        return offlineQuestlinesRepository.getAllTasksWithSubtasks()
     }
 
     override fun getQuestById(questId: Long): Quest {

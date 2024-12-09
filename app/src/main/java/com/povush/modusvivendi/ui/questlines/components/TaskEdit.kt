@@ -22,6 +22,7 @@ import androidx.compose.material.icons.outlined.Add
 import androidx.compose.material.icons.outlined.Create
 import androidx.compose.material.icons.outlined.DeleteOutline
 import androidx.compose.material3.Checkbox
+import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -63,6 +65,8 @@ fun TaskEdit(
     var taskHeightPx by remember { mutableIntStateOf(0) }
     val taskHeightDp = with(LocalDensity.current) { taskHeightPx.toDp() }
 
+    var lineCount by remember { mutableIntStateOf(0) }
+
     Row {
         if (isSubtask) {
             Box(
@@ -86,18 +90,36 @@ fun TaskEdit(
                         color = MaterialTheme.colorScheme.primaryContainer,
                         shape = RoundedCornerShape(8.dp)
                     )
+                    .padding(bottom = if (lineCount > 1) 4.5.dp else 0.dp)
             ) {
                 Checkbox(
                     checked = task.isCompleted,
                     onCheckedChange = { onCheckedChange(task,it) },
                     modifier = Modifier.size(32.dp)
                 )
-                DynamicPaddingBasicTextField(
-                    value = task.name,
-                    isAdditional = task.isAdditional,
-                    onValueChange = { input -> onTaskTextChange(task, input) },
-                    modifier = Modifier.weight(1f)
-                )
+                Box(modifier = Modifier.weight(1f).padding(top = 6.5.dp)) {
+                    BasicTextField(
+                        value = task.name,
+                        onValueChange = { onTaskTextChange(task, it) },
+                        modifier = Modifier.fillMaxWidth(),
+                        onTextLayout = { textLayoutResult: TextLayoutResult ->
+                            lineCount = textLayoutResult.lineCount
+                        },
+                        textStyle = MaterialTheme.typography.bodyLarge.copy(
+                            color =
+                            if (task.isAdditional) Color.Black.copy(alpha = 0.6f)
+                            else Color.Black
+                        )
+                    )
+                    if (task.name.isEmpty()) {
+                        Text(
+                            text = stringResource(R.string.new_task),
+                            style = MaterialTheme.typography.bodyLarge.copy(
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
+                            )
+                        )
+                    }
+                }
                 Box(
                     modifier = Modifier
                         .wrapContentSize(Alignment.TopEnd)
@@ -163,8 +185,9 @@ private fun TaskEditButton(
     Box(
         modifier = modifier
             .size(22.dp)
+            .clip(CircleShape)
             .background(
-                color = MaterialTheme.colorScheme.surfaceContainerLow,
+                color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             )
             .clickable { onClicked() },
@@ -173,51 +196,9 @@ private fun TaskEditButton(
         Icon(
             imageVector = Icons.Default.Edit,
             contentDescription = null,
-            tint = Color.White,
+            tint = MaterialTheme.colorScheme.onPrimary,
             modifier = Modifier
                 .size(16.dp)
         )
-    }
-}
-
-@Composable
-fun DynamicPaddingBasicTextField(
-    value: String,
-    isAdditional: Boolean,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    var lineCount by remember { mutableIntStateOf(0) }
-
-    val animatedHeight by animateDpAsState(
-        targetValue = when (lineCount) {
-            1 -> 8.dp
-            else -> 4.dp
-        },
-        label = "DynamicPaddingBasicTextField"
-    )
-
-    Box(modifier = modifier.padding(top = animatedHeight)) {
-        BasicTextField(
-            value = value,
-            onValueChange = { onValueChange(it) },
-            modifier = Modifier.fillMaxWidth(),
-            onTextLayout = { textLayoutResult: TextLayoutResult ->
-                lineCount = textLayoutResult.lineCount
-            },
-            textStyle = MaterialTheme.typography.bodyLarge.copy(
-                color =
-                    if (isAdditional) Color.Black.copy(alpha = 0.6f)
-                    else Color.Black
-            )
-        )
-        if (value.isEmpty()) {
-            Text(
-                text = stringResource(R.string.new_task),
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.5f)
-                )
-            )
-        }
     }
 }

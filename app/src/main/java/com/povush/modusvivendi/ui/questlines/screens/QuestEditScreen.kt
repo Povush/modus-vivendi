@@ -52,6 +52,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
@@ -277,41 +278,41 @@ fun QuestDifficulty(
                 .padding(8.dp),
             style = MaterialTheme.typography.bodySmall
         )
-        Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-            Difficulty.entries.forEach { currentDifficulty ->
-                val isSelected = difficulty == currentDifficulty
-                val color = if (isSelected) currentDifficulty.color
-                else currentDifficulty.color.copy(alpha = 0.3f)
-
-                Icon(
-                    imageVector = Icons.Default.Castle,
-                    contentDescription = null,
-                    tint = color,
-                    modifier = Modifier
-                        .wrapContentSize()
-                        .padding(4.dp)
-                        .clickable { onDifficultyChange(currentDifficulty) }
-                        .weight(1f)
-                        .fillMaxSize()
-                )
-            }
-        }
         Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier
+                .fillMaxWidth()
+                .wrapContentHeight(),
+            verticalAlignment = Alignment.Top
         ) {
             Difficulty.entries.forEach { currentDifficulty ->
-                val isSelected = difficulty == currentDifficulty
-                val color = if (isSelected) MaterialTheme.colorScheme.onBackground
-                else MaterialTheme.colorScheme.onBackground.copy(alpha = 0.3f)
+                Column(
+                    modifier = Modifier
+                        .weight(1f)
+                        .clip(RoundedCornerShape(8.dp))
+                        .clickable { onDifficultyChange(currentDifficulty) },
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    val isSelected = difficulty == currentDifficulty
+                    val color = if (isSelected) currentDifficulty.color
+                    else currentDifficulty.color.copy(alpha = 0.3f)
 
-                Text(
-                    text = stringResource(currentDifficulty.textResId),
-                    modifier = Modifier.weight(1f),
-                    style = MaterialTheme.typography.bodySmall.copy(lineHeight = 10.sp),
-                    textAlign = TextAlign.Center,
-                    color = color
-                )
+                    Icon(
+                        imageVector = Icons.Default.Castle,
+                        contentDescription = null,
+                        tint = color,
+                        modifier = Modifier
+                            .wrapContentSize()
+                            .padding(4.dp)
+                            .fillMaxSize()
+                    )
+                    Text(
+                        text = stringResource(currentDifficulty.textResId),
+                        modifier = Modifier,
+                        style = MaterialTheme.typography.bodySmall.copy(lineHeight = 10.sp),
+                        textAlign = TextAlign.Center,
+                        color = color
+                    )
+                }
             }
         }
     }

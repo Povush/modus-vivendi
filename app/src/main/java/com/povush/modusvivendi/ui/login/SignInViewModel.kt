@@ -2,7 +2,7 @@ package com.povush.modusvivendi.ui.login
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.povush.modusvivendi.data.firebase.AccountService
+import com.povush.modusvivendi.data.network.firebase.AccountService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

@@ -7,6 +7,7 @@ import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.spring
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -29,6 +30,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.lerp
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -37,6 +39,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.BaselineShift
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
@@ -138,22 +141,23 @@ private fun TaskDisplayItem(
                     text = buildAnnotatedString {
                         append(task.name)
                         if (task.isAdditional) {
-//                            withStyle(style = SpanStyle(color = Color.Black)) {
-//                                append(" (")
-//                            }
-                            append(" ")
-                            withStyle(style = SpanStyle(color = Color(0xFF806000))) {
+                            append(" (")
+                            withStyle(style = SpanStyle(color =
+                                if (task.isFailed) MaterialTheme.colorScheme.error
+                                else Color(0xFF806000)
+                            )) {
                                 append(stringResource(R.string.add_l))
                             }
-//                            withStyle(style = SpanStyle(color = Color.Black)) {
-//                                append(")")
-//                            }
+                            append(")")
                         }
                     },
                     style = MaterialTheme.typography.bodyLarge.copy(
                         color =
-                            if (task.isAdditional) Color.Black.copy(alpha = 1f)
-                            else Color.Black
+                            if (task.isFailed) MaterialTheme.colorScheme.error
+                            else Color.Black,
+                        textDecoration =
+                            if (task.isFailed) TextDecoration.LineThrough
+                            else TextDecoration.None
                     )
                 )
             }

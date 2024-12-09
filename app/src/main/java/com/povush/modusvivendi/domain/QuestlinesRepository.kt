@@ -17,6 +17,7 @@ interface QuestlinesRepository {
     suspend fun getTaskScope(task: Task): TaskWithSubtasks?
     fun getAllTasksWithSubtasksStreamByQuestId(questId: Long): Flow<List<TaskWithSubtasks>>
     fun getAllTasksWithSubtasksByQuestId(questId: Long): List<TaskWithSubtasks>
+    fun getAllTasksWithSubtasks(): Flow<List<TaskWithSubtasks>>
     fun getQuestById(questId: Long): Quest
     fun getAllQuests(): Flow<List<Quest>>
 }

@@ -3,16 +3,17 @@ buildscript {
         classpath("com.google.dagger:hilt-android-gradle-plugin:2.51.1")
     }
 
-    fun getMapkitApiKey(): String {
+    fun getApiKey(keyName: String): String {
         val properties = java.util.Properties()
         val localPropertiesFile = rootProject.file("local.properties")
         if (localPropertiesFile.exists()) {
             localPropertiesFile.inputStream().use { properties.load(it) }
         }
-        return properties.getProperty("MAPKIT_API_KEY") ?: ""
+        return properties.getProperty(keyName) ?: ""
     }
 
-    val mapkitApiKey: String by extra { getMapkitApiKey() }
+    val mapkitApiKey: String by extra { getApiKey("MAPKIT_API_KEY") }
+    val openWeatherApiKey: String by extra { getApiKey("OPENWEATHER_API_KEY") }
 }
 
 plugins {

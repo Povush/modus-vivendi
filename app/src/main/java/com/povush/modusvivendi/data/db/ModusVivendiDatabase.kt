@@ -17,7 +17,7 @@ import com.povush.modusvivendi.data.model.Task
         Quest::class,
         Task::class
     ],
-    version = 7,
+    version = 8,
     exportSchema = false
 )
 @TypeConverters(ModusVivendiDatabaseConverter::class)
@@ -33,8 +33,7 @@ abstract class ModusVivendiDatabase : RoomDatabase() {
         fun getDatabase(context: Context): ModusVivendiDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, ModusVivendiDatabase::class.java, "mv_database")
-                    /*TODO: Review migration*/
-                    .fallbackToDestructiveMigration()
+                    .addMigrations(MIGRATION_7_8)
                     .build()
                     .also { Instance = it }
             }

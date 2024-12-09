@@ -4,7 +4,7 @@ import androidx.annotation.DrawableRes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.data.firebase.AccountService
+import com.povush.modusvivendi.data.network.firebase.AccountService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -26,7 +26,7 @@ class ModalNavigationViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(ModalNavigationUiState(
         R.drawable.img_imperial_direction_coat_of_arms,
-        "No country",
+        "Unnamed kingdom",
         "No handle"
     ))
     val uiState = _uiState.asStateFlow()

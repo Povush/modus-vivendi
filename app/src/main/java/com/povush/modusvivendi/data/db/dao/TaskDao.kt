@@ -39,6 +39,10 @@ interface TaskDao {
     fun getAllTasksWithSubtasksStreamByQuestId(questId: Long): Flow<List<TaskWithSubtasks>>
 
     @Transaction
+    @Query("SELECT * FROM tasks WHERE parentTaskId IS NULL")
+    fun getAllTasksWithSubtasks(): Flow<List<TaskWithSubtasks>>
+
+    @Transaction
     @Query("SELECT * FROM tasks WHERE parentTaskId IS NULL and questId = :questId ORDER BY orderIndex")
     fun getAllTasksWithSubtasksByQuestId(questId: Long): List<TaskWithSubtasks>
 

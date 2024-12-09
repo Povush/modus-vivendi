@@ -36,6 +36,7 @@ data class Task(
     val parentTaskId: Long? = null,
     val name: String = "",
     val isCompleted: Boolean = false,
+    val isFailed: Boolean = false,
     val counter: Pair<Int, Int>? = null,
     val isAdditional: Boolean = false,
     val orderIndex: Int = 0

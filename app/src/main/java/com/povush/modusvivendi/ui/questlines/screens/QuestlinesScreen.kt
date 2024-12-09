@@ -1,5 +1,6 @@
 package com.povush.modusvivendi.ui.questlines.screens
 
+import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -33,6 +34,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarDuration
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -83,6 +88,7 @@ fun QuestlinesScreen(
     viewModel: QuestlinesViewModel = hiltViewModel()
 ) {
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val tasks by viewModel.tasks.collectAsStateWithLifecycle()
     val selectedQuestSection by viewModel.selectedQuestSection.collectAsStateWithLifecycle()
 
     when (uiState) {
@@ -93,6 +99,7 @@ fun QuestlinesScreen(
         )
         is QuestlinesUiState.Success -> QuestlinesSuccessScreen(
             uiState = uiState as QuestlinesUiState.Success,
+            tasks = tasks,
             onNavigationClick = onNavigationClick,
             navigateToQuestEdit = navigateToQuestEdit,
             selectedQuestSection = selectedQuestSection,
@@ -166,6 +173,7 @@ fun QuestlinesDefaultScreen(
 @Composable
 fun QuestlinesSuccessScreen(
     uiState: QuestlinesUiState.Success,
+    tasks: List<TaskWithSubtasks>,
     onNavigationClick: () -> Unit,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     selectedQuestSection: QuestType,
@@ -176,6 +184,7 @@ fun QuestlinesSuccessScreen(
         pageCount = { QuestType.entries.size }
     )
     val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
 
     var menuExpanded by remember { mutableStateOf(false) }
 
@@ -246,6 +255,7 @@ fun QuestlinesSuccessScreen(
                 tabCounter = viewModel::sectionCounter
             )
         },
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         floatingActionButton = {
             FloatingActionButton(
                 onClick = { navigateToQuestEdit(-1L, selectedQuestSection.ordinal) },
@@ -273,14 +283,34 @@ fun QuestlinesSuccessScreen(
             if (currentPageQuests.isNotEmpty()) {
                 QuestSection(
                     quests = currentPageQuests,
+                    tasks = tasks
+                        .filter { it.task.questId in currentPageQuests.map { quest -> quest.id } },
                     expandedStates = uiState.expandedStates,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = viewModel::changeQuestExpandStatus,
-                    deleteQuest = viewModel::deleteQuest,
+                    deleteQuest = { quest ->
+                        val tasksBackup = tasks.filter { it.task.questId == quest.id }
+                        viewModel.deleteQuest(quest)
+                        coroutineScope.launch {
+                            val result = snackbarHostState
+                                .showSnackbar(
+                                    message = "Quest deleted",
+                                    actionLabel = "Cancel",
+                                    duration = SnackbarDuration.Short
+                                )
+                            when (result) {
+                                SnackbarResult.ActionPerformed -> {
+                                    viewModel.recreateQuestAndTasks(quest, tasksBackup)
+                                }
+                                SnackbarResult.Dismissed -> {
+                                    /* Handle snackbar dismissed */
+                                }
+                            }
+                        }
+                    },
                     updateTaskStatus = viewModel::updateTaskStatus,
                     completeQuest = viewModel::completeQuest,
-                    checkCompletionStatus = viewModel::checkCompletionStatus,
-                    provideTasksByQuestId = viewModel::provideTasksByQuestId
+                    checkCompletionStatus = viewModel::checkCompletionStatus
                 )
             } else {
                 EmptyQuestSection()
@@ -292,6 +322,7 @@ fun QuestlinesSuccessScreen(
 @Composable
 fun QuestSection(
     quests: List<Quest>,
+    tasks: List<TaskWithSubtasks>,
     expandedStates: Map<Long, Boolean>,
     navigateToQuestEdit: (Long?, Int?) -> Unit,
     changeQuestExpandStatus: (Quest) -> Unit,
@@ -299,7 +330,6 @@ fun QuestSection(
     updateTaskStatus: (Task, Boolean, List<Task>?) -> Boolean,
     completeQuest: (Quest) -> Unit,
     checkCompletionStatus: (QuestWithTasks) -> Unit,
-    provideTasksByQuestId: (Long) -> Flow<List<TaskWithSubtasks>>,
     modifier: Modifier = Modifier
 ) {
     val lazyListState = rememberLazyListState()
@@ -312,21 +342,16 @@ fun QuestSection(
         item { Spacer(modifier = Modifier.size(0.dp)) }                                             // Need for paddings by Arrangement.spacedBy
         items(quests) { quest ->
             key(quest.id) {
-                val tasks by provideTasksByQuestId(quest.id).collectAsState(
-                    initial = emptyList(),
-                    context = Dispatchers.IO
-                )
-
                 QuestCard(
                     quest = quest,
-                    tasks = tasks,
+                    tasks = tasks.filter { it.task.questId == quest.id },
                     isExpanded = expandedStates[quest.id] ?: false,
                     navigateToQuestEdit = navigateToQuestEdit,
                     changeQuestExpandStatus = changeQuestExpandStatus,
                     deleteQuest = deleteQuest,
                     updateTaskStatus = updateTaskStatus,
                     completeQuest = completeQuest,
-                    checkCompletionStatus = checkCompletionStatus
+                    checkCompletionStatus = checkCompletionStatus,
                 )
             }
         }

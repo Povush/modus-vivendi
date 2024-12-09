@@ -39,6 +39,8 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardColors
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -48,6 +50,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -78,7 +81,9 @@ import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
 import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
 import com.povush.modusvivendi.ui.shimmerEffect
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun QuestCard(
@@ -152,12 +157,7 @@ fun QuestCard(
                         modifier = Modifier,
                         overflow = TextOverflow.Ellipsis,
                         maxLines = 2,
-                        style = MaterialTheme.typography.headlineSmall.copy(
-//                            fontFamily = FontFamily(
-//                                Font(R.font.freeride)
-//                            ),
-//                            fontWeight = FontWeight.Bold
-                        )
+                        style = MaterialTheme.typography.headlineSmall
                     )
                     Text(
                         text = stringResource(

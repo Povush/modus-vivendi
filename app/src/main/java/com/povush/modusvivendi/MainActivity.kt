@@ -4,7 +4,10 @@ import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
 import android.Manifest
+import android.app.NotificationChannel
+import android.app.NotificationManager
 import android.content.ContentValues.TAG
+import android.content.Context
 import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -17,13 +20,14 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
+import androidx.core.app.NotificationCompat
 import androidx.core.content.ContextCompat
 import com.google.firebase.ktx.Firebase
 import com.google.firebase.messaging.ktx.messaging
-import com.povush.modusvivendi.data.firebase.AccountService
+import com.povush.modusvivendi.data.network.firebase.AccountService
+import com.povush.modusvivendi.data.workers.PovSonchik
 import com.povush.modusvivendi.ui.theme.NationalTheme
 import com.yandex.mapkit.MapKitFactory
-import com.yandex.mapkit.mapview.MapView
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -60,6 +64,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Inject lateinit var accountService: AccountService
+    @Inject lateinit var povSonchik: PovSonchik
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -81,6 +86,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         askNotificationPermission()
+        povSonchik.doPovSonchik()
         Firebase.messaging.subscribeToTopic("all")
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {

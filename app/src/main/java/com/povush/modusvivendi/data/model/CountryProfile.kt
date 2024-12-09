@@ -1,8 +1,5 @@
 package com.povush.modusvivendi.data.model
 
-import androidx.compose.ui.text.toUpperCase
-import java.util.Locale
-
 data class CountryProfile(
     val userId: String? = null,
     val countryName: String = "Unnamed kingdom",
@@ -10,7 +7,7 @@ data class CountryProfile(
     val coatOfArms: Int? = null
 ) {
     /**
-    Turns "cosmologicalRenaissance" to "@cosmologicalRenaissance [CR]".
+    Turns "cosmologicalRenaissance" into "@cosmologicalRenaissance [CR]".
      */
     fun getFormattedHandle(): String {
         if (!checkHandleForCamelCaseAndTwoWords(handle)) return "@$handle"
@@ -26,4 +23,3 @@ data class CountryProfile(
         return firstAndLastLettersIsLowerCase && middleUpperCaseCount == 1
     }
 }
-

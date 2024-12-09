@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.data.firebase.impl
+package com.povush.modusvivendi.data.network.firebase.impl
 
 import android.content.Context
 import androidx.credentials.CredentialManager
@@ -9,7 +9,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException
 import com.google.firebase.auth.FirebaseAuthInvalidUserException
 import com.google.firebase.auth.auth
 import com.google.firebase.firestore.firestore
-import com.povush.modusvivendi.data.firebase.AccountService
+import com.povush.modusvivendi.data.network.firebase.AccountService
 import com.povush.modusvivendi.data.model.CountryProfile
 import com.povush.modusvivendi.data.model.User
 import dagger.hilt.android.qualifiers.ApplicationContext
