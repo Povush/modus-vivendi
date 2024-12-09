@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
     }
 
     @Inject lateinit var accountService: AccountService
-    @Inject lateinit var povSonchik: PovSonchik
+//    @Inject lateinit var povSonchik: PovSonchik
 
     @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -86,7 +86,7 @@ class MainActivity : ComponentActivity() {
             }
         }
         askNotificationPermission()
-        povSonchik.doPovSonchik()
+//        povSonchik.doPovSonchik()
         Firebase.messaging.subscribeToTopic("all")
             .addOnCompleteListener { task ->
                 if (task.isSuccessful) {

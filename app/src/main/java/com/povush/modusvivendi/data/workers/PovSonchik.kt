@@ -32,11 +32,11 @@ class PovSonchik @Inject constructor(
     private fun calculateInitialDelay(): Long {
         val now = Calendar.getInstance()
         val targetTime  = Calendar.getInstance().apply {
-            if (now.get(Calendar.HOUR_OF_DAY) >= 20 && now.get(Calendar.MINUTE) >= 50) {
+            if (now.get(Calendar.HOUR_OF_DAY) >= 1 && now.get(Calendar.MINUTE) >= 1) {
                 add(Calendar.DAY_OF_YEAR, 1)
             }
-            set(Calendar.HOUR_OF_DAY, 20)
-            set(Calendar.MINUTE, 50)
+            set(Calendar.HOUR_OF_DAY, 0)
+            set(Calendar.MINUTE, 0)
             set(Calendar.SECOND, 0)
             set(Calendar.MILLISECOND, 0)
         }

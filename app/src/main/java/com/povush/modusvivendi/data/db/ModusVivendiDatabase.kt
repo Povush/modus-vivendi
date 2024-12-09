@@ -33,7 +33,7 @@ abstract class ModusVivendiDatabase : RoomDatabase() {
         fun getDatabase(context: Context): ModusVivendiDatabase {
             return Instance ?: synchronized(this) {
                 Room.databaseBuilder(context, ModusVivendiDatabase::class.java, "mv_database")
-                    .addMigrations(MIGRATION_7_8)
+                    .fallbackToDestructiveMigration()
                     .build()
                     .also { Instance = it }
             }
