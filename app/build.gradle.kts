@@ -68,6 +68,9 @@ android {
 }
 
 dependencies {
+    // Modules
+    implementation(project(":core"))
+
     // Gson
     implementation(libs.gson)
 
