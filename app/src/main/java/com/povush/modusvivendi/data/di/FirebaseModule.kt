@@ -1,8 +1,10 @@
 package com.povush.modusvivendi.data.di
 
 import com.povush.modusvivendi.data.network.firebase.AccountService
+import com.povush.modusvivendi.data.network.firebase.CloudMessagingService
 import com.povush.modusvivendi.data.network.firebase.StorageService
 import com.povush.modusvivendi.data.network.firebase.impl.AccountServiceImpl
+import com.povush.modusvivendi.data.network.firebase.impl.CloudMessagingServiceImpl
 import com.povush.modusvivendi.data.network.firebase.impl.StorageServiceImpl
 import dagger.Binds
 import dagger.Module
@@ -17,4 +19,7 @@ abstract class FirebaseModule {
 
     @Binds
     abstract fun provideStorageService(impl: StorageServiceImpl): StorageService
+
+    @Binds
+    abstract fun provideCloudMessagingService(impl: CloudMessagingServiceImpl): CloudMessagingService
 }
