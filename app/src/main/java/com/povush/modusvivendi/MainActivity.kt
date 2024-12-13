@@ -62,6 +62,4 @@ class MainActivity : ComponentActivity() {
         MapKitFactory.getInstance().onStop()
         super.onStop()
     }
-
-    // Pov test
 }
