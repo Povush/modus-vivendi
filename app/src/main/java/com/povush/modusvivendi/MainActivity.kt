@@ -11,7 +11,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.material3.windowsizeclass.calculateWindowSizeClass
 import androidx.compose.ui.Modifier
-import com.povush.modusvivendi.data.di.PermissionManagerFactory
+import com.povush.modusvivendi.data.di.assisted_factory.PermissionManagerFactory
 import com.povush.modusvivendi.data.network.firebase.AccountService
 import com.povush.modusvivendi.data.network.firebase.CloudMessagingService
 import com.povush.modusvivendi.framework.PermissionManager
@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+//        MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY)
         MapKitFactory.initialize(this)
         permissionManager = permissionManagerFactory.create(this)
         setContent {

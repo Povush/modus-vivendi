@@ -325,26 +325,33 @@ fun QuestDescription(
 ) {
     val isFocused = remember { mutableStateOf(false) }
 
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        modifier = Modifier
-            .fillMaxWidth()
-            .onFocusChanged { focusState ->
-                isFocused.value = focusState.isFocused
+    Column {
+        Text(
+            text = "Description",
+            modifier = Modifier.padding(8.dp),
+            style = MaterialTheme.typography.bodySmall
+        )
+        OutlinedTextField(
+            value = value,
+            onValueChange = onValueChange,
+            modifier = Modifier
+                .fillMaxWidth()
+                .onFocusChanged { focusState ->
+                    isFocused.value = focusState.isFocused
+                },
+            textStyle = MaterialTheme.typography.bodyMedium,
+            placeholder = {
+                if (!isFocused.value) {
+                    Text(
+                        text = stringResource(R.string.description),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
             },
-        textStyle = MaterialTheme.typography.bodyMedium,
-        placeholder = {
-            if (!isFocused.value) {
-                Text(
-                    text = stringResource(R.string.description),
-                    style = MaterialTheme.typography.bodyMedium
-                )
-            }
-        },
-        minLines = 7,
-        shape = RectangleShape
-    )
+            minLines = 7,
+            shape = RoundedCornerShape(8.dp)
+        )
+    }
 }
 
 @Composable

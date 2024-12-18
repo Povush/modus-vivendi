@@ -1,6 +1,7 @@
 package com.povush.modusvivendi.ui.map
 
 import android.util.Log
+import androidx.annotation.RawRes
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -30,6 +31,8 @@ import com.povush.modusvivendi.R
 import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
+import com.yandex.mapkit.geometry.Point
+import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView
 
 object MapDestination : NavigationDestination {
@@ -93,11 +96,27 @@ fun YandexMapView(modifier: Modifier = Modifier) {
     AndroidView(
         factory = { context ->
             MapView(context).apply {
-//                val styleJson = context.resources.openRawResource(R.raw.map_style_tno).bufferedReader().use { it.readText() }
-//                val isStyleApplied = mapWindow.map.setMapStyle(styleJson)
-//                Log.d("MapStyle", "Style applied: $isStyleApplied")
+                moveToDefaultCologneLocation()
             }
         },
         modifier = Modifier.fillMaxSize()
+    )
+}
+
+fun MapView.setupStyle(@RawRes style: Int) {
+    val styleJson = context.resources.openRawResource(style)
+        .bufferedReader()
+        .use { it.readText() }
+    mapWindow.map.setMapStyle(styleJson)
+}
+
+fun MapView.moveToDefaultCologneLocation() {
+    mapWindow.map.move(
+        CameraPosition(
+            Point(50.930779, 6.938399),
+            3.75f,
+            0.0f,
+            0.0f
+        )
     )
 }

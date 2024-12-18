@@ -1,4 +1,4 @@
-package com.povush.modusvivendi.data.di
+package com.povush.modusvivendi.data.di.assisted_factory
 
 import androidx.activity.ComponentActivity
 import com.povush.modusvivendi.framework.PermissionManagerImpl

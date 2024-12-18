@@ -45,14 +45,14 @@ fun ModusVivendiDropdownMenuItem(
         },
         onClick = onClick,
         modifier = Modifier.height(36.dp),
-        leadingIcon = {
-            leadingIcon?.let {
+        leadingIcon = if (leadingIcon != null) {
+            {
                 Icon(
                     imageVector = leadingIcon,
                     contentDescription = null,
                     tint = if (isDangerous) MaterialTheme.colorScheme.error else MaterialTheme.colorScheme.onBackground
                 )
             }
-        }
+        } else null
     )
 }

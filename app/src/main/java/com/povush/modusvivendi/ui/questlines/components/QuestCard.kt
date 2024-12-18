@@ -177,34 +177,33 @@ fun QuestCard(
                     )
                 }
             }
-        }
-        DropdownMenu(
-            expanded = menuExpanded,
-            onDismissRequest = { menuExpanded = false },
-            modifier = Modifier
-                .background(Color.White)
-                .wrapContentSize(),
-            shape = RoundedCornerShape(8.dp),
-            shadowElevation = 8.dp,
-            offset = DpOffset(x = 8.dp, y = 0.dp)
-        ) {
-            ModusVivendiDropdownMenuItem(
-                textRes = R.string.edit,
-                onClick = {
-                    menuExpanded = false
-                    navigateToQuestEdit(quest.id, -1)
-                },
-                leadingIcon = Icons.Outlined.Edit
-            )
-            ModusVivendiDropdownMenuItem(
-                textRes = R.string.delete,
-                onClick = {
-                    menuExpanded = false
-                    deleteQuest(quest)
-                },
-                leadingIcon = Icons.Outlined.DeleteOutline,
-                isDangerous = true
-            )
+            DropdownMenu(
+                expanded = menuExpanded,
+                onDismissRequest = { menuExpanded = false },
+                modifier = Modifier
+                    .background(Color.White)
+                    .wrapContentSize(),
+                shape = RoundedCornerShape(8.dp),
+                shadowElevation = 8.dp
+            ) {
+                ModusVivendiDropdownMenuItem(
+                    textRes = R.string.edit,
+                    onClick = {
+                        menuExpanded = false
+                        navigateToQuestEdit(quest.id, -1)
+                    },
+                    leadingIcon = Icons.Outlined.Edit
+                )
+                ModusVivendiDropdownMenuItem(
+                    textRes = R.string.delete,
+                    onClick = {
+                        menuExpanded = false
+                        deleteQuest(quest)
+                    },
+                    leadingIcon = Icons.Outlined.DeleteOutline,
+                    isDangerous = true
+                )
+            }
         }
         if (isExpanded) {
             Text(

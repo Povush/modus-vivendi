@@ -2,6 +2,7 @@ package com.povush.modusvivendi.ui.questlines.components
 
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -25,6 +26,7 @@ import androidx.compose.material3.Checkbox
 import androidx.compose.material3.CheckboxDefaults
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.Icon
+import androidx.compose.material3.LocalTextStyle
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,13 +38,17 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextLayoutResult
 import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.povush.modusvivendi.R
@@ -101,15 +107,33 @@ fun TaskEdit(
                     BasicTextField(
                         value = task.name,
                         onValueChange = { onTaskTextChange(task, it) },
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        decorationBox = { innerTextField ->
+                            Box {
+                                if (task.isAdditional) {
+                                    Text(
+                                        text = buildAnnotatedString {
+                                            withStyle(style = SpanStyle(color = Color.Transparent)) {
+                                                append(task.name)
+                                            }
+                                            append(" (")
+                                            withStyle(style = SpanStyle(color = Color(0xFF806000))) {
+                                                append(stringResource(R.string.add_l))
+                                            }
+                                            append(")")
+                                        },
+                                        style = MaterialTheme.typography.bodyLarge,
+                                        modifier = Modifier.padding(start = 1.dp)
+                                    )
+                                }
+                                innerTextField()
+                            }
+                        },
                         onTextLayout = { textLayoutResult: TextLayoutResult ->
                             lineCount = textLayoutResult.lineCount
                         },
-                        textStyle = MaterialTheme.typography.bodyLarge.copy(
-                            color =
-                            if (task.isAdditional) Color.Black.copy(alpha = 0.6f)
-                            else Color.Black
-                        )
+                        textStyle = MaterialTheme.typography.bodyLarge
                     )
                     if (task.name.isEmpty()) {
                         Text(
@@ -182,6 +206,8 @@ private fun TaskEditButton(
     onClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val focusManager = LocalFocusManager.current
+
     Box(
         modifier = modifier
             .size(22.dp)
@@ -190,7 +216,10 @@ private fun TaskEditButton(
                 color = MaterialTheme.colorScheme.primary,
                 shape = CircleShape
             )
-            .clickable { onClicked() },
+            .clickable {
+                focusManager.clearFocus(false)
+                onClicked()
+            },
         contentAlignment = Alignment.Center
     ) {
         Icon(
