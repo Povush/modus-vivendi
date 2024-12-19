@@ -3,7 +3,6 @@ package com.povush.modusvivendi
 import android.content.res.Configuration
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -23,18 +22,14 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
-import com.povush.modusvivendi.ui.common.appbar.MainParameterData
-import com.povush.modusvivendi.ui.common.appbar.MainParametersBar
-import com.povush.modusvivendi.ui.domain.DomainDestination
+import com.povush.modusvivendi.ui.common.appbars.MainParameterData
+import com.povush.modusvivendi.ui.common.appbars.MainParametersBar
 import com.povush.modusvivendi.ui.login.SignInDestination
 import com.povush.modusvivendi.ui.login.SignUpDestination
 import com.povush.modusvivendi.ui.map.MapDestination
 import com.povush.modusvivendi.ui.navigation.LoginDestination
 import com.povush.modusvivendi.ui.navigation.ModusVivendiModalDrawerSheet
 import com.povush.modusvivendi.ui.navigation.ModusVivendiNavHost
-import com.povush.modusvivendi.ui.technologies.TechnologiesDestination
-import com.povush.modusvivendi.ui.thoughtrealm.ThoughtrealmDestination
-import com.povush.modusvivendi.ui.treasure.TreasureDestination
 import kotlinx.coroutines.launch
 
 @Composable

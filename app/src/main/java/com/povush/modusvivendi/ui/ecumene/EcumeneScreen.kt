@@ -12,7 +12,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.appbars.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 
 object EcumeneDestination : NavigationDestination {

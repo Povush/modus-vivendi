@@ -25,7 +25,6 @@ class MainActivity : ComponentActivity() {
 
     @Inject lateinit var accountService: AccountService
     @Inject lateinit var cloudMessagingService: CloudMessagingService
-
     @Inject lateinit var permissionManagerFactory: PermissionManagerFactory
     private lateinit var permissionManager: PermissionManager
 
@@ -33,7 +32,6 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-//        MapKitFactory.setApiKey(BuildConfig.MAPKIT_API_KEY)
         MapKitFactory.initialize(this)
         permissionManager = permissionManagerFactory.create(this)
         setContent {

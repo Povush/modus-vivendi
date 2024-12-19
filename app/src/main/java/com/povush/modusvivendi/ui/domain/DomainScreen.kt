@@ -16,7 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.appbars.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 
 object DomainDestination : NavigationDestination {

@@ -1,16 +1,10 @@
 package com.povush.modusvivendi.ui.map
 
-import android.util.Log
 import androidx.annotation.RawRes
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.AbsoluteCutCornerShape
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Create
 import androidx.compose.material.icons.filled.Menu
 import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material.icons.filled.Navigation
@@ -21,16 +15,12 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.appbars.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
-import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
 import com.yandex.mapkit.geometry.Point
 import com.yandex.mapkit.map.CameraPosition
 import com.yandex.mapkit.mapview.MapView

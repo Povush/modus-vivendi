@@ -1,6 +1,5 @@
 package com.povush.modusvivendi.ui.questlines.screens
 
-import android.util.Log
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.RepeatMode
 import androidx.compose.animation.core.animateFloat
@@ -41,7 +40,6 @@ import androidx.compose.material3.SnackbarResult
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -60,20 +58,17 @@ import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.povush.modusvivendi.R
-import com.povush.modusvivendi.data.db.dao.TaskDao
 import com.povush.modusvivendi.data.model.Quest
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.QuestWithTasks
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
-import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.appbars.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.QuestCard
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesUiState
 import com.povush.modusvivendi.ui.questlines.viewmodel.QuestlinesViewModel
 import com.povush.modusvivendi.ui.splash.SplashScreen
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.launch
 
 object QuestlinesDestination : NavigationDestination {

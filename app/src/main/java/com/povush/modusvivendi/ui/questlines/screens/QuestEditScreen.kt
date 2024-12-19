@@ -24,12 +24,10 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Castle
-import androidx.compose.material.icons.filled.Check
 import androidx.compose.material.icons.filled.Done
 import androidx.compose.material.icons.filled.DragIndicator
 import androidx.compose.material3.Button
 import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
@@ -45,7 +43,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
@@ -55,8 +52,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -64,13 +59,12 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.povush.modusvivendi.R
 import com.povush.modusvivendi.data.model.Difficulty
 import com.povush.modusvivendi.data.model.QuestType
 import com.povush.modusvivendi.data.model.Task
 import com.povush.modusvivendi.data.model.TaskWithSubtasks
-import com.povush.modusvivendi.ui.common.appbar.ModusVivendiAppBar
+import com.povush.modusvivendi.ui.common.appbars.ModusVivendiAppBar
 import com.povush.modusvivendi.ui.common.components.ModusVivendiDropdownMenuItem
 import com.povush.modusvivendi.ui.navigation.NavigationDestination
 import com.povush.modusvivendi.ui.questlines.components.TaskEdit

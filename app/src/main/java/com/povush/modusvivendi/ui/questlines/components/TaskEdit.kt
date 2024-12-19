@@ -111,7 +111,7 @@ fun TaskEdit(
                             .fillMaxWidth(),
                         decorationBox = { innerTextField ->
                             Box {
-                                if (task.isAdditional) {
+                                if (task.isAdditional && task.name.isNotEmpty()) {
                                     Text(
                                         text = buildAnnotatedString {
                                             withStyle(style = SpanStyle(color = Color.Transparent)) {
@@ -123,8 +123,7 @@ fun TaskEdit(
                                             }
                                             append(")")
                                         },
-                                        style = MaterialTheme.typography.bodyLarge,
-                                        modifier = Modifier.padding(start = 1.dp)
+                                        style = MaterialTheme.typography.bodyLarge
                                     )
                                 }
                                 innerTextField()

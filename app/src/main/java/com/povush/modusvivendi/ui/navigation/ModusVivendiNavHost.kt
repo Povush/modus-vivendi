@@ -14,6 +14,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.navigation
+import com.povush.core.ui.animations.ScaleTransitionDirection
+import com.povush.core.ui.animations.scaleIntoContainer
+import com.povush.core.ui.animations.scaleOutOfContainer
 import com.povush.modusvivendi.ui.login.SignInDestination
 import com.povush.modusvivendi.ui.questlines.screens.QuestlinesDestination
 
@@ -57,31 +60,4 @@ fun ModusVivendiNavHost(
             gameGraph(navController, onNavigationClick)
         }
     }
-}
-
-enum class ScaleTransitionDirection {
-    INWARDS,
-    OUTWARDS
-}
-
-fun scaleIntoContainer(
-    direction: ScaleTransitionDirection = ScaleTransitionDirection.INWARDS,
-    initialScale: Float = if (direction == ScaleTransitionDirection.OUTWARDS) 0.9f else 1.1f
-): EnterTransition {
-    return scaleIn(
-        animationSpec = tween(220, delayMillis = 90),
-        initialScale = initialScale
-    ) + fadeIn(animationSpec = tween(220, delayMillis = 90))
-}
-
-fun scaleOutOfContainer(
-    direction: ScaleTransitionDirection = ScaleTransitionDirection.OUTWARDS,
-    targetScale: Float = if (direction == ScaleTransitionDirection.INWARDS) 0.9f else 1.1f
-): ExitTransition {
-    return scaleOut(
-        animationSpec = tween(
-            durationMillis = 220,
-            delayMillis = 90
-        ), targetScale = targetScale
-    ) + fadeOut(tween(delayMillis = 90))
 }
